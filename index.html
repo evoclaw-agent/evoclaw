@@ -495,6 +495,7 @@
         <div class="hs"><span class="hs-v">100%</span><span class="hs-k">Async</span></div>
         <div class="hs"><span class="hs-v">5 min</span><span class="hs-k">Setup</span></div>
         <div class="hs"><span class="hs-v">2</span><span class="hs-k">Learn Modes</span></div>
+        <div class="hs"><span class="hs-v" id="skillsCounter">—</span><span class="hs-k">Skills Learned</span></div>
         <div class="hs"><span class="hs-v">MIT</span><span class="hs-k">License</span></div>
       </div>
 
@@ -892,6 +893,7 @@
           <li><a href="demo.html">Live Demo</a></li>
           <li><a href="docs.html">Documentation</a></li>
           <li><a href="#get-started">Get Started</a></li>
+          <li><a href="ask.html">Ask EvoClaw</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -1002,6 +1004,21 @@
       if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
     });
   });
+</script>
+<script>
+  // Fetch live skills count from Redis via API
+  (async () => {
+    try {
+      const res = await fetch('/api/stats');
+      if (res.ok) {
+        const data = await res.json();
+        const el = document.getElementById('skillsCounter');
+        if (el && data.skills_total !== undefined) {
+          el.textContent = data.skills_total;
+        }
+      }
+    } catch (e) {}
+  })();
 </script>
 </body>
 </html>
