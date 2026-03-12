@@ -260,6 +260,15 @@
           </div>
         </div>
 
+        <!-- Memory / learned skills -->
+        <div class="side-panel">
+          <div class="side-title">🧠 JUST LEARNED</div>
+          <div id="learnedSkill" style="font-size:.75rem;color:var(--dim);font-weight:300">Agent learns a new skill after each conversation</div>
+          <div style="margin-top:10px;font-family:var(--mono);font-size:.6rem;color:var(--dim)">TOTAL SKILLS: <span id="totalSkills" style="color:var(--green)">—</span></div>
+          <div style="font-family:var(--mono);font-size:.6rem;color:var(--dim)">CONVERSATIONS: <span id="totalConvs" style="color:var(--blue)">—</span></div>
+          <div style="font-family:var(--mono);font-size:.6rem;margin-top:6px" id="memoryStatus"></div>
+        </div>
+
         <!-- Suggestions -->
         <div class="side-panel">
           <div class="side-title">TRY ASKING</div>
@@ -365,6 +374,31 @@
       span.textContent = skill;
       skillsList.appendChild(span);
     });
+
+    // Show learned skill
+    if (meta.new_skill_learned) {
+      const el = document.getElementById('learnedSkill');
+      el.style.color = 'var(--green)';
+      el.style.fontFamily = 'var(--mono)';
+      el.style.fontSize = '.7rem';
+      el.textContent = '✦ ' + meta.new_skill_learned;
+    }
+
+    // Update counters
+    if (meta.learned_skills_total !== undefined) {
+      document.getElementById('totalSkills').textContent = meta.learned_skills_total;
+    }
+    if (meta.conversations_total !== undefined) {
+      document.getElementById('totalConvs').textContent = meta.conversations_total;
+    }
+
+    // Memory status
+    const memEl = document.getElementById('memoryStatus');
+    if (meta.memory_active) {
+      memEl.innerHTML = '<span style="color:var(--green)">● MEMORY ACTIVE</span>';
+    } else {
+      memEl.innerHTML = '<span style="color:var(--dim)">○ MEMORY OFFLINE</span>';
+    }
   }
 
   async function sendMsg() {
