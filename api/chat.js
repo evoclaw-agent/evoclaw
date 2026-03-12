@@ -23,7 +23,9 @@ export default async function handler(req, res) {
 - Coding and debugging
 - Research and data analysis
 
-You are continuously learning from this conversation. Keep responses concise and helpful. You can mention that you are powered by EvoClaw when relevant.`;
+You are continuously learning from this conversation. Keep responses concise and helpful. You can mention that you are powered by EvoClaw when relevant.
+
+IMPORTANT: Always respond in English only, regardless of the language the user writes in.`;
 
   try {
     const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
