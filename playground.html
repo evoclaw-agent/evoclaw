@@ -629,9 +629,14 @@
                 <div class="mo-desc">100+ models, one key</div>
                 <span class="mo-badge smart">MULTI-MODEL</span>
               </div>
+              <div class="model-opt" onclick="selectProvider('claude', this)">
+                <div class="mo-name">Claude (Anthropic)</div>
+                <div class="mo-desc">Claude 3.5, Claude 3 Opus</div>
+                <span class="mo-badge smart">CLAUDE</span>
+              </div>
               <div class="model-opt" onclick="selectProvider('custom', this)">
                 <div class="mo-name">Custom</div>
-                <div class="mo-desc">Any OpenAI-compatible API</div>
+                <div class="mo-desc">Ollama · LM Studio · Together AI · Fireworks · Mistral · Perplexity · Anyscale · Deepinfra</div>
                 <span class="mo-badge fast">BYOB</span>
               </div>
             </div>
@@ -876,12 +881,14 @@
   // ── STEP 1: PROVIDER SELECT ──
   const PROVIDER_HINTS = {
     groq: 'Get your free key at <a href="https://console.groq.com" target="_blank">console.groq.com</a> — free tier: 14,400 req/day',
+    claude: 'Get your key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> — pay as you go',
     openai: 'Get your key at <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a> — pay as you go',
     openrouter: 'Get your key at <a href="https://openrouter.ai/keys" target="_blank">openrouter.ai</a> — free credits available',
     custom: 'Enter the base URL of your OpenAI-compatible API above'
   };
   const PROVIDER_PLACEHOLDERS = {
     groq: 'gsk_xxxxxxxxxxxxxxxxxxxx',
+    claude: 'sk-ant-xxxxxxxxxxxxxxxxxxxx',
     openai: 'sk-xxxxxxxxxxxxxxxxxxxx',
     openrouter: 'sk-or-xxxxxxxxxxxxxxxxxxxx',
     custom: 'Your API key...'
@@ -978,6 +985,41 @@
       ];
 
       // Call Groq directly from browser
+      // Claude uses different API format
+      if (config.provider === 'claude') {
+        const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': config.apiKey,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true'
+          },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-5',
+            max_tokens: 1024,
+            system: systemMsg,
+            messages: conversationHistory.length > 0
+              ? [...conversationHistory.filter(m => m.role !== 'system'), { role: 'user', content: text }]
+              : [{ role: 'user', content: text }]
+          })
+        });
+        const claudeData = await claudeRes.json();
+        if (!claudeRes.ok) throw new Error(claudeData.error?.message || 'Claude API error');
+        const reply = claudeData.content[0].text;
+        removeTyping(typingId);
+        conversationHistory.push({ role: 'user', content: text });
+        conversationHistory.push({ role: 'assistant', content: reply });
+        if (conversationHistory.length > 20) conversationHistory = conversationHistory.slice(-20);
+        appendMsg('agent', reply);
+        extractSkill(text, reply);
+        updatePRM();
+        updateSkillsPanel();
+        sendBtn.disabled = false;
+        document.getElementById('chatInput').focus();
+        return;
+      }
+
       const apiUrl = config.provider === 'openai' ? 'https://api.openai.com/v1/chat/completions'
         : config.provider === 'openrouter' ? 'https://openrouter.ai/api/v1/chat/completions'
         : config.provider === 'custom' ? (config.customUrl + '/chat/completions')
