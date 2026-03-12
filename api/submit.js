@@ -202,24 +202,30 @@ export default async function handler(req, res) {
       }),
     });
 
-    // Send welcome email to user
-    const userRes = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: 'EvoClaw <onboarding@resend.dev>',
-        to: [email],
-        subject: `🦎 You're in, ${firstName} — EvoClaw setup guide inside`,
-        html: userEmailHTML,
-      }),
-    });
-
-    if (!ownerRes.ok || !userRes.ok) {
-      const err = await userRes.text();
+    if (!ownerRes.ok) {
+      const err = await ownerRes.text();
       throw new Error(`Resend error: ${err}`);
+    }
+
+    // Send welcome email to user (only works after domain verified at resend.com/domains)
+    const VERIFIED_DOMAIN = process.env.VERIFIED_DOMAIN; // e.g. noreply@evoclaw.ai
+    if (VERIFIED_DOMAIN) {
+      const userRes = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: `EvoClaw <${VERIFIED_DOMAIN}>`,
+          to: [email],
+          subject: `🦎 You're in, ${firstName} — EvoClaw setup guide inside`,
+          html: userEmailHTML,
+        }),
+      });
+      if (!userRes.ok) {
+        console.error('Welcome email failed (non-fatal):', await userRes.text());
+      }
     }
 
     return res.status(200).json({ success: true });
