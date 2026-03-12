@@ -231,6 +231,8 @@
     .feat-title { font-size: .88rem; font-weight: 500; color: var(--text); margin-bottom: 7px; }
     .feat-text { font-size: .8rem; color: var(--muted); line-height: 1.75; font-weight: 300; }
     .feat-tag { display:inline-block; margin-top:10px; font-family:var(--mono); font-size:.58rem; letter-spacing:.12em; color:var(--green); background:var(--green-d); padding:3px 8px; border-radius:3px; }
+    .feat-new { border-color: rgba(0,196,255,.25); background: linear-gradient(135deg, rgba(0,196,255,.04), rgba(0,255,135,.03)); position:relative; }
+    .feat-badge { position:absolute; top:14px; right:14px; font-family:var(--mono); font-size:.55rem; letter-spacing:.14em; color:#000; background:var(--blue); padding:2px 7px; border-radius:3px; font-weight:700; }
 
     /* ── GET STARTED SECTION ── */
     .gs-grid {
@@ -617,6 +619,20 @@
         <div class="feat-title">Dual Learning Modes</div>
         <p class="feat-text">RL (GRPO) for implicit environment signals. On-Policy Distillation for richer language supervision. One config field to switch.</p>
         <span class="feat-tag">GRPO + OPD</span>
+      </div>
+      <div class="feat feat-new">
+        <span class="feat-badge">NEW</span>
+        <span class="feat-icon">🤖</span>
+        <div class="feat-title">Discord & Telegram Deploy</div>
+        <p class="feat-text">Deploy your self-evolving agent directly to Discord or Telegram with a single command. Your community becomes the training ground — every message improves the agent automatically.</p>
+        <span class="feat-tag">1 COMMAND DEPLOY</span>
+      </div>
+      <div class="feat feat-new">
+        <span class="feat-badge">NEW</span>
+        <span class="feat-icon">🏷️</span>
+        <div class="feat-title">Skill Auto-Tag</div>
+        <p class="feat-text">Every skill is automatically categorized and tagged by domain — crypto, coding, research, agentic — using an LLM. No manual labeling. Skills are instantly searchable and composable across agent instances.</p>
+        <span class="feat-tag">LLM-POWERED</span>
       </div>
     </div>
   </div>
