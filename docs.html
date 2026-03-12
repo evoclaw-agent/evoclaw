@@ -125,6 +125,12 @@
       <button class="sb-link" onclick="scrollTo('models')"><span class="sb-dot"></span>Supported Models</button>
     </div>
     <div class="sb-section">
+      <div class="sb-section-title">Integrations ✦ NEW</div>
+      <button class="sb-link" onclick="scrollTo('bot-discord')"><span class="sb-dot"></span>Discord Bot</button>
+      <button class="sb-link" onclick="scrollTo('bot-telegram')"><span class="sb-dot"></span>Telegram Bot</button>
+      <button class="sb-link" onclick="scrollTo('skill-autotag')"><span class="sb-dot"></span>Skill Auto-Tag</button>
+    </div>
+    <div class="sb-section">
       <div class="sb-section-title">Guides</div>
       <button class="sb-link" onclick="scrollTo('deploy')"><span class="sb-dot"></span>Deployment Guide</button>
       <button class="sb-link" onclick="scrollTo('troubleshoot')"><span class="sb-dot"></span>Troubleshooting</button>
@@ -473,6 +479,113 @@ You are a helpful AI assistant.
         <tr><td>Any OpenAI-compatible</td><td>—</td><td>Set model_name to any Tinker-supported model identifier.</td><td>—</td></tr>
       </tbody>
     </table>
+
+    <!-- DISCORD BOT -->
+    <h2 id="bot-discord">Discord Bot Integration <span style="font-size:.7rem;background:var(--blue);color:#000;padding:2px 8px;border-radius:3px;vertical-align:middle;font-family:var(--mono);letter-spacing:.1em">NEW</span></h2>
+    <p>Deploy your EvoClaw self-evolving agent directly to Discord. Every message from your community automatically becomes training data — the agent improves in real time.</p>
+
+    <h3>1. Create a Discord Bot</h3>
+    <ol>
+      <li>Go to <a href="https://discord.com/developers/applications" target="_blank">discord.com/developers</a> → New Application → Bot</li>
+      <li>Copy the bot token</li>
+      <li>Enable <b>Message Content Intent</b> under Bot → Privileged Gateway Intents</li>
+      <li>Invite bot to server with <code>Read Messages</code> + <code>Send Messages</code> permissions</li>
+    </ol>
+
+    <h3>2. Install dependencies</h3>
+    <pre><code>pip install discord.py</code></pre>
+
+    <h3>3. Run the bot</h3>
+    <pre><code># One command:
+python -m evoclaw.bot discord \
+  --token YOUR_DISCORD_TOKEN \
+  --proxy http://localhost:8000 \
+  --channel-id 123456789  # optional: restrict to specific channels
+
+# Or via Python:
+from evoclaw.bot import EvoBotDiscord
+
+bot = EvoBotDiscord(
+    discord_token="YOUR_DISCORD_TOKEN",
+    evoclaw_url="http://localhost:8000",
+    channel_ids=[123456789],  # empty = all channels
+    system_prompt="You are a crypto trading assistant powered by EvoClaw.",
+)
+bot.run()</code></pre>
+
+    <p>The bot responds to <code>@mention</code> or messages starting with <code>!ask</code>. All conversations are automatically scored and fed into the EvoClaw training loop.</p>
+
+    <!-- TELEGRAM BOT -->
+    <h2 id="bot-telegram">Telegram Bot Integration <span style="font-size:.7rem;background:var(--blue);color:#000;padding:2px 8px;border-radius:3px;vertical-align:middle;font-family:var(--mono);letter-spacing:.1em">NEW</span></h2>
+    <p>Same self-evolving agent, deployed to Telegram. Ideal for crypto communities, trading groups, and DeFi support bots.</p>
+
+    <h3>1. Create a Telegram Bot</h3>
+    <ol>
+      <li>Open Telegram → search <b>@BotFather</b> → send <code>/newbot</code></li>
+      <li>Follow the prompts → copy the token</li>
+    </ol>
+
+    <h3>2. Install dependencies</h3>
+    <pre><code>pip install python-telegram-bot</code></pre>
+
+    <h3>3. Run the bot</h3>
+    <pre><code># One command:
+python -m evoclaw.bot telegram \
+  --token YOUR_TELEGRAM_TOKEN \
+  --proxy http://localhost:8000
+
+# Or via Python:
+from evoclaw.bot import EvoBotTelegram
+
+bot = EvoBotTelegram(
+    telegram_token="YOUR_TELEGRAM_TOKEN",
+    evoclaw_url="http://localhost:8000",
+    system_prompt="You are a DeFi research assistant powered by EvoClaw.",
+    allowed_chats=[],  # empty = all chats
+)
+bot.run()</code></pre>
+
+    <!-- SKILL AUTO-TAG -->
+    <h2 id="skill-autotag">Skill Auto-Tag <span style="font-size:.7rem;background:var(--blue);color:#000;padding:2px 8px;border-radius:3px;vertical-align:middle;font-family:var(--mono);letter-spacing:.1em">NEW</span></h2>
+    <p>Automatically categorize and tag every skill in your skill bank using an LLM. No manual labeling required. Skills become searchable and composable across agent instances.</p>
+
+    <h3>Domains</h3>
+    <p>Each skill is tagged with one of: <code>crypto</code>, <code>coding</code>, <code>research</code>, <code>agentic</code>, <code>security</code>, <code>communication</code>, <code>general</code></p>
+
+    <h3>Usage</h3>
+    <pre><code>from evoclaw.skill_autotag import SkillAutoTagger
+
+# Tag all skills in the skill bank
+tagger = SkillAutoTagger(
+    api_key="YOUR_OPENAI_KEY",  # or set OPENAI_API_KEY env var
+    model="gpt-4o-mini",        # cheap + fast
+)
+tagger.tag_all("memory_data/conversation/conversation_skills.json")
+
+# Search tagged skills by domain
+crypto_skills = tagger.search("memory_data/conversation/conversation_skills.json", domain="crypto")
+for skill in crypto_skills:
+    print(skill["text"], "→", skill["tags"])</code></pre>
+
+    <h3>CLI</h3>
+    <pre><code># Tag all skills
+python -m evoclaw.skill_autotag memory_data/conversation/conversation_skills.json
+
+# Re-tag existing (overwrite)
+python -m evoclaw.skill_autotag memory_data/conversation/conversation_skills.json --overwrite
+
+# Tag + search by domain
+python -m evoclaw.skill_autotag memory_data/conversation/conversation_skills.json --search-domain crypto</code></pre>
+
+    <h3>Output format</h3>
+    <p>Each skill in the JSON becomes:</p>
+    <pre><code>{
+  "text": "When analyzing DeFi protocols, always check TVL, audit history, and token distribution.",
+  "domain": "crypto",
+  "tags": ["defi", "risk-analysis", "protocol-audit"],
+  "complexity": "intermediate",
+  "use_case": "Use when evaluating DeFi investment opportunities or reviewing smart contract safety."
+}</code></pre>
 
     <!-- DEPLOYMENT -->
     <h2 id="deploy">Deployment Guide</h2>
