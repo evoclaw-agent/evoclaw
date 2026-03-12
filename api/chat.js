@@ -44,7 +44,7 @@ export default async function handler(req, res) {
 
 ## About EvoClaw
 EvoClaw is a self-evolving AI agent wrapper that continuously trains from live conversations. Key facts:
-- Website: evoclaw.vercel.app
+- Website: evoclaw.tech
 - GitHub: github.com/evoclaw-agent/evoclaw
 - License: MIT (fully open source)
 - No GPU required — training offloads to Tinker cloud (by thinkingmachines.ai)
