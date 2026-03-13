@@ -1,90 +1,80 @@
-// api/chat.js — EvoClaw Live Demo backend
-// Proxies requests to Groq API (key stored safely in Vercel env vars)
-
+// api/chat.js — EvoClaw Ask chat endpoint (Vercel serverless)
 export default async function handler(req, res) {
-  // CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
   const GROQ_API_KEY = process.env.GROQ_API_KEY;
-  if (!GROQ_API_KEY) return res.status(500).json({ error: "GROQ_API_KEY not configured" });
+  if (!GROQ_API_KEY) return res.status(500).json({ error: "GROQ_API_KEY not set in Vercel env" });
 
-  const { messages } = req.body;
-  if (!messages || !Array.isArray(messages)) {
-    return res.status(400).json({ error: "messages array required" });
+  // Accept both { messages } and { message, history } formats
+  const body = req.body || {};
+  let messages = [];
+  if (body.messages && Array.isArray(body.messages)) {
+    messages = body.messages;
+  } else if (body.message) {
+    const history = Array.isArray(body.history) ? body.history : [];
+    messages = [...history, { role: "user", content: body.message }];
   }
+  if (!messages.length) return res.status(400).json({ error: "No messages provided" });
 
-  const SYSTEM_PROMPT = `You are an EvoClaw agent — a self-evolving AI assistant built on top of the OpenClaw framework. You specialize in:
-- Crypto, DeFi, and Web3 analysis
-- Agentic workflows and automation  
-- Coding and debugging
-- Research and data analysis
+  const SKILLS = [
+    { name: "deep-research", rule: "Always verify reasoning before responding. Break complex problems into steps." },
+    { name: "defi-expert",   rule: "When explaining DeFi concepts, mention risks and provide numerical examples." },
+    { name: "crypto-security", rule: "For crypto/Web3 questions, always mention security considerations." },
+    { name: "structured-output", rule: "Structure long answers with clear sections. Use examples for abstract concepts." },
+    { name: "code-quality",  rule: "When writing code, handle edge cases and explain the 'why' behind decisions." },
+  ];
 
-You are continuously learning from this conversation. Keep responses concise and helpful. You can mention that you are powered by EvoClaw when relevant.`;
+  const skillBlock = `## EvoClaw Injected Skills:\n${SKILLS.map((s,i) => `${i+1}. ${s.rule}`).join("\n")}`;
+  const systemMsg = {
+    role: "system",
+    content: `You are EvoClaw — a self-evolving AI assistant that learns from every conversation.\n\nEvoClaw is an open-source Python package that wraps any OpenAI-compatible API with a local proxy, scores conversations using a PRM (Process Reward Model) via Groq (free), injects learned skills in real time, and optionally trains LoRA adapters via Tinker cloud. It works with Groq, OpenAI, Anthropic, and any OpenAI-compatible API. No GPU required. Install with: pip install git+https://github.com/evoclaw-agent/evoclaw\n\n${skillBlock}`
+  };
 
   try {
     const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${GROQ_API_KEY}`,
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${GROQ_API_KEY}`,
       },
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          ...messages,
-        ],
-        max_tokens: 512,
+        messages: [systemMsg, ...messages.slice(-10)],
+        max_tokens: 1024,
         temperature: 0.7,
       }),
     });
 
-    if (!groqRes.ok) {
-      const err = await groqRes.text();
-      return res.status(groqRes.status).json({ error: err });
-    }
-
     const data = await groqRes.json();
-    const reply = data.choices[0].message.content;
+    if (!groqRes.ok) throw new Error(data.error?.message || "Groq API error");
 
-    // Simulate EvoClaw skill injection metadata
-    const skills = detectSkills(messages[messages.length - 1]?.content || "");
+    const reply = data.choices?.[0]?.message?.content || "No response";
+
+    // Simulate PRM + skill learning (real version needs local proxy)
+    const prm_score = parseFloat((0.72 + Math.random() * 0.23).toFixed(2));
+    const didLearn = Math.random() > 0.55;
+    const learnedSkill = didLearn ? SKILLS[Math.floor(Math.random() * SKILLS.length)] : null;
+    const injectedNames = SKILLS.slice(0, 3).map(s => s.name);
 
     return res.status(200).json({
       reply,
       meta: {
-        model: "llama-3.3-70b-versatile (via EvoClaw)",
-        skills_injected: skills,
-        prm_score: (Math.random() * 0.3 + 0.7).toFixed(2), // simulated score
-        trained: true,
+        prm_score,
+        skills_injected: injectedNames,
+        new_skill_learned: didLearn ? learnedSkill.name : null,
+        total_skills: 11 + Math.floor(Math.random() * 8),
+        conversations: Math.floor(Math.random() * 120) + 40,
+        model: "llama-3.3-70b-versatile",
       }
     });
 
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    console.error("Chat error:", err);
+    return res.status(500).json({ error: err.message || "Internal server error" });
   }
-}
-
-// Detect relevant skills based on message content
-function detectSkills(message) {
-  const msg = message.toLowerCase();
-  const skills = [];
-  if (msg.includes("defi") || msg.includes("crypto") || msg.includes("token") || msg.includes("blockchain")) {
-    skills.push("defi-analysis");
-  }
-  if (msg.includes("code") || msg.includes("python") || msg.includes("function") || msg.includes("bug")) {
-    skills.push("code-review");
-  }
-  if (msg.includes("research") || msg.includes("analyze") || msg.includes("explain")) {
-    skills.push("deep-research");
-  }
-  if (msg.includes("agent") || msg.includes("automate") || msg.includes("workflow")) {
-    skills.push("agentic-planning");
-  }
-  if (skills.length === 0) skills.push("general-reasoning");
-  return skills;
 }
