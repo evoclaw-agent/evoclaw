@@ -86,6 +86,19 @@
       .sb-link{white-space:nowrap;padding:6px 12px;font-size:.76rem}
       .docs-content{padding:32px 20px}
     }
+
+    @media (max-width: 768px) {
+      .docs-layout { grid-template-columns: 1fr; }
+      .sidebar { position: relative; top: 0; height: auto; max-height: 200px; overflow-y: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 16px 20px; display: flex; flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; flex-direction: row; gap: 0; }
+      .sb-group { display: contents; }
+      .sb-cat { display: none; }
+      .sb-link { display: inline-flex; white-space: nowrap; padding: 6px 12px; }
+      .doc-content { padding: 24px 20px 60px; }
+    }
+    @media (max-width: 480px) {
+      .doc-content { padding: 20px 16px 60px; }
+      .cb { font-size: .75rem; }
+    }
   </style>
 </head>
 <body>
@@ -101,9 +114,20 @@
       <li><a href="ask.html" style="color:var(--green)">ASK EVOCLAW</a></li>
       <li><a href="playground.html" style="color:var(--green)">PLAYGROUND</a></li>
     </ul>
-  <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank" class="nav-cta">GITHUB →</a>
+  <button class="nav-toggle" id="navToggle" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+    <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank" class="nav-cta">GITHUB →</a>
   </div>
 </nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">HOME</a>
+  <a href="demo.html">LIVE DEMO</a>
+  <a href="docs.html" class="active">DOCS</a>
+  <a href="index.html#get-started">GET STARTED</a>
+  <a href="ask.html" style="color:var(--green)">ASK EVOCLAW</a>
+  <a href="playground.html" style="color:var(--green)">PLAYGROUND</a>
+  <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank" class="mobile-cta">GITHUB →</a>
+</div>
 
 <div class="docs-layout">
 
@@ -773,5 +797,22 @@ WantedBy=multi-user.target</pre></div>
 
   sections.forEach(id=>{ const el=document.getElementById(id); if(el)sObs.observe(el); });
 </script>
+
+<script>
+  function toggleMenu() {
+    const menu = document.getElementById('mobileMenu');
+    const btn = document.getElementById('navToggle');
+    menu.classList.toggle('open');
+    btn.classList.toggle('open');
+  }
+  // Close menu on link click
+  document.querySelectorAll('.mobile-menu a').forEach(a => {
+    a.addEventListener('click', () => {
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.getElementById('navToggle').classList.remove('open');
+    });
+  });
+</script>
+
 </body>
 </html>
