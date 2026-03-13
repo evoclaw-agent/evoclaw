@@ -343,6 +343,30 @@ html, body {
   table { display: block !important; overflow-x: auto !important; }
 }
 </style>
+
+<style id="sidebar-fix">
+/* Keep sidebar stable */
+.docs-sidebar { display: block !important; visibility: visible !important; }
+.sb-link { 
+  display: flex !important; 
+  align-items: center !important;
+  width: 100% !important;
+}
+.sb-link:focus { outline: none !important; }
+@media (max-width: 768px) {
+  .docs-layout { 
+    grid-template-columns: 1fr !important; 
+  }
+  .docs-sidebar { 
+    position: relative !important;
+    height: auto !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding: 16px !important;
+    overflow: visible !important;
+  }
+}
+</style>
 </head>
 <body>
 
