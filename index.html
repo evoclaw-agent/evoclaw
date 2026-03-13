@@ -4,6 +4,17 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>EvoClaw — Self-Evolving AI Agent</title>
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://evoclaw.tech"/>
+  <meta property="og:title" content="EvoClaw — Self-Evolving AI Agent"/>
+  <meta property="og:description" content="EvoClaw continuously trains your AI agent from live conversations. No GPU. No data team. Just plug it in."/>
+  <meta property="og:image" content="https://evoclaw.tech/assets/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="EvoClaw — Self-Evolving AI Agent"/>
+  <meta name="twitter:description" content="EvoClaw continuously trains your AI agent from live conversations. No GPU. No data team. Just plug it in."/>
+  <meta name="twitter:image" content="https://evoclaw.tech/assets/og-image.png"/>
   <meta name="description" content="EvoClaw continuously trains your AI agent from live conversations. No GPU. No data team. Just plug it in."/>
   <link rel="stylesheet" href="css/shared.css"/>
   <link rel="icon" type="image/png" href="data:image/png;base64,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"/>
@@ -231,6 +242,8 @@
     .feat-title { font-size: .88rem; font-weight: 500; color: var(--text); margin-bottom: 7px; }
     .feat-text { font-size: .8rem; color: var(--muted); line-height: 1.75; font-weight: 300; }
     .feat-tag { display:inline-block; margin-top:10px; font-family:var(--mono); font-size:.58rem; letter-spacing:.12em; color:var(--green); background:var(--green-d); padding:3px 8px; border-radius:3px; }
+    .feat-new { border-color: rgba(0,196,255,.25); background: linear-gradient(135deg, rgba(0,196,255,.04), rgba(0,255,135,.03)); position:relative; }
+    .feat-badge { position:absolute; top:14px; right:14px; font-family:var(--mono); font-size:.55rem; letter-spacing:.14em; color:#000; background:var(--blue); padding:2px 7px; border-radius:3px; font-weight:700; }
 
     /* ── GET STARTED SECTION ── */
     .gs-grid {
@@ -441,6 +454,58 @@
       .hero-stats .hs:nth-child(5) { border-right: 1px solid var(--border); }
     }
   </style>
+        <style id="hamburger-style">
+    .nav-inner { display:flex; align-items:center; width:100%; }
+    .nav-logo { display:flex; align-items:center; gap:8px; white-space:nowrap; text-decoration:none; flex-shrink:0; margin-right:auto; }
+    .nav-logo-img { width:36px; height:36px; object-fit:contain; display:block !important; }
+    .hamburger { display:none; flex-direction:column; justify-content:center; gap:5px; cursor:pointer; padding:8px; background:none; border:none; z-index:1001; flex-shrink:0; margin-left:12px; }
+    .hamburger span { display:block; width:22px; height:2px; background:#00ff88; border-radius:2px; transition:all .3s ease; }
+    .hamburger.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity:0; transform:scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+    .mobile-menu {
+      display:none; position:fixed; top:0; right:0; width:75%; max-width:300px; height:100%;
+      background:#080f08; border-left:1px solid rgba(0,255,136,.15);
+      z-index:1000; flex-direction:column; padding:80px 32px 40px;
+      gap:0; transform:translateX(100%); transition:transform .3s ease;
+    }
+    .mobile-menu.open { display:flex; transform:translateX(0); }
+    .mobile-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.6); z-index:999; }
+    .mobile-overlay.open { display:block; }
+    .mobile-menu a {
+      font-family:var(--mono,monospace); font-size:.85rem; letter-spacing:.12em;
+      color:rgba(224,255,224,.7); text-decoration:none; padding:14px 0;
+      border-bottom:1px solid rgba(0,255,136,.08); transition:color .2s;
+      display:block;
+    }
+    .mobile-menu a:last-child { border-bottom:none; }
+    .mobile-menu a:hover, .mobile-menu a:active { color:#00ff88; }
+    .mobile-menu a.green { color:#00ff88; }
+    .mobile-close {
+      position:absolute; top:20px; right:20px;
+      background:none; border:1px solid rgba(0,255,136,.3); color:#00ff88;
+      width:36px; height:36px; border-radius:6px; font-size:1rem;
+      cursor:pointer; display:flex; align-items:center; justify-content:center;
+      transition:all .2s;
+    }
+    .mobile-close:hover { background:rgba(0,255,136,.1); }
+    .mobile-menu-title {
+      font-family:var(--mono,monospace); font-size:.65rem; letter-spacing:.2em;
+      color:rgba(0,255,136,.4); margin-bottom:24px; display:block;
+    }
+    .mobile-github-btn {
+      margin-top:24px; background:#00ff88; color:#000 !important;
+      font-weight:700; padding:12px 20px; border-radius:6px;
+      text-align:center; border-bottom:none !important;
+      letter-spacing:.08em;
+    }
+    .mobile-github-btn:hover { opacity:.85; color:#000 !important; }
+    @media (max-width:768px) {
+      .hamburger { display:flex !important; }
+      .nav-links { display:none !important; }
+      .nav-cta { display:none !important; }
+    }
+  </style>
 </head>
 <body>
 
@@ -448,15 +513,56 @@
 <nav class="nav" id="nav">
   <div class="nav-inner">
     <a href="index.html" class="nav-logo"><img src="assets/logo.png" class="nav-logo-img" alt="EvoClaw"><span class="g">EVO</span>CLAW</a>
-    <ul class="nav-links">
+        <ul class="nav-links">
       <li><a href="index.html" class="active">HOME</a></li>
       <li><a href="demo.html">LIVE DEMO</a></li>
       <li><a href="docs.html">DOCS</a></li>
-      <li><a href="#get-started">GET STARTED</a></li>
+      <li><a href="index.html#get-started">GET STARTED</a></li>
+      <li><a href="ask.html" style="color:var(--green)">ASK EVOCLAW</a></li>
+      <li><a href="playground.html" style="color:var(--green)">PLAYGROUND</a></li>
     </ul>
     <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank" class="nav-cta">GITHUB →</a>
+    <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
+<div class="mobile-overlay" id="mobileOverlay"></div>
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" id="mobileClose" aria-label="Close">✕</button>
+  <span class="mobile-menu-title">NAVIGATION</span>
+  <a href="index.html">HOME</a>
+  <a href="demo.html">LIVE DEMO</a>
+  <a href="docs.html">DOCS</a>
+  <a href="index.html#get-started">GET STARTED</a>
+  <a href="ask.html" class="green">ASK EVOCLAW</a>
+  <a href="playground.html" class="green">PLAYGROUND</a>
+  <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank" class="mobile-github-btn">GITHUB →</a>
+</div>
+<script>
+(function(){
+  var btn = document.getElementById('hamburger');
+  var menu = document.getElementById('mobileMenu');
+  var overlay = document.getElementById('mobileOverlay');
+  var closeBtn = document.getElementById('mobileClose');
+  function open() {
+    menu.classList.add('open');
+    overlay.classList.add('open');
+    btn.classList.add('open');
+    document.body.style.overflow='hidden';
+  }
+  function close() {
+    menu.classList.remove('open');
+    overlay.classList.remove('open');
+    btn.classList.remove('open');
+    document.body.style.overflow='';
+  }
+  btn.addEventListener('click', function(){ menu.classList.contains('open') ? close() : open(); });
+  closeBtn.addEventListener('click', close);
+  overlay.addEventListener('click', close);
+  menu.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', close); });
+})();
+</script>
+
+
 
 <!-- ── HERO ── -->
 <div class="hero-wrap">
@@ -467,7 +573,7 @@
 
       <div class="hero-badge reveal">
         <span class="pulse-dot"></span>
-        v0.1.0 &nbsp;·&nbsp; MIT LICENSE &nbsp;·&nbsp; OPEN SOURCE
+        v0.2.0 &nbsp;·&nbsp; MIT LICENSE &nbsp;·&nbsp; OPEN SOURCE
       </div>
 
       <div class="label reveal">SELF-EVOLVING AI AGENT WRAPPER</div>
@@ -476,9 +582,7 @@
       <span class="hero-title-line2 reveal">continuously learning.</span>
 
       <p class="hero-desc reveal">
-        EvoClaw wraps your model, scores every conversation with a reward model,
-        injects skills in real time, and trains via cloud LoRA — automatically.
-        No GPU. No data team. No downtime.
+        EvoClaw wraps any OpenAI-compatible API, scores every conversation, injects learned skills in real time, and trains via Tinker cloud LoRA — automatically. Works with Groq, OpenAI, Anthropic. No GPU. No data team.
       </p>
 
       <div class="hero-actions reveal">
@@ -492,6 +596,7 @@
         <div class="hs"><span class="hs-v">100%</span><span class="hs-k">Async</span></div>
         <div class="hs"><span class="hs-v">5 min</span><span class="hs-k">Setup</span></div>
         <div class="hs"><span class="hs-v">2</span><span class="hs-k">Learn Modes</span></div>
+        <div class="hs"><span class="hs-v" id="skillsCounter">—</span><span class="hs-k">Skills Learned</span></div>
         <div class="hs"><span class="hs-v">MIT</span><span class="hs-k">License</span></div>
       </div>
 
@@ -618,6 +723,20 @@
         <p class="feat-text">RL (GRPO) for implicit environment signals. On-Policy Distillation for richer language supervision. One config field to switch.</p>
         <span class="feat-tag">GRPO + OPD</span>
       </div>
+      <div class="feat feat-new">
+        <span class="feat-badge">NEW</span>
+        <span class="feat-icon">🤖</span>
+        <div class="feat-title">Discord & Telegram Deploy</div>
+        <p class="feat-text">Deploy your self-evolving agent directly to Discord or Telegram with a single command. Your community becomes the training ground — every message improves the agent automatically.</p>
+        <span class="feat-tag">1 COMMAND DEPLOY</span>
+      </div>
+      <div class="feat feat-new">
+        <span class="feat-badge">NEW</span>
+        <span class="feat-icon">🏷️</span>
+        <div class="feat-title">Skill Auto-Tag</div>
+        <p class="feat-text">Every skill is automatically categorized and tagged by domain — crypto, coding, research, agentic — using an LLM. No manual labeling. Skills are instantly searchable and composable across agent instances.</p>
+        <span class="feat-tag">LLM-POWERED</span>
+      </div>
     </div>
   </div>
 </section>
@@ -695,7 +814,7 @@
             </div>
             <div class="fg">
               <label>GITHUB USERNAME (OPTIONAL)</label>
-              <input type="text" placeholder="your-username"/>
+              <input type="text" id="f-github" placeholder="your-username"/>
             </div>
             <div class="fg">
               <label>BASE MODEL</label>
@@ -751,22 +870,24 @@
               <label>PRIMARY USE CASE</label>
               <select id="f-usecase">
                 <option value="">Select your use case...</option>
-                <option>Coding assistant / IDE agent</option>
-                <option>AI security & red teaming</option>
-                <option>Customer support automation</option>
-                <option>Research & RAG agent</option>
-                <option>Agentic workflow automation</option>
-                <option>Document analysis & writing</option>
-                <option>Data analysis agent</option>
-                <option>Personal AI assistant</option>
-                <option>Production deployment</option>
-                <option>Academic research</option>
+                <option>OpenClaw self-evolving agent</option>
+                <option>Skill injection & auto-evolution agent</option>
+                <option>Autonomous trading agent</option>
+                <option>Multi-agent orchestration system</option>
+                <option>Deep research & alpha intelligence</option>
+                <option>Agentic coding assistant (vibe coding)</option>
+                <option>Supervisor agent (agent-of-agents)</option>
+                <option>Market intelligence automation</option>
+                <option>DeFi workflow automation</option>
+                <option>Web3 customer support bot</option>
+                <option>Personal AI companion (memory-based)</option>
+                <option>Production deployment / enterprise scale</option>
                 <option>Other</option>
               </select>
             </div>
             <div class="fg">
               <label>ABOUT YOUR PROJECT (OPTIONAL)</label>
-              <textarea placeholder="Brief description of what you're building..."></textarea>
+              <textarea id="f-about" placeholder="Brief description of what you're building..."></textarea>
             </div>
             <button class="form-submit" onclick="submitForm()">→ Send Me the Setup Guide</button>
           </div>
@@ -792,7 +913,7 @@
   <div class="container">
     <div class="section-divider reveal"><span>QUICK START</span></div>
     <h2 class="section-title reveal">Running in <b>3 commands.</b></h2>
-    <p class="section-sub reveal">No GPU, no cluster, no data team. Install, configure, and start — EvoClaw handles the rest.</p>
+    <p class="section-sub reveal">No GPU, no cluster, no data team. One command install — EvoClaw handles the rest.</p>
 
     <div class="qs-panel reveal">
       <div class="qs-bar">
@@ -800,17 +921,19 @@
         <span class="qs-label">TERMINAL</span>
       </div>
       <div class="qs-body">
-        <div><span class="cm"># 1. Install dependencies</span></div>
-        <div><span class="fn">pip</span> install fastapi uvicorn httpx openai transformers tinker tinker-cookbook</div>
+        <div><span class="cm"># 1. Install EvoClaw</span></div>
+        <div><span class="fn">pip</span> install git+https://github.com/evoclaw-agent/evoclaw</div>
         <div>&nbsp;</div>
-        <div><span class="cm"># 2. Set up OpenClaw to use EvoClaw proxy</span></div>
-        <div><span class="fn">bash</span> openclaw_model_kimi.sh</div>
+        <div><span class="cm"># 2. Setup — enter your Groq + Tinker API keys</span></div>
+        <div><span class="fn">evoclaw</span> init</div>
         <div>&nbsp;</div>
-        <div><span class="cm"># 3. Add your Tinker key and run</span></div>
-        <div><span class="va">export</span> TINKER_API_KEY=<span class="st">"your_key_here"</span></div>
-        <div><span class="fn">python</span> examples/run_with_skills.py</div>
+        <div><span class="cm"># 3. Start the self-evolving proxy</span></div>
+        <div><span class="fn">evoclaw</span> start</div>
         <div>&nbsp;</div>
-        <div><span class="st">🦎 EvoClaw ready — your agent is now self-evolving.</span></div>
+        <div><span class="cm"># 4. Point your existing agent here</span></div>
+        <div><span class="va">client</span> = OpenAI(base_url=<span class="st">"http://localhost:8080/v1"</span>)</div>
+        <div>&nbsp;</div>
+        <div><span class="st">🦎 Your agent now learns from every conversation.</span></div>
       </div>
     </div>
 
@@ -873,6 +996,7 @@
           <li><a href="demo.html">Live Demo</a></li>
           <li><a href="docs.html">Documentation</a></li>
           <li><a href="#get-started">Get Started</a></li>
+          <li><a href="ask.html">Ask EvoClaw</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -983,6 +1107,21 @@
       if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
     });
   });
+</script>
+<script>
+  // Fetch live skills count from Redis via API
+  (async () => {
+    try {
+      const res = await fetch('/api/stats');
+      if (res.ok) {
+        const data = await res.json();
+        const el = document.getElementById('skillsCounter');
+        if (el && data.skills_total !== undefined) {
+          el.textContent = data.skills_total;
+        }
+      }
+    } catch (e) {}
+  })();
 </script>
 </body>
 </html>
