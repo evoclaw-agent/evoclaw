@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EvoClaw — Documentation</title>
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://evoclaw.tech"/>
+  <meta property="og:title" content="EvoClaw — Self-Evolving AI Agent"/>
+  <meta property="og:description" content="EvoClaw continuously trains your AI agent from live conversations. No GPU. No data team. Just plug it in."/>
+  <meta property="og:image" content="https://evoclaw.tech/assets/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="EvoClaw — Self-Evolving AI Agent"/>
+  <meta name="twitter:description" content="EvoClaw continuously trains your AI agent from live conversations. No GPU. No data team. Just plug it in."/>
+  <meta name="twitter:image" content="https://evoclaw.tech/assets/og-image.png"/>
+  <link rel="stylesheet" href="css/shared.css"/>
+  <link rel="icon" type="image/png" href="data:image/png;base64,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"/>
+  <style>
+    .docs-layout{display:grid;grid-template-columns:240px 1fr;gap:0;min-height:calc(100vh - 56px);margin-top:56px}
+
+    /* ── SIDEBAR ── */
+    .sidebar{position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto;border-right:1px solid var(--border);background:var(--bg2);padding:32px 0}
+    .sb-section{margin-bottom:28px;padding:0 20px}
+    .sb-section-title{font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;color:var(--dim);text-transform:uppercase;margin-bottom:10px;padding:0 8px}
+    .sb-link{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:4px;font-size:.82rem;color:var(--muted);transition:all .15s;cursor:pointer;border:none;background:none;font-family:var(--sans);width:100%;text-align:left}
+    .sb-link:hover{color:var(--text);background:var(--surface)}
+    .sb-link.active{color:var(--green);background:var(--green-d)}
+    .sb-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+
+    /* ── CONTENT ── */
+    .docs-content{padding:56px 64px;max-width:780px}
+    .docs-content h1{font-size:2.2rem;font-weight:300;letter-spacing:-.03em;margin-bottom:12px}
+    .docs-content h1 b{font-weight:600}
+    .docs-content h2{font-size:1.5rem;font-weight:500;letter-spacing:-.025em;margin:48px 0 14px;padding-top:48px;border-top:1px solid var(--border);color:var(--text)}
+    .docs-content h2:first-of-type{margin-top:32px}
+    .docs-content h3{font-size:1.05rem;font-weight:500;margin:28px 0 10px;color:var(--text)}
+    .docs-content p{color:var(--muted);line-height:1.85;margin-bottom:14px;font-size:.9rem;font-weight:300}
+    .docs-content ul,.docs-content ol{color:var(--muted);padding-left:20px;margin-bottom:14px}
+    .docs-content li{margin-bottom:7px;font-size:.88rem;line-height:1.75;font-weight:300}
+    .docs-content strong{color:var(--text);font-weight:500}
+    .docs-content a{color:var(--green);border-bottom:1px solid var(--green-b);transition:border-color .15s}
+    .docs-content a:hover{border-bottom-color:var(--green)}
+    .note{background:var(--blue-d);border:1px solid var(--blue-b);border-radius:var(--radius);padding:14px 18px;margin:20px 0;font-size:.84rem;color:var(--muted);line-height:1.7}
+    .note strong{color:var(--blue)}
+    .warn{background:rgba(255,140,66,.05);border:1px solid rgba(255,140,66,.18);border-radius:var(--radius);padding:14px 18px;margin:20px 0;font-size:.84rem;color:var(--muted);line-height:1.7}
+    .warn strong{color:var(--orange)}
+    .tip{background:var(--green-d);border:1px solid var(--green-b);border-radius:var(--radius);padding:14px 18px;margin:20px 0;font-size:.84rem;color:var(--muted);line-height:1.7}
+    .tip strong{color:var(--green)}
+
+    /* ── CODE ── */
+    .code-block{background:#030508;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:20px 0;font-family:var(--mono);font-size:.75rem}
+    .cb-bar{background:var(--surface);padding:9px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+    .cb-lang{font-size:.6rem;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+    .cb-copy{font-size:.6rem;letter-spacing:.1em;color:var(--muted);background:none;border:1px solid var(--border);padding:3px 10px;border-radius:3px;cursor:pointer;font-family:var(--mono);transition:all .15s}
+    .cb-copy:hover{border-color:var(--green-b);color:var(--green)}
+    .cb-body{padding:18px 20px;line-height:2;overflow-x:auto}
+    .cb-body .kw{color:var(--blue)}.cb-body .st{color:var(--green)}.cb-body .fn{color:#ffcb6b}.cb-body .va{color:#c792ea}.cb-body .cm{color:var(--muted);font-style:italic}.cb-body .op{color:#7dd3fc}
+    pre{margin:0;white-space:pre}
+
+    /* ── PARAM TABLE ── */
+    .param-table{width:100%;border-collapse:collapse;font-size:.82rem;margin:20px 0}
+    .param-table th{padding:10px 14px;text-align:left;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;color:var(--dim);font-weight:400;border-bottom:1px solid var(--border);background:var(--surface)}
+    .param-table td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top;line-height:1.65}
+    .param-table tr:last-child td{border-bottom:none}
+    .param-table tr:hover td{background:rgba(255,255,255,.01)}
+    .param-table td:first-child{font-family:var(--mono);color:var(--green);font-size:.77rem}
+    .param-table td:nth-child(2){font-family:var(--mono);color:#c792ea;font-size:.77rem}
+    .param-table td:nth-child(3){font-family:var(--mono);color:var(--blue);font-size:.77rem}
+
+    /* ── VERSIONS / CHANGELOG ── */
+    .changelog-item{border-left:2px solid var(--border);padding:0 0 28px 20px;margin-left:8px;position:relative}
+    .changelog-item::before{content:'';position:absolute;left:-5px;top:0;width:8px;height:8px;border-radius:50%;background:var(--border)}
+    .changelog-item.latest::before{background:var(--green)}
+    .changelog-item:last-child{border-left-color:transparent;padding-bottom:0}
+    .cl-version{font-family:var(--mono);font-size:.75rem;color:var(--green);margin-bottom:4px}
+    .cl-date{font-family:var(--mono);font-size:.65rem;color:var(--dim);margin-bottom:10px}
+
+    /* ── MOBILE ── */
+    @media(max-width:900px){
+      .docs-layout{grid-template-columns:1fr}
+      .sidebar{position:relative;height:auto;border-right:none;border-bottom:1px solid var(--border);padding:20px 0;overflow-x:auto;white-space:nowrap;display:flex;flex-direction:row;gap:0}
+      .sb-section{margin-bottom:0;display:flex;align-items:center;gap:4px;padding:0 8px}
+      .sb-section-title{display:none}
+      .sb-link{white-space:nowrap;padding:6px 12px;font-size:.76rem}
+      .docs-content{padding:32px 20px}
+    }
+  </style>
+  <link rel="stylesheet" href="/css/mobile-fix.css">
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+  <a href="index.html" class="nav-logo"><img src="assets/logo.png" class="nav-logo-img" alt="EvoClaw"><span class="g">EVO</span>CLAW</a>
+      <ul class="nav-links">
+      <li><a href="index.html">HOME</a></li>
+      <li><a href="demo.html">LIVE DEMO</a></li>
+      <li><a href="docs.html" class="active">DOCS</a></li>
+      <li><a href="index.html#get-started">GET STARTED</a></li>
+      <li><a href="ask.html" style="color:var(--green)">ASK EVOCLAW</a></li>
+      <li><a href="playground.html" style="color:var(--green)">PLAYGROUND</a></li>
+    </ul>
+  <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank" class="nav-cta">GITHUB →</a>
+  </div>
+</nav>
+
+<div class="docs-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-section">
+      <div class="sb-section-title">Getting Started</div>
+      <button class="sb-link active" onclick="scrollToSection('intro')"><span class="sb-dot"></span>Introduction</button>
+      <button class="sb-link" onclick="scrollToSection('install')"><span class="sb-dot"></span>Installation</button>
+      <button class="sb-link" onclick="scrollToSection('quickstart')"><span class="sb-dot"></span>Quick Start</button>
+      <button class="sb-link" onclick="scrollToSection('prerequisites')"><span class="sb-dot"></span>Prerequisites</button>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-title">Architecture</div>
+      <button class="sb-link" onclick="scrollToSection('overview')"><span class="sb-dot"></span>System Overview</button>
+      <button class="sb-link" onclick="scrollToSection('proxy')"><span class="sb-dot"></span>EvoClawProxy</button>
+      <button class="sb-link" onclick="scrollToSection('buffer')"><span class="sb-dot"></span>ConversationBuffer</button>
+      <button class="sb-link" onclick="scrollToSection('prm')"><span class="sb-dot"></span>RewardModel (PRM)</button>
+      <button class="sb-link" onclick="scrollToSection('trainer')"><span class="sb-dot"></span>EvoClawTrainer</button>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-title">Skills</div>
+      <button class="sb-link" onclick="scrollToSection('skills-intro')"><span class="sb-dot"></span>Skill System</button>
+      <button class="sb-link" onclick="scrollToSection('skill-injection')"><span class="sb-dot"></span>Skill Injection</button>
+      <button class="sb-link" onclick="scrollToSection('skill-evolution')"><span class="sb-dot"></span>Skill Evolution</button>
+      <button class="sb-link" onclick="scrollToSection('custom-skills')"><span class="sb-dot"></span>Custom Skills</button>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-title">Configuration</div>
+      <button class="sb-link" onclick="scrollToSection('config-ref')"><span class="sb-dot"></span>EvoClawConfig</button>
+      <button class="sb-link" onclick="scrollToSection('learning-modes')"><span class="sb-dot"></span>Learning Modes</button>
+      <button class="sb-link" onclick="scrollToSection('models')"><span class="sb-dot"></span>Supported Models</button>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-title">Integrations ✦ NEW</div>
+      <button class="sb-link" onclick="scrollToSection('bot-discord')"><span class="sb-dot"></span>Discord Bot</button>
+      <button class="sb-link" onclick="scrollToSection('bot-telegram')"><span class="sb-dot"></span>Telegram Bot</button>
+      <button class="sb-link" onclick="scrollToSection('skill-autotag')"><span class="sb-dot"></span>Skill Auto-Tag</button>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-title">Guides</div>
+      <button class="sb-link" onclick="scrollToSection('deploy')"><span class="sb-dot"></span>Deployment Guide</button>
+      <button class="sb-link" onclick="scrollToSection('troubleshoot')"><span class="sb-dot"></span>Troubleshooting</button>
+      <button class="sb-link" onclick="scrollToSection('faq')"><span class="sb-dot"></span>FAQ</button>
+      <button class="sb-link" onclick="scrollToSection('changelog')"><span class="sb-dot"></span>Changelog</button>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="docs-content" id="docsMain">
+
+    <!-- INTRO -->
+    <div id="intro">
+      <span class="label">DOCUMENTATION</span>
+      <h1>EvoClaw <b>Developer Guide</b></h1>
+      <p>EvoClaw is a self-evolving AI agent wrapper that turns live OpenClaw conversations into continuous training data. It wraps your model behind an OpenAI-compatible API proxy, intercepts every turn, scores it, injects skills, trains via cloud LoRA on Tinker, and hot-swaps weights — all while your users are typing.</p>
+
+      <div class="note">
+        <strong>📦 Version 0.1.0</strong> — EvoClaw is in active development. The API is stable but may have minor breaking changes before v1.0. See the <a href="#" onclick="scrollToSection('changelog')">changelog</a> for updates.
+      </div>
+
+      <div class="g2" style="margin:24px 0;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+        <div class="cell" style="padding:20px;">
+          <div class="cell-title" style="font-size:.82rem;">🚀 New to EvoClaw?</div>
+          <p class="cell-text" style="font-size:.78rem;">Start with the <a href="#" onclick="scrollToSection('quickstart')">Quick Start guide</a> — you'll have a running agent in 5 minutes.</p>
+        </div>
+        <div class="cell" style="padding:20px;">
+          <div class="cell-title" style="font-size:.82rem;">⚙️ Already set up?</div>
+          <p class="cell-text" style="font-size:.78rem;">Jump to the <a href="#" onclick="scrollToSection('config-ref')">Config Reference</a> or <a href="#" onclick="scrollToSection('skills-intro')">Skills Guide</a>.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- INSTALLATION -->
+    <h2 id="install">Installation</h2>
+    <p>EvoClaw requires Python 3.9+ and a valid <a href="https://www.thinkingmachines.ai/tinker/" target="_blank">Tinker API key</a> for cloud training. Install all dependencies with pip:</p>
+
+    <div class="code-block">
+      <div class="cb-bar"><span class="cb-lang">bash</span><button class="cb-copy" onclick="copyCode(this)">COPY</button></div>
+      <div class="cb-body"><pre><span class="fn">pip</span> install fastapi uvicorn httpx openai transformers tinker tinker-cookbook</pre></div>
+    </div>
+
+    <h3>Optional: Verify installation</h3>
+    <div class="code-block">
+      <div class="cb-bar"><span class="cb-lang">python</span><button class="cb-copy" onclick="copyCode(this)">COPY</button></div>
+      <div class="cb-body"><pre><span class="kw">import</span> evoclaw
+<span class="fn">print</span>(evoclaw.__version__)  <span class="cm"># 0.1.0</span></pre></div>
+    </div>
+
+    <!-- QUICK START -->
+    <h2 id="quickstart">Quick Start</h2>
+    <p>The fastest way to get EvoClaw running is with the included example scripts. Three commands and your agent is live and evolving.</p>
+
+    <h3>Step 1 — Configure OpenClaw gateway</h3>
+    <p>Run the setup script for your chosen model. This configures OpenClaw to route through the EvoClaw proxy on port 30000.</p>
+    <div class="code-block">
+      <div class="cb-bar"><span class="cb-lang">bash</span><button class="cb-copy" onclick="copyCode(this)">COPY</button></div>
+      <div class="cb-body"><pre><span class="cm"># Recommended: Kimi-2.5 (~200B MoE)</span>
+<span class="fn">bash</span> openclaw_model_kimi.sh
+
+<span class="cm"># Lightweight alternative: Qwen3-4B</span>
+<span class="fn">bash</span> openclaw_model_qwen.sh</pre></div>
+    </div>
+
+    <h3>Step 2 — Set your Tinker API key</h3>
+    <div class="code-block">
+      <div class="cb-bar"><span class="cb-lang">bash</span><button class="cb-copy" onclick="copyCode(this)">COPY</button></div>
+      <div class="cb-body"><pre><span class="va">export</span> TINKER_API_KEY=<span class="st">"your_tinker_api_key_here"</span></pre></div>
+    </div>
+    <p>Get your Tinker API key at <a href="https://www.thinkingmachines.ai/tinker/" target="_blank">thinkingmachines.ai/tinker</a>. The key is free for development use.</p>
+
+    <h3>Step 3 — Start EvoClaw</h3>
+    <div class="code-block">
+      <div class="cb-bar"><span class="cb-lang">bash</span><button class="cb-copy" onclick="copyCode(this)">COPY</button></div>
+      <div class="cb-body"><pre><span class="cm"># Basic RL training mode</span>
+<span class="fn">python</span> examples/run_conversation_rl.py
+
+<span class="cm"># With skills + evolution enabled</span>
+<span class="fn">python</span> examples/run_with_skills.py</pre></div>
+    </div>
+
+    <p>You should see output like:</p>
+    <div class="code-block">
+      <div class="cb-bar"><span class="cb-lang">output</span></div>
+      <div class="cb-body"><pre><span class="op">🦎 EvoClaw v0.1.0 starting...</span>
+<span class="cm">   → Model:       moonshotai/Kimi-2.5</span>
+<span class="cm">   → Proxy port:  30000</span>
+<span class="cm">   → Tinker URL:  http://localhost:8080</span>
+<span class="cm">   → Skills:      enabled (18 loaded)</span>
+<span class="cm">   → Evolution:   enabled</span>
+<span class="op">   → Ready. Start chatting — your agent will begin evolving!</span></pre></div>
+    </div>
+
+    <div class="tip"><strong>💡 Tip:</strong> Open a second terminal and start your OpenClaw interface. As you chat, watch the EvoClaw terminal — you'll see turns being scored, skills injected, and training happening in real time.</div>
+
+    <!-- PREREQUISITES -->
+    <h2 id="prerequisites">Prerequisites</h2>
+    <ul>
+      <li><strong>Python 3.9+</strong> — EvoClaw uses modern async/await and type hints throughout</li>
+      <li><strong>OpenClaw</strong> — The agent framework EvoClaw wraps. See <a href="https://openclaw.ai" target="_blank">openclaw.ai</a></li>
+      <li><strong>Tinker API key</strong> — For cloud LoRA training. Free tier available at <a href="https://www.thinkingmachines.ai/tinker/" target="_blank">thinkingmachines.ai/tinker</a></li>
+      <li><strong>OpenAI-compatible judge endpoint</strong> — For PRM scoring (e.g. Azure OpenAI, any OpenAI-compatible API)</li>
+      <li><strong>Network access</strong> — That's it. No GPU, no local model server, no cluster.</li>
+    </ul>
+
+    <!-- OVERVIEW -->
+    <h2 id="overview">System Architecture Overview</h2>
+    <p>EvoClaw consists of five main components that work together asynchronously. They are fully decoupled — the proxy serves users while training runs in the background without blocking.</p>
+
+    <table class="param-table" style="margin:20px 0;">
+      <thead><tr><th>MODULE</th><th>FILE</th><th>ROLE</th></tr></thead>
+      <tbody>
+        <tr><td>EvoClawProxy</td><td>proxy.py</td><td>OpenAI-compatible FastAPI server that intercepts all conversations</td></tr>
+        <tr><td>ConversationBuffer</td><td>buffer.py</td><td>Thread-safe async queue that accumulates turns until batch is full</td></tr>
+        <tr><td>RewardModel</td><td>reward_model.py</td><td>Calls a judge LLM to score each turn on a 0.0–1.0 scale</td></tr>
+        <tr><td>SkillManager</td><td>skill_manager.py</td><td>Loads, retrieves, injects, and evolves skills</td></tr>
+        <tr><td>EvoClawTrainer</td><td>trainer.py</td><td>Submits training jobs to Tinker and hot-swaps weights on completion</td></tr>
+      </tbody>
+    </table>
+
+    <!-- PROXY -->
+    <h2 id="proxy">EvoClawProxy</h2>
+    <p>The proxy is a FastAPI application that implements the OpenAI chat completions API. It sits between OpenClaw and your model, transparently intercepting every request.</p>
+
+    <div class="code-block">
+      <div class="cb-bar"><span class="cb-lang">python</span><button class="cb-copy" onclick="copyCode(this)">COPY</button></div>
+      <div class="cb-body"><pre><span class="kw">from</span> evoclaw <span class="kw">import</span> EvoClawConfig, EvoClawProxy
+<span class="kw">from</span> evoclaw.buffer <span class="kw">import</span> ConversationBuffer
+<span class="kw">import</span> asyncio
+
+<span class="va">config</span> = EvoClawConfig(proxy_port=<span class="st">30000</span>)
+<span class="va">buffer</span> = ConversationBuffer(config)
+<span class="va">proxy</span>  = EvoClawProxy(config=config, buffer=buffer)
+
+<span class="cm"># Start the proxy server</span>
+asyncio.run(proxy.serve())</pre></div>
+    </div>
+
+    <p>The proxy supports both <strong>streaming</strong> and <strong>non-streaming</strong> completions. Point your OpenClaw config to <code>http://localhost:30000/v1</code>.</p>
+
+    <!-- BUFFER -->
+    <h2 id="buffer">ConversationBuffer</h2>
+    <p>A thread-safe async FIFO queue. Every intercepted turn is added to the buffer. When the buffer reaches <code>batch_size</code>, it triggers a training cycle automatically.</p>
+
+    <div class="code-block">
+      <div class="cb-bar"><span class="cb-lang">python</span><button class="cb-copy" onclick="copyCode(this)">COPY</button></div>
+      <div class="cb-body"><pre><span class="kw">from</span> evoclaw.buffer <span class="kw">import</span> ConversationBuffer
+
+<span class="va">buffer</span> = ConversationBuffer(config)
+
+<span class="cm"># Add a turn manually (proxy does this automatically)</span>
+<span class="kw">await</span> buffer.add_turn(messages=messages, response=response)
+
+<span class="cm"># Check current size</span>
+<span class="fn">print</span>(buffer.size)   <span class="cm"># e.g. 14 / 32</span>
+
+<span class="cm"># Register a callback when buffer is ready</span>
+buffer.on_batch_ready(callback=trainer.train_step)</pre></div>
+    </div>
+
+    <!-- REWARD MODEL -->
+    <h2 id="prm">RewardModel (PRM)</h2>
+    <p>The Process Reward Model scores every agent turn on a scale of 0.0 to 1.0. It calls a configurable judge endpoint — any OpenAI-compatible API works.</p>
+
+    <table class="param-table">
+      <thead><tr><th>SCORE RANGE</th><th>MEANING</th><th>ACTION</th></tr></thead>
+      <tbody>
+        <tr><td>0.7 – 1.0</td><td>High quality</td><td>Strong positive gradient update</td></tr>
+        <tr><td>0.3 – 0.7</td><td>Acceptable</td><td>Moderate gradient update</td></tr>
+        <tr><td>0.0 – 0.3</td><td>Poor / failure</td><td>Weak update + triggers Skill Evolution</td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="cb-bar"><span class="cb-lang">python</span><button class="cb-copy" onclick="copyCode(this)">COPY</button></div>
+      <div class="cb-body"><pre><span class="kw">from</span> evoclaw.reward_model <span class="kw">import</span> RewardModel
+
+<span class="va">prm</span> = RewardModel(config)
+
+<span class="cm"># Score a single turn</span>
+<span class="va">score</span> = <span class="kw">await</span> prm.score(
+    messages=conversation_history,
+    response=agent_response
+)
+<span class="fn">print</span>(score)  <span class="cm"># 0.82</span></pre></div>
+    </div>
+
+    <!-- TRAINER -->
+    <h2 id="trainer">EvoClawTrainer</h2>
+    <p>The trainer listens to the buffer and submits LoRA training jobs to Tinker cloud when a batch is ready. After training, it calls the hot-swap API to update the live sampling server.</p>
+
+    <div class="code-block">
+      <div class="cb-bar"><span class="cb-lang">python</span><button class="cb-copy" onclick="copyCode(this)">COPY</button></div>
+      <div class="cb-body"><pre><span class="kw">from</span> evoclaw <span class="kw">import</span> EvoClawTrainer
+
+<span class="va">trainer</span> = EvoClawTrainer(config=config, buffer=buffer)
+
+<span class="cm"># Run the training loop (runs indefinitely)</span>
+<span class="kw">await</span> trainer.run()
+
+<span class="cm"># Or run a single step manually</span>
+<span class="kw">await</span> trainer.train_step(batch=buffer.flush())</pre></div>
+    </div>
+
+    <!-- SKILLS INTRO -->
+    <h2 id="skills-intro">The Skill System</h2>
+    <p>Skills are short Markdown instructions (typically 2–5 sentences) that guide agent behavior. They are stored in a JSON skill bank and retrieved at inference time based on relevance to the current conversation.</p>
+
+    <p>The default skill bank (<code>memory_data/conversation/conversation_skills.json</code>) ships with 18 skills across 5 categories:</p>
+
+    <table class="param-table">
+      <thead><tr><th>CATEGORY</th><th>SKILLS</th><th>EXAMPLE</th></tr></thead>
+      <tbody>
+        <tr><td>coding</td><td>6</td><td>"Write clean, documented, tested code. Prefer readability over cleverness."</td></tr>
+        <tr><td>security</td><td>4</td><td>"Validate all inputs. Never construct SQL queries with string interpolation."</td></tr>
+        <tr><td>agentic</td><td>3</td><td>"Plan before acting. List steps, identify dependencies, verify preconditions."</td></tr>
+        <tr><td>writing</td><td>3</td><td>"Be direct and concise. Lead with the answer, then provide supporting detail."</td></tr>
+        <tr><td>research</td><td>2</td><td>"Cite sources. Distinguish between facts and analysis clearly."</td></tr>
+      </tbody>
+    </table>
+
+    <!-- SKILL INJECTION -->
+    <h2 id="skill-injection">Skill Injection</h2>
+    <p>At every turn, EvoClaw retrieves the top-K most relevant skills from the bank and injects them into the system prompt as a <code>### Agent Skills</code> block. This happens before the model responds.</p>
+
+    <div class="code-block">
+      <div class="cb-bar"><span class="cb-lang">python</span><button class="cb-copy" onclick="copyCode(this)">COPY</button></div>
+      <div class="cb-body"><pre><span class="cm"># Enable skill injection in config</span>
+<span class="va">config</span> = EvoClawConfig(use_skills=<span class="kw">True</span>)
+
+<span class="cm"># The system prompt will be augmented like this:</span>
+<span class="st">"""
+You are a helpful AI assistant.
+
+### Agent Skills
+- Write clean, documented, tested code.
+- Validate all inputs before processing.
+- Prefer iterative solutions over recursive ones.
+"""</span></pre></div>
+    </div>
+
+    <p>The injection is fully transparent — users never see the skill block, but the model does. The result is immediate behavior improvement without any retraining.</p>
+
+    <!-- SKILL EVOLUTION -->
+    <h2 id="skill-evolution">Skill Evolution</h2>
+    <p>When a turn receives a reward score below 0.3, EvoClaw automatically triggers skill evolution:</p>
+    <ol>
+      <li>The full conversation trajectory is sent to the evolution LLM (configured via <code>azure_openai_deployment</code>)</li>
+      <li>The LLM analyzes what the agent did wrong and what it should have done differently</li>
+      <li>A new, targeted skill is generated and appended to the skill bank as a JSON entry</li>
+      <li>The new skill is immediately available for injection in future turns</li>
+    </ol>
+
+    <div class="code-block">
+      <div class="cb-bar"><span class="cb-lang">python</span><button class="cb-copy" onclick="copyCode(this)">COPY</button></div>
+      <div class="cb-body"><pre><span class="cm"># Enable evolution in config</span>
+<span class="va">config</span> = EvoClawConfig(
+    use_skills=<span class="kw">True</span>,
+    enable_skill_evolution=<span class="kw">True</span>,
+    azure_openai_deployment=<span class="st">"gpt-5.2"</span>,
+    azure_openai_endpoint=<span class="st">"https://YOUR-RESOURCE.openai.azure.com/"</span>,
+)</pre></div>
+    </div>
+
+    <div class="warn"><strong>⚠ Note:</strong> Skill evolution uses the <code>azure_openai_deployment</code> model to generate skills. This incurs API costs. You can set a <code>min_reward_for_evolution</code> threshold to control when evolution triggers.</div>
+
+    <!-- CUSTOM SKILLS -->
+    <h2 id="custom-skills">Writing Custom Skills</h2>
+    <p>You can add your own skills directly to the JSON bank. Each skill has a simple structure:</p>
+
+    <div class="code-block">
+      <div class="cb-bar"><span class="cb-lang">json</span><button class="cb-copy" onclick="copyCode(this)">COPY</button></div>
+      <div class="cb-body"><pre>{
+  <span class="fn">"id"</span>: <span class="st">"skill_019"</span>,
+  <span class="fn">"category"</span>: <span class="st">"coding"</span>,
+  <span class="fn">"title"</span>: <span class="st">"Always write type hints in Python"</span>,
+  <span class="fn">"content"</span>: <span class="st">"When writing Python functions, always include type hints for all parameters and the return value. Use Optional[T] for values that may be None. Example: def process(data: list[str]) -> dict[str, int]:"</span>,
+  <span class="fn">"tags"</span>: [<span class="st">"python"</span>, <span class="st">"typing"</span>, <span class="st">"best-practices"</span>],
+  <span class="fn">"enabled"</span>: <span class="kw">true</span>
+}</pre></div>
+    </div>
+
+    <!-- CONFIG REF -->
+    <h2 id="config-ref">EvoClawConfig Reference</h2>
+    <p>All settings are passed as a single <code>EvoClawConfig</code> dataclass instance. Both <code>EvoClawProxy</code> and <code>EvoClawTrainer</code> accept the same config object.</p>
+
+    <table class="param-table">
+      <thead><tr><th>FIELD</th><th>TYPE</th><th>DEFAULT</th><th>DESCRIPTION</th></tr></thead>
+      <tbody>
+        <tr><td>model_name</td><td>str</td><td>"moonshotai/Kimi-2.5"</td><td>Base model. Kimi-2.5 recommended for best results.</td></tr>
+        <tr><td>lora_rank</td><td>int</td><td>32</td><td>LoRA rank for cloud fine-tuning. Higher = more capacity, slower training.</td></tr>
+        <tr><td>batch_size</td><td>int</td><td>32</td><td>Number of turns to accumulate before triggering a training step.</td></tr>
+        <tr><td>max_steps</td><td>int</td><td>1000</td><td>Total training steps before the training loop stops.</td></tr>
+        <tr><td>loss_fn</td><td>str</td><td>"importance_sampling"</td><td>Loss function: "importance_sampling", "ppo", or "cispo".</td></tr>
+        <tr><td>use_prm</td><td>bool</td><td>True</td><td>Enable Process Reward Model scoring for each turn.</td></tr>
+        <tr><td>prm_url</td><td>str</td><td>"https://api.openai.com/v1"</td><td>Base URL for the judge LLM endpoint (OpenAI-compatible).</td></tr>
+        <tr><td>prm_model</td><td>str</td><td>"gpt-5.2"</td><td>Model used for reward scoring / judging.</td></tr>
+        <tr><td>prm_api_key</td><td>str</td><td>None</td><td>API key for the PRM judge endpoint. Falls back to OPENAI_API_KEY env var.</td></tr>
+        <tr><td>use_skills</td><td>bool</td><td>False</td><td>Enable skill injection into system prompt at every turn.</td></tr>
+        <tr><td>skill_bank_path</td><td>str</td><td>"memory_data/..."</td><td>Path to the JSON skill bank file.</td></tr>
+        <tr><td>top_k_skills</td><td>int</td><td>3</td><td>Number of skills to inject per turn.</td></tr>
+        <tr><td>enable_skill_evolution</td><td>bool</td><td>False</td><td>Auto-generate new skills when reward score falls below threshold.</td></tr>
+        <tr><td>evolution_threshold</td><td>float</td><td>0.3</td><td>Reward score below which skill evolution is triggered.</td></tr>
+        <tr><td>proxy_port</td><td>int</td><td>30000</td><td>Port for the EvoClaw proxy server to listen on.</td></tr>
+        <tr><td>tinker_sampling_url</td><td>str</td><td>"http://localhost:8080"</td><td>Tinker sampling endpoint for model serving.</td></tr>
+        <tr><td>tinker_api_key</td><td>str</td><td>None</td><td>Tinker API key. Falls back to TINKER_API_KEY env var.</td></tr>
+        <tr><td>openclaw_env_data_dir</td><td>str</td><td>None</td><td>Optional path to JSONL tasks for programmatic (non-chat) rollout.</td></tr>
+        <tr><td>azure_openai_deployment</td><td>str</td><td>None</td><td>Azure OpenAI deployment name for skill evolution LLM.</td></tr>
+        <tr><td>azure_openai_endpoint</td><td>str</td><td>None</td><td>Azure OpenAI resource endpoint URL.</td></tr>
+        <tr><td>log_level</td><td>str</td><td>"INFO"</td><td>"DEBUG", "INFO", "WARNING", or "ERROR".</td></tr>
+      </tbody>
+    </table>
+
+    <!-- LEARNING MODES -->
+    <h2 id="learning-modes">Learning Modes</h2>
+
+    <h3>Mode 1: Reinforcement Learning (GRPO)</h3>
+    <p>Uses Group Relative Policy Optimization to update the model policy based on scored conversation turns. Best when you have clear task completion signals from the environment.</p>
+    <div class="code-block">
+      <div class="cb-bar"><span class="cb-lang">python</span><button class="cb-copy" onclick="copyCode(this)">COPY</button></div>
+      <div class="cb-body"><pre><span class="va">config</span> = EvoClawConfig(
+    loss_fn=<span class="st">"importance_sampling"</span>,  <span class="cm"># or "ppo", "cispo"</span>
+    use_prm=<span class="kw">True</span>,
+)</pre></div>
+    </div>
+
+    <h3>Mode 2: On-Policy Distillation (OPD)</h3>
+    <p>Leverages richer natural-language supervision from a teacher model. Best with a strong teacher (e.g. GPT-5) providing detailed feedback. Faster convergence and denser signal than pure RL.</p>
+    <div class="code-block">
+      <div class="cb-bar"><span class="cb-lang">python</span><button class="cb-copy" onclick="copyCode(this)">COPY</button></div>
+      <div class="cb-body"><pre><span class="va">config</span> = EvoClawConfig(
+    loss_fn=<span class="st">"importance_sampling"</span>,
+    use_prm=<span class="kw">True</span>,
+    prm_model=<span class="st">"gpt-5.2"</span>,  <span class="cm"># Strong teacher</span>
+    prm_url=<span class="st">"https://api.openai.com/v1"</span>,
+)</pre></div>
+    </div>
+
+    <!-- SUPPORTED MODELS -->
+    <h2 id="models">Supported Models</h2>
+    <table class="param-table">
+      <thead><tr><th>MODEL</th><th>SIZE</th><th>USE CASE</th><th>SCRIPT</th></tr></thead>
+      <tbody>
+        <tr><td>moonshotai/Kimi-2.5</td><td>~200B MoE</td><td>Recommended. Best quality, long context, strong reasoning.</td><td>openclaw_model_kimi.sh</td></tr>
+        <tr><td>Qwen/Qwen3-4B</td><td>4B</td><td>Lightweight. Fast iteration, lower API costs, constrained environments.</td><td>openclaw_model_qwen.sh</td></tr>
+        <tr><td>Any OpenAI-compatible</td><td>—</td><td>Set model_name to any Tinker-supported model identifier.</td><td>—</td></tr>
+      </tbody>
+    </table>
+
+    <!-- DISCORD BOT -->
+    <h2 id="bot-discord">Discord Bot Integration <span style="font-size:.7rem;background:var(--blue);color:#000;padding:2px 8px;border-radius:3px;vertical-align:middle;font-family:var(--mono);letter-spacing:.1em">NEW</span></h2>
+    <p>Deploy your EvoClaw self-evolving agent directly to Discord. Every message from your community automatically becomes training data — the agent improves in real time.</p>
+
+    <h3>1. Create a Discord Bot</h3>
+    <ol>
+      <li>Go to <a href="https://discord.com/developers/applications" target="_blank">discord.com/developers</a> → New Application → Bot</li>
+      <li>Copy the bot token</li>
+      <li>Enable <b>Message Content Intent</b> under Bot → Privileged Gateway Intents</li>
+      <li>Invite bot to server with <code>Read Messages</code> + <code>Send Messages</code> permissions</li>
+    </ol>
+
+    <h3>2. Install dependencies</h3>
+    <pre><code>pip install discord.py</code></pre>
+
+    <h3>3. Run the bot</h3>
+    <pre><code># One command:
+python -m evoclaw.bot discord \
+  --token YOUR_DISCORD_TOKEN \
+  --proxy http://localhost:8000 \
+  --channel-id 123456789  # optional: restrict to specific channels
+
+# Or via Python:
+from evoclaw.bot import EvoBotDiscord
+
+bot = EvoBotDiscord(
+    discord_token="YOUR_DISCORD_TOKEN",
+    evoclaw_url="http://localhost:8000",
+    channel_ids=[123456789],  # empty = all channels
+    system_prompt="You are a crypto trading assistant powered by EvoClaw.",
+)
+bot.run()</code></pre>
+
+    <p>The bot responds to <code>@mention</code> or messages starting with <code>!ask</code>. All conversations are automatically scored and fed into the EvoClaw training loop.</p>
+
+    <!-- TELEGRAM BOT -->
+    <h2 id="bot-telegram">Telegram Bot Integration <span style="font-size:.7rem;background:var(--blue);color:#000;padding:2px 8px;border-radius:3px;vertical-align:middle;font-family:var(--mono);letter-spacing:.1em">NEW</span></h2>
+    <p>Same self-evolving agent, deployed to Telegram. Ideal for crypto communities, trading groups, and DeFi support bots.</p>
+
+    <h3>1. Create a Telegram Bot</h3>
+    <ol>
+      <li>Open Telegram → search <b>@BotFather</b> → send <code>/newbot</code></li>
+      <li>Follow the prompts → copy the token</li>
+    </ol>
+
+    <h3>2. Install dependencies</h3>
+    <pre><code>pip install python-telegram-bot</code></pre>
+
+    <h3>3. Run the bot</h3>
+    <pre><code># One command:
+python -m evoclaw.bot telegram \
+  --token YOUR_TELEGRAM_TOKEN \
+  --proxy http://localhost:8000
+
+# Or via Python:
+from evoclaw.bot import EvoBotTelegram
+
+bot = EvoBotTelegram(
+    telegram_token="YOUR_TELEGRAM_TOKEN",
+    evoclaw_url="http://localhost:8000",
+    system_prompt="You are a DeFi research assistant powered by EvoClaw.",
+    allowed_chats=[],  # empty = all chats
+)
+bot.run()</code></pre>
+
+    <!-- SKILL AUTO-TAG -->
+    <h2 id="skill-autotag">Skill Auto-Tag <span style="font-size:.7rem;background:var(--blue);color:#000;padding:2px 8px;border-radius:3px;vertical-align:middle;font-family:var(--mono);letter-spacing:.1em">NEW</span></h2>
+    <p>Automatically categorize and tag every skill in your skill bank using an LLM. No manual labeling required. Skills become searchable and composable across agent instances.</p>
+
+    <h3>Domains</h3>
+    <p>Each skill is tagged with one of: <code>crypto</code>, <code>coding</code>, <code>research</code>, <code>agentic</code>, <code>security</code>, <code>communication</code>, <code>general</code></p>
+
+    <h3>Usage</h3>
+    <pre><code>from evoclaw.skill_autotag import SkillAutoTagger
+
+# Tag all skills in the skill bank
+tagger = SkillAutoTagger(
+    api_key="YOUR_OPENAI_KEY",  # or set OPENAI_API_KEY env var
+    model="gpt-4o-mini",        # cheap + fast
+)
+tagger.tag_all("memory_data/conversation/conversation_skills.json")
+
+# Search tagged skills by domain
+crypto_skills = tagger.search("memory_data/conversation/conversation_skills.json", domain="crypto")
+for skill in crypto_skills:
+    print(skill["text"], "→", skill["tags"])</code></pre>
+
+    <h3>CLI</h3>
+    <pre><code># Tag all skills
+python -m evoclaw.skill_autotag memory_data/conversation/conversation_skills.json
+
+# Re-tag existing (overwrite)
+python -m evoclaw.skill_autotag memory_data/conversation/conversation_skills.json --overwrite
+
+# Tag + search by domain
+python -m evoclaw.skill_autotag memory_data/conversation/conversation_skills.json --search-domain crypto</code></pre>
+
+    <h3>Output format</h3>
+    <p>Each skill in the JSON becomes:</p>
+    <pre><code>{
+  "text": "When analyzing DeFi protocols, always check TVL, audit history, and token distribution.",
+  "domain": "crypto",
+  "tags": ["defi", "risk-analysis", "protocol-audit"],
+  "complexity": "intermediate",
+  "use_case": "Use when evaluating DeFi investment opportunities or reviewing smart contract safety."
+}</code></pre>
+
+    <!-- DEPLOYMENT -->
+    <h2 id="deploy">Deployment Guide</h2>
+
+    <h3>Production setup with systemd</h3>
+    <div class="code-block">
+      <div class="cb-bar"><span class="cb-lang">bash</span><button class="cb-copy" onclick="copyCode(this)">COPY</button></div>
+      <div class="cb-body"><pre><span class="cm"># /etc/systemd/system/evoclaw.service</span>
+[Unit]
+Description=EvoClaw Self-Evolving Agent
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/opt/evoclaw
+Environment=<span class="st">"TINKER_API_KEY=tk_xxxxxxxxxxxx"</span>
+ExecStart=/usr/bin/python3 examples/run_with_skills.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target</pre></div>
+    </div>
+
+    <h3>Environment variables</h3>
+    <table class="param-table">
+      <thead><tr><th>VAR</th><th>REQUIRED</th><th>DESCRIPTION</th></tr></thead>
+      <tbody>
+        <tr><td>TINKER_API_KEY</td><td>Yes</td><td>Tinker cloud training API key</td></tr>
+        <tr><td>OPENAI_API_KEY</td><td>If using OpenAI for PRM</td><td>Judge LLM API key</td></tr>
+        <tr><td>AZURE_OPENAI_KEY</td><td>If using Azure for evolution</td><td>Azure OpenAI API key</td></tr>
+        <tr><td>EVOCLAW_LOG_LEVEL</td><td>No</td><td>Defaults to INFO</td></tr>
+      </tbody>
+    </table>
+
+    <!-- TROUBLESHOOTING -->
+    <h2 id="troubleshoot">Troubleshooting</h2>
+
+    <h3>Proxy not starting</h3>
+    <p>Make sure port 30000 is available. Change it with <code>proxy_port</code> in your config. Check that FastAPI and uvicorn are installed correctly.</p>
+
+    <h3>Training not triggering</h3>
+    <p>The trainer only fires when the buffer reaches <code>batch_size</code> (default 32). For testing, reduce it: <code>EvoClawConfig(batch_size=4)</code>. Also verify your Tinker API key is set correctly.</p>
+
+    <h3>PRM scoring failing</h3>
+    <p>Verify <code>prm_url</code> is reachable and your API key (<code>prm_api_key</code> or <code>OPENAI_API_KEY</code>) is valid. You can test with <code>use_prm=False</code> for initial setup.</p>
+
+    <h3>Skill evolution not triggering</h3>
+    <p>Evolution only fires when <code>enable_skill_evolution=True</code> AND reward is below <code>evolution_threshold</code> (default 0.3). Check that <code>azure_openai_deployment</code> is set.</p>
+
+    <!-- FAQ -->
+    <h2 id="faq">Frequently Asked Questions</h2>
+
+    <h3>Does EvoClaw work without a GPU?</h3>
+    <p>Yes. The entire training pipeline runs on Tinker cloud. Your machine only needs network access. This is one of EvoClaw's core design principles.</p>
+
+    <h3>How is EvoClaw different from MetaClaw?</h3>
+    <p>EvoClaw builds on MetaClaw's concept but adds a proper Python package structure, full documentation, an interactive website, a streaming proxy, more default skills, better error handling, and a pip-installable setup. See the <a href="index.html#vs">full comparison</a>.</p>
+
+    <h3>Can I use EvoClaw with models other than Kimi-2.5?</h3>
+    <p>Yes. Any model supported by Tinker cloud can be used. Set <code>model_name</code> to the Tinker model identifier. Qwen3-4B is a good lightweight option.</p>
+
+    <h3>Is my conversation data sent anywhere?</h3>
+    <p>Training batches are sent to Tinker cloud for LoRA fine-tuning. The PRM judge endpoint receives conversation turns for scoring. No data is sent to EvoClaw's servers — EvoClaw is entirely open-source and runs on your infrastructure.</p>
+
+    <h3>Can I disable training and just use skill injection?</h3>
+    <p>Yes. Set <code>use_skills=True</code> and simply don't start the <code>EvoClawTrainer</code>. The proxy and skill injection will work independently.</p>
+
+    <!-- CHANGELOG -->
+    <h2 id="changelog">Changelog</h2>
+
+    <div class="changelog-item latest">
+      <div class="cl-version">v0.1.0 — Initial Release</div>
+      <div class="cl-date">March 2026</div>
+      <ul>
+        <li>Initial open-source release of EvoClaw</li>
+        <li>EvoClawProxy with streaming + non-streaming support</li>
+        <li>ConversationBuffer with async thread-safe queue</li>
+        <li>RewardModel with configurable judge endpoint</li>
+        <li>SkillManager with injection and evolution</li>
+        <li>EvoClawTrainer with Tinker cloud LoRA integration</li>
+        <li>18 default skills across 5 categories</li>
+        <li>Kimi-2.5 and Qwen3-4B setup scripts</li>
+        <li>MIT license</li>
+      </ul>
+    </div>
+    <div class="changelog-item">
+      <div class="cl-version">v0.2.0 — Coming Soon</div>
+      <div class="cl-date">Planned</div>
+      <ul>
+        <li>Web dashboard for real-time training metrics</li>
+        <li>Skill marketplace integration</li>
+        <li>Multi-agent support</li>
+        <li>Export trained adapters as standalone LoRA files</li>
+      </ul>
+    </div>
+
+    <div style="margin-top:48px;padding:28px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);text-align:center;">
+      <p style="margin-bottom:16px;font-size:.9rem;">Ready to start? Your agent evolves with every conversation.</p>
+      <div class="btns" style="justify-content:center;">
+        <a href="index.html#get-started" class="btn btn-g">🚀 Get Started Free →</a>
+        <a href="demo.html" class="btn btn-b">▶ Try Live Demo</a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="index.html" class="nav-logo"><img src="assets/logo.png" class="nav-logo-img" alt="EvoClaw"><span class="g">EVO</span>CLAW</a>
+      <p>Self-evolving AI agent wrapper. MIT licensed.</p>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col">
+        <h5>PAGES</h5>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="demo.html">Live Demo</a></li>
+          <li><a href="docs.html">Documentation</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>LINKS</h5>
+        <ul>
+          <li><a href="https://github.com/evoclaw-agent/evoclaw" target="_blank">GitHub</a></li>
+          <li><a href="https://openclaw.ai" target="_blank">OpenClaw</a></li>
+          <li><a href="https://www.thinkingmachines.ai/tinker/" target="_blank">Tinker</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bot">
+    <span>© 2026 EvoClaw Contributors</span>
+    <span class="mit">MIT LICENSE</span>
+  </div>
+</footer>
+
+<script>
+  function scrollToSection(id){
+    const el=document.getElementById(id);
+    if(el){ el.scrollIntoView({behavior:'smooth',block:'start'}); }
+    document.querySelectorAll('.sb-link').forEach(b=>b.classList.remove('active'));
+    event.target.classList.add('active');
+  }
+
+  function copyCode(btn){
+    const code=btn.closest('.code-block').querySelector('pre').innerText;
+    navigator.clipboard.writeText(code).then(()=>{
+      btn.textContent='✓ COPIED'; setTimeout(()=>btn.textContent='COPY',2000);
+    });
+  }
+
+  window.addEventListener('scroll',()=>{
+    document.getElementById('nav').classList.toggle('scrolled',window.scrollY>10);
+  });
+
+  // Highlight active sidebar link on scroll
+  const sections=['intro','install','quickstart','prerequisites','overview','proxy','buffer','prm','trainer','skills-intro','skill-injection','skill-evolution','custom-skills','config-ref','learning-modes','models','deploy','troubleshoot','faq','changelog'];
+  const links=document.querySelectorAll('.sb-link');
+
+  const sObs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        const id=e.target.id;
+        links.forEach(l=>l.classList.remove('active'));
+        const match=[...links].find(l=>l.getAttribute('onclick')?.includes("'"+id+"'"));
+        if(match)match.classList.add('active');
+      }
+    });
+  },{rootMargin:'-20% 0px -70% 0px'});
+
+  sections.forEach(id=>{ const el=document.getElementById(id); if(el)sObs.observe(el); });
+</script>
+</body>
+</html>
