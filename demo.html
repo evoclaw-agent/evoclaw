@@ -105,6 +105,14 @@
       .controls{flex-direction:column;align-items:flex-start}
     }
   </style>
+
+<style>
+@media (max-width: 768px) {
+  .iflow-stage { flex-direction: column; gap: 12px; padding: 16px; }
+  .iflow-num { font-size: 1rem; }
+  .iflow-code { font-size: .65rem; word-break: break-all; }
+}
+</style>
 </head>
 <body>
 
@@ -116,7 +124,9 @@
     <li><a href="demo.html" class="active">LIVE DEMO</a></li>
     <li><a href="docs.html">DOCS</a></li>
     <li><a href="index.html#get-started">GET STARTED</a></li>
-  </ul>
+        <li><a href="ask.html" style="color:var(--green)">ASK EVOCLAW</a></li>
+      <li><a href="playground.html" style="color:var(--green)">PLAYGROUND</a></li>
+    </ul>
   <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank" class="nav-cta">GITHUB →</a>
   </div>
 </nav>
