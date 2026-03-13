@@ -670,6 +670,7 @@ html, body {
   <a href="demo.html">LIVE DEMO</a>
   <a href="docs.html">DOCS</a>
   <a href="index.html#get-started">GET STARTED</a>
+  <a href="install.html" class="green">INSTALL</a>
   <a href="ask.html" class="green">ASK EVOCLAW</a>
   <a href="playground.html" class="green">PLAYGROUND</a>
   <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank" class="mobile-github-btn">GITHUB →</a>
@@ -684,7 +685,7 @@ html, body {
 
       <div class="hero-badge reveal">
         <span class="pulse-dot"></span>
-        v0.2.0 &nbsp;·&nbsp; MIT LICENSE &nbsp;·&nbsp; OPEN SOURCE
+        v0.2.1 &nbsp;·&nbsp; MIT LICENSE &nbsp;·&nbsp; OPEN SOURCE
       </div>
 
       <div class="label reveal">SELF-EVOLVING AI AGENT WRAPPER</div>
@@ -1175,14 +1176,13 @@ html, body {
         <div><span class="cm"># 1. Install EvoClaw</span></div>
         <div><span class="fn">pip</span> install evoclaw</div>
         <div>&nbsp;</div>
-        <div><span class="cm"># 2. Set up OpenClaw to use EvoClaw proxy</span></div>
-        <div><span class="fn">bash</span> openclaw_model_kimi.sh</div>
+        <div><span class="cm"># 2. Setup API keys (Groq = free)</span></div>
+        <div><span class="fn">bash</span> evoclaw</span> init</div>
         <div>&nbsp;</div>
-        <div><span class="cm"># 3. Add your Tinker key and run</span></div>
-        <div><span class="va">export</span> TINKER_API_KEY=<span class="st">"your_key_here"</span></div>
-        <div><span class="fn">python</span> examples/run_with_skills.py</div>
+        <div><span class="cm"># 3. Start the proxy</span></div>
+        <div><span class="fn">evoclaw</span> evoclaw</span> start</div>
         <div>&nbsp;</div>
-        <div><span class="st">🦎 EvoClaw ready — your agent is now self-evolving.</span></div>
+        <div><span class="st">🦎 EvoClaw Proxy v0.2.1 — localhost:8080 — evolving!</span></div>
       </div>
     </div>
 
