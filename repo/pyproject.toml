@@ -1,10 +1,10 @@
 [build-system]
 requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.backends.legacy:build"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "evoclaw"
-version = "0.2.0"
+version = "0.2.1"
 description = "Self-evolving AI agents via LoRA — Just talk to your agent, it learns."
 readme = "README.md"
 license = { text = "MIT" }
