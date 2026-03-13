@@ -1,0 +1,170 @@
+# 🦎 EvoClaw
+
+**Just talk to your agent — it learns and *EVOLVES*.**
+
+[![No GPU Required](https://img.shields.io/badge/☁️_No_GPU_Cluster-blue?style=flat&labelColor=555)]()
+[![Fully Async](https://img.shields.io/badge/⚡_Fully_Async-yellow?style=flat&labelColor=555)]()
+[![Skill Evolution](https://img.shields.io/badge/🧠_Skill_Evolution-orange?style=flat&labelColor=555)]()
+
+EvoClaw turns live conversations into continuous training data — automatically.  
+Works with **any OpenAI-compatible API**. Uses **free Groq** for PRM scoring. Trains with **Tinker cloud LoRA**.
+
+---
+
+## 🔥 What is EvoClaw?
+
+EvoClaw wraps your existing AI agent behind an OpenAI-compatible proxy. Every conversation is:
+
+1. **Scored** by a PRM (Process Reward Model) via Groq
+2. **Skills extracted** from high-quality responses and stored
+3. **Skills injected** into future prompts (immediate improvement, no retraining needed)
+4. **Failed turns** trigger automatic skill evolution via LLM
+5. **All turns** feed Tinker LoRA training (GRPO or OPD)
+
+After every `batch_size` samples, updated weights are saved to Tinker — no service interruption.
+
+---
+
+## 🚀 Quick Start
+
+```bash
+pip install evoclaw
+
+evoclaw init   # enter your Groq + Tinker API keys
+evoclaw start  # proxy starts on localhost:8080
+```
+
+Then point your existing OpenAI client at EvoClaw:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:8080/v1",
+    api_key="any-string",  # Not checked by proxy
+)
+
+# Just use it normally — EvoClaw learns in the background
+response = client.chat.completions.create(
+    model="llama-3.3-70b-versatile",
+    messages=[{"role": "user", "content": "Explain impermanent loss"}]
+)
+```
+
+**That's it.** Start chatting. EvoClaw learns automatically.
+
+---
+
+## 🤖 Key Features
+
+### Skill Injection
+At every turn, the most relevant learned skills are injected into the system prompt.  
+Immediate behavior improvement — no waiting for retraining.
+
+### Skill Evolution
+When the agent fails (low PRM score), EvoClaw uses an LLM to generate a new skill  
+that would have prevented the failure. Over time, the skill bank grows smarter.
+
+### Tinker LoRA Training
+All conversations feed into online LoRA training via [Tinker](https://thinkingmachines.ai/tinker/).  
+No GPU required. Updated weights are hot-swapped with no downtime.
+
+### Two Learning Modes
+- **GRPO**: Reinforcement learning from implicit conversation rewards
+- **OPD**: On-policy distillation from high-quality responses
+
+### Works with Any Provider
+Unlike MetaClaw (OpenClaw + Kimi-2.5 only), EvoClaw works with:
+- Groq (free, recommended)
+- OpenAI
+- Anthropic
+- Any OpenAI-compatible endpoint
+
+---
+
+## ⚙️ Configuration
+
+All settings in `EvoClawConfig`:
+
+| Field | Default | Description |
+|-------|---------|-------------|
+| `model_name` | `Qwen/Qwen3-4B` | Tinker base model |
+| `lora_rank` | `32` | LoRA rank |
+| `batch_size` | `32` | Samples before train step |
+| `loss_fn` | `importance_sampling` | `grpo` / `opd` / `cross_entropy` |
+| `use_prm` | `True` | PRM scoring |
+| `prm_threshold` | `0.65` | Min score to learn from |
+| `use_skills` | `True` | Skill injection |
+| `enable_skill_evolution` | `True` | Auto-generate skills from failures |
+| `proxy_port` | `8080` | Proxy listen port |
+
+---
+
+## 💪 Skill Packs
+
+Pre-built skills for common domains:
+
+```python
+config = EvoClawConfig(
+    skill_packs=["general", "coding", "crypto", "defi", "security", "agentic"]
+)
+```
+
+---
+
+## 🔄 Training Loop Example
+
+```bash
+python examples/run_conversation_rl.py           # GRPO mode
+python examples/run_conversation_rl.py --mode opd  # OPD mode
+python examples/run_conversation_rl.py --no-train  # Skill injection only
+```
+
+Train from your own conversation file:
+
+```bash
+evoclaw train --file conversations.jsonl
+# Format: {"user": "...", "assistant": "..."}
+```
+
+---
+
+## 📊 Monitor Progress
+
+```bash
+evoclaw status        # Skills + trainer status
+evoclaw skills        # List all learned skills  
+evoclaw skills --category crypto  # Filter by category
+```
+
+---
+
+## 🏗️ Architecture
+
+```
+User/Agent
+    │
+    ▼
+┌─────────────────────────────────┐
+│  EvoClaw Proxy (localhost:8080) │
+│  - Inject skills into prompt    │
+│  - Forward to upstream API      │
+│  - Score response async (Groq)  │
+│  - Evolve skills on failure     │
+│  - Feed samples to Tinker       │
+└─────────────────────────────────┘
+    │              │
+    ▼              ▼
+Groq API     Tinker LoRA
+(responses)  (training)
+```
+
+---
+
+## 📄 License
+
+MIT
+
+## Acknowledgements
+
+Built on top of [MetaClaw](https://github.com/aiming-lab/MetaClaw), [Tinker](https://thinkingmachines.ai/tinker/), and [Groq](https://groq.com).

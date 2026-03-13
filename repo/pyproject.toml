@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "evoclaw"
+version = "0.2.0"
+description = "Self-evolving AI agents via LoRA — Just talk to your agent, it learns."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+keywords = ["ai", "llm", "lora", "fine-tuning", "agents", "rl"]
+
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn>=0.29.0",
+    "httpx>=0.27.0",
+    "groq>=0.9.0",
+    "tinker>=0.15.0",
+]
+
+[project.optional-dependencies]
+discord = ["discord.py>=2.3.0"]
+redis = ["upstash-redis>=1.0.0"]
+all = ["discord.py>=2.3.0", "upstash-redis>=1.0.0"]
+
+[project.scripts]
+evoclaw = "evoclaw.cli:main"
+
+[project.urls]
+Homepage = "https://evoclaw.tech"
+Repository = "https://github.com/evoclaw-agent/evoclaw"
+Documentation = "https://evoclaw.tech/docs"
