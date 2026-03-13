@@ -614,39 +614,43 @@ WantedBy=multi-user.target</pre></div>
 </footer>
 
 <script>
-  function navTo(id, el){
-    const el=document.getElementById(id);
-    if(el){ el.scrollIntoView({behavior:'smooth',block:'start'}); }
-    document.querySelectorAll('.sb-link').forEach(function(b){b.classList.remove('active');});var btn=el;while(btn&&btn.tagName!=='BUTTON'){btn=btn.parentElement;}if(btn){btn.classList.add('active');}
+  function navTo(id, clicked){
+    var t = document.getElementById(id);
+    if(t){ t.scrollIntoView({behavior:'smooth', block:'start'}); }
+    document.querySelectorAll('.sb-link').forEach(function(b){ b.classList.remove('active'); });
+    var btn = clicked;
+    while(btn && btn.tagName !== 'BUTTON'){ btn = btn.parentElement; }
+    if(btn){ btn.classList.add('active'); }
   }
 
   function copyCode(btn){
-    const code=btn.closest('.code-block').querySelector('pre').innerText;
-    navigator.clipboard.writeText(code).then(()=>{
-      btn.textContent='✓ COPIED'; setTimeout(()=>btn.textContent='COPY',2000);
+    var code = btn.closest('.code-block').querySelector('pre').innerText;
+    navigator.clipboard.writeText(code).then(function(){
+      btn.textContent = 'COPIED'; setTimeout(function(){ btn.textContent = 'COPY'; }, 2000);
     });
   }
 
-  window.addEventListener('scroll',()=>{
-    document.getElementById('nav').classList.toggle('scrolled',window.scrollY>10);
+  window.addEventListener('scroll', function(){
+    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 10);
   });
 
-  // Highlight active sidebar link on scroll
-  const sections=['intro','install','quickstart','prerequisites','overview','proxy','buffer','prm','trainer','skills-intro','skill-injection','skill-evolution','custom-skills','config-ref','learning-modes','models','deploy','troubleshoot','faq','changelog'];
-  const links=document.querySelectorAll('.sb-link');
+  var sections = ['intro','install','quickstart','prerequisites','overview','proxy','buffer','prm','trainer','skills-intro','skill-injection','skill-evolution','custom-skills','config-ref','learning-modes','models','deploy','troubleshoot','faq','changelog'];
+  var links = document.querySelectorAll('.sb-link');
 
-  const sObs=new IntersectionObserver(entries=>{
-    entries.forEach(e=>{
+  var sObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
       if(e.isIntersecting){
-        const id=e.target.id;
-        links.forEach(l=>l.classList.remove('active'));
-        const match=[...links].find(l=>l.getAttribute('onclick')?.includes("'"+id+"'"));
-        if(match)match.classList.add('active');
+        var id = e.target.id;
+        links.forEach(function(l){ l.classList.remove('active'); });
+        var match = Array.from(links).find(function(l){
+          return l.getAttribute('onclick') && l.getAttribute('onclick').indexOf("'"+id+"'") > -1;
+        });
+        if(match) match.classList.add('active');
       }
     });
-  },{rootMargin:'-20% 0px -70% 0px'});
+  }, {rootMargin: '-20% 0px -70% 0px'});
 
-  sections.forEach(id=>{ const el=document.getElementById(id); if(el)sObs.observe(el); });
+  sections.forEach(function(id){ var el = document.getElementById(id); if(el) sObs.observe(el); });
 </script>
 </body>
 </html>
