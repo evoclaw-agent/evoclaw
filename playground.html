@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>EvoClaw Playground — Test Your Agent</title>
   <meta name="description" content="Test your self-evolving agent live. Paste your API key, customize your agent, and watch it learn."/>
   <meta property="og:title" content="EvoClaw Playground — Test Your Agent"/>
@@ -570,6 +570,76 @@
   #pgTerminal{min-height:140px!important;font-size:.68rem!important;}
 }
 </style>
+
+<style id="mobile-nav-fix">
+/* ── Mobile nav ── */
+@media (max-width: 900px) {
+  .hamburger { display:flex !important; }
+  .nav-links  { display:none !important; }
+  .nav-cta    { display:none !important; }
+}
+@media (min-width: 901px) {
+  .hamburger   { display:none !important; }
+  .nav-links   { display:flex !important; }
+  .mobile-menu { display:none !important; }
+}
+/* Hamburger icon */
+.hamburger {
+  flex-direction:column; justify-content:center;
+  gap:5px; cursor:pointer; padding:8px;
+  background:none; border:none; z-index:1001;
+  flex-shrink:0; margin-left:auto;
+}
+.hamburger span {
+  display:block; width:22px; height:2px;
+  background:#00ff88; border-radius:2px; transition:all .3s;
+}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0; transform:scaleX(0);}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+/* Mobile slide-in menu */
+.mobile-menu {
+  position:fixed; top:0; right:-100%; width:260px; height:100vh;
+  background:#0a0f0a; border-left:1px solid var(--border);
+  z-index:1100; padding:24px 20px;
+  display:flex; flex-direction:column; gap:4px;
+  transition:right .3s cubic-bezier(.4,0,.2,1);
+}
+.mobile-menu.open { right:0; }
+.mobile-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,.6);
+  z-index:1099; opacity:0; pointer-events:none;
+  transition:opacity .3s;
+}
+.mobile-overlay.open { opacity:1; pointer-events:all; }
+.mobile-close {
+  align-self:flex-end; background:none; border:1px solid var(--border);
+  color:var(--text); width:32px; height:32px; border-radius:50%;
+  cursor:pointer; font-size:1rem; display:flex;
+  align-items:center; justify-content:center; margin-bottom:12px;
+  flex-shrink:0;
+}
+.mobile-close:hover { border-color:var(--green); color:var(--green); }
+.mobile-menu-title {
+  font-family:var(--mono); font-size:.6rem; letter-spacing:.15em;
+  color:var(--dim); padding:0 4px; margin-bottom:8px;
+}
+.mobile-menu a {
+  font-family:var(--mono); font-size:.78rem; letter-spacing:.1em;
+  color:var(--muted); padding:12px 8px;
+  border-bottom:1px solid var(--border); text-decoration:none;
+  transition:color .2s;
+}
+.mobile-menu a:hover, .mobile-menu a.active { color:var(--text); }
+.mobile-menu a.green { color:var(--green); }
+.mobile-menu a.active { color:#fff; }
+.mobile-github-btn {
+  margin-top:auto; background:var(--green); color:#000 !important;
+  font-weight:700; text-align:center; border-radius:6px;
+  border:none !important; padding:12px !important;
+}
+/* Viewport fix - prevent zoom */
+</style>
 </head>
 <body>
 
@@ -585,8 +655,21 @@
       <li><a href="playground.html" style="color:var(--green)" class="active">PLAYGROUND</a></li>
     </ul>
     <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank" class="nav-cta">GITHUB →</a>
+      <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
+<div class="mobile-overlay" id="mobileOverlay"></div>
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" id="mobileClose" aria-label="Close">✕</button>
+  <span class="mobile-menu-title">NAVIGATION</span>
+  <a href="index.html">HOME</a>
+  <a href="demo.html">LIVE DEMO</a>
+  <a href="docs.html">DOCS</a>
+  <a href="index.html#get-started">GET STARTED</a>
+  <a href="ask.html" class="green">ASK EVOCLAW</a>
+  <a href="playground.html" class="green active">PLAYGROUND</a>
+  <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank" class="mobile-github-btn">GITHUB →</a>
+</div>
 
 <div class="pg-wrap">
 
@@ -1235,5 +1318,21 @@
 })();
 </script>
 
+
+<script id="mobile-nav-script">
+(function(){
+  var btn=document.getElementById('hamburger');
+  var menu=document.getElementById('mobileMenu');
+  var overlay=document.getElementById('mobileOverlay');
+  var closeBtn=document.getElementById('mobileClose');
+  if(!btn||!menu) return;
+  function openMenu(){ menu.classList.add('open'); overlay.classList.add('open'); btn.classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeMenu(){ menu.classList.remove('open'); overlay.classList.remove('open'); btn.classList.remove('open'); document.body.style.overflow=''; }
+  btn.addEventListener('click', function(){ menu.classList.contains('open')?closeMenu():openMenu(); });
+  if(closeBtn) closeBtn.addEventListener('click', closeMenu);
+  overlay.addEventListener('click', closeMenu);
+  menu.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', closeMenu); });
+})();
+</script>
 </body>
 </html>
