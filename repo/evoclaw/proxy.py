@@ -59,6 +59,96 @@ class EvoClawProxy:
                 "trainer": self.trainer.get_status() if self.trainer else None,
             }
 
+        @app.get("/logo.png")
+        async def serve_logo():
+            import pathlib
+            from fastapi.responses import FileResponse, Response
+            candidates = [
+                pathlib.Path(__file__).parent.parent.parent / "website" / "assets" / "logo.png",
+                pathlib.Path(__file__).parent.parent / "assets" / "logo.png",
+                pathlib.Path("assets/logo.png"),
+                pathlib.Path("../assets/logo.png"),
+                pathlib.Path("../../website/assets/logo.png"),
+            ]
+            for p in candidates:
+                if p.exists():
+                    return FileResponse(str(p), media_type="image/png")
+            return Response(status_code=404)
+
+        @app.get("/")
+        async def root():
+            from fastapi.responses import HTMLResponse
+            stats = self.skill_bank.stats()
+            trainer_status = self.trainer.get_status() if self.trainer else None
+            tinker_ok = trainer_status and trainer_status.get("tinker_connected")
+            cats_html = "".join(
+                f'<div class="stat"><span class="stat-label">{cat}</span>'
+                f'<span class="stat-value">{count} skills</span></div>'
+                for cat, count in stats["categories"].items()
+            )
+            html = f"""<!DOCTYPE html>
+<html><head><title>EvoClaw Proxy</title><meta charset="utf-8">
+<style>
+*{{margin:0;padding:0;box-sizing:border-box}}
+body{{background:#0a0a0a;color:#e0e0e0;font-family:'Courier New',monospace;display:flex;align-items:center;justify-content:center;min-height:100vh}}
+.container{{max-width:600px;width:100%;padding:40px 20px}}
+.logo{{font-size:48px;margin-bottom:8px}}
+h1{{font-size:28px;color:#00ff88;margin-bottom:4px}}
+.sub{{color:#888;margin-bottom:32px;font-size:14px}}
+.card{{background:#111;border:1px solid #222;border-radius:12px;padding:24px;margin-bottom:16px}}
+.card h2{{font-size:12px;color:#555;text-transform:uppercase;letter-spacing:2px;margin-bottom:16px}}
+.stat{{display:flex;justify-content:space-between;margin-bottom:12px}}
+.stat-label{{color:#888;font-size:14px}}
+.stat-value{{color:#00ff88;font-weight:bold;font-size:14px}}
+.stat-value.warn{{color:#ffaa00}}
+.endpoint{{background:#0d1117;border:1px solid #333;border-radius:8px;padding:16px;margin-top:8px;font-size:13px;color:#79c0ff;line-height:1.8}}
+.dot{{width:8px;height:8px;border-radius:50%;background:#00ff88;display:inline-block;margin-right:6px;animation:pulse 2s infinite}}
+@keyframes pulse{{0%,100%{{opacity:1}}50%{{opacity:.4}}}}
+footer{{text-align:center;color:#444;font-size:12px;margin-top:24px}}
+footer a{{color:#555;text-decoration:none}}
+</style></head>
+<body><div class="container">
+  <img src="/logo.png" alt="EvoClaw" style="width:72px;height:72px;object-fit:contain;margin-bottom:8px;" onerror="this.style.display='none';document.getElementById('emoji-logo').style.display='block'">
+  <div id="emoji-logo" style="font-size:48px;margin-bottom:8px;display:none">🦎</div>
+  <h1>EvoClaw Proxy</h1>
+  <p class="sub"><span class="dot"></span>Running &nbsp;·&nbsp; v0.2.0</p>
+
+  <div class="card">
+    <h2>Status</h2>
+    <div class="stat"><span class="stat-label">Proxy</span><span class="stat-value">● Online :8080</span></div>
+    <div class="stat"><span class="stat-label">Conversations</span><span class="stat-value">{self._conversations}</span></div>
+    <div class="stat"><span class="stat-label">Total Skills</span><span class="stat-value">{stats["total_skills"]}</span></div>
+    <div class="stat"><span class="stat-label">Skills Injected</span><span class="stat-value">{stats["total_injected"]}</span></div>
+    <div class="stat"><span class="stat-label">Tinker LoRA</span>
+      <span class="stat-value {'stat-value' if tinker_ok else 'stat-value warn'}">{"● Connected" if tinker_ok else "⚠ Skill-only mode"}</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Skill Categories</h2>
+    {cats_html}
+  </div>
+
+  <div class="card">
+    <h2>Quick Start</h2>
+    <div class="endpoint">
+      from openai import OpenAI<br>
+      client = OpenAI(<br>
+      &nbsp;&nbsp;base_url="http://localhost:8080/v1",<br>
+      &nbsp;&nbsp;api_key="any-string"<br>
+      )<br>
+      <span style="color:#8b949e"># Just chat — agent learns automatically</span>
+    </div>
+  </div>
+
+  <footer>
+    <a href="https://evoclaw.tech">evoclaw.tech</a> &nbsp;·&nbsp;
+    <a href="/health">/health</a> &nbsp;·&nbsp;
+    <a href="/v1/models">/v1/models</a>
+  </footer>
+</div></body></html>"""
+            return HTMLResponse(html)
+
         return app
 
     async def _handle_chat(self, request: Request) -> Response:
