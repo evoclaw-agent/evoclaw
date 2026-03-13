@@ -986,3 +986,84 @@
 </script>
 </body>
 </html>
+
+
+<!-- ── PROXY FLOW SECTION ── -->
+<section id="how-it-works" style="padding:96px 0;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:56px;">
+      <span class="label">HOW IT WORKS</span>
+      <h2 style="font-size:clamp(1.8rem,3vw,2.6rem);font-weight:300;letter-spacing:-.03em;margin-top:12px;">Every message goes through <b>the proxy</b></h2>
+      <p style="color:var(--muted);max-width:520px;margin:16px auto 0;line-height:1.85;font-size:.95rem;font-weight:300;">EvoClaw sits between your app and the AI model. Intercepts every request, scores it, injects skills, and learns — transparently.</p>
+    </div>
+    <div id="proxyFlow" style="max-width:860px;margin:0 auto;">
+      <div style="display:flex;align-items:center;justify-content:center;gap:0;overflow-x:auto;padding:8px 0;">
+        <div class="pf-node" id="pfNode1"><div class="pf-icon">📱</div><div class="pf-label">YOUR APP</div><div class="pf-sub">sends request</div></div>
+        <div class="pf-arrow" id="pfArrow1" style="font-size:1.4rem;color:var(--border);padding:0 8px;min-width:48px;text-align:center;position:relative;transition:color .3s;">→</div>
+        <div class="pf-node pf-node-main" id="pfNode2">
+          <div class="pf-icon">🦎</div><div class="pf-label">EVOCLAW</div><div class="pf-sub">proxy :8080</div>
+          <div style="display:flex;flex-direction:column;gap:3px;margin-top:8px;width:100%;">
+            <div class="pf-substep" id="pfs1">⚡ intercept</div>
+            <div class="pf-substep" id="pfs2">🎯 prm score</div>
+            <div class="pf-substep" id="pfs3">💉 inject skills</div>
+            <div class="pf-substep" id="pfs4">📚 learn</div>
+          </div>
+        </div>
+        <div class="pf-arrow" id="pfArrow2" style="font-size:1.4rem;color:var(--border);padding:0 8px;min-width:48px;text-align:center;transition:color .3s;">→</div>
+        <div class="pf-node" id="pfNode3"><div class="pf-icon">🤖</div><div class="pf-label">AI MODEL</div><div class="pf-sub">Groq / OpenAI</div></div>
+        <div class="pf-arrow" id="pfArrow3" style="font-size:1.4rem;color:var(--border);padding:0 8px;min-width:48px;text-align:center;transition:color .3s;">←</div>
+        <div class="pf-node" id="pfNode4"><div class="pf-icon">✨</div><div class="pf-label">RESPONSE</div><div class="pf-sub">+skills applied</div></div>
+      </div>
+      <div style="margin-top:32px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:20px;font-family:var(--mono);font-size:.75rem;line-height:2;max-height:160px;overflow:hidden;">
+        <div style="color:var(--dim);margin-bottom:8px;letter-spacing:.1em;">● PROXY LOG</div>
+        <div id="pfLog"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:8px;overflow:hidden;margin-top:16px;">
+        <div style="background:var(--bg);padding:16px;text-align:center;"><div style="font-size:1.4rem;font-weight:300;color:var(--green)" id="pfStatReqs">0</div><div style="font-family:var(--mono);font-size:.58rem;color:var(--dim);letter-spacing:.1em;margin-top:4px;">REQUESTS</div></div>
+        <div style="background:var(--bg);padding:16px;text-align:center;"><div style="font-size:1.4rem;font-weight:300;color:var(--green)" id="pfStatPrm">—</div><div style="font-family:var(--mono);font-size:.58rem;color:var(--dim);letter-spacing:.1em;margin-top:4px;">AVG PRM</div></div>
+        <div style="background:var(--bg);padding:16px;text-align:center;"><div style="font-size:1.4rem;font-weight:300;color:var(--green)" id="pfStatSkills">0</div><div style="font-family:var(--mono);font-size:.58rem;color:var(--dim);letter-spacing:.1em;margin-top:4px;">SKILLS</div></div>
+        <div style="background:var(--bg);padding:16px;text-align:center;"><div style="font-size:1.4rem;font-weight:300;color:var(--green)" id="pfStatLatency">0ms</div><div style="font-family:var(--mono);font-size:.58rem;color:var(--dim);letter-spacing:.1em;margin-top:4px;">OVERHEAD</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<style>
+.pf-node{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:18px 20px;min-width:110px;transition:all .3s;}
+.pf-node.active{border-color:var(--green);box-shadow:0 0 20px rgba(0,255,136,.15);}
+.pf-node-main{min-width:140px;background:var(--bg2);}
+.pf-icon{font-size:1.5rem;}.pf-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;color:var(--text);}
+.pf-sub{font-size:.7rem;color:var(--dim);}
+.pf-substep{font-family:var(--mono);font-size:.62rem;color:var(--dim);padding:3px 8px;border-radius:3px;transition:all .3s;}
+.pf-substep.active{color:var(--green);background:rgba(0,255,136,.1);}
+</style>
+<script>
+(function(){
+  const nodes=[document.getElementById('pfNode1'),document.getElementById('pfNode2'),document.getElementById('pfNode3'),document.getElementById('pfNode4')];
+  const arrows=[document.getElementById('pfArrow1'),document.getElementById('pfArrow2'),document.getElementById('pfArrow3')];
+  const subs=[document.getElementById('pfs1'),document.getElementById('pfs2'),document.getElementById('pfs3'),document.getElementById('pfs4')];
+  const logEl=document.getElementById('pfLog');
+  let reqCount=0,skillCount=0,prmSum=0,prmCount=0;
+  function addLog(msg,color){const d=document.createElement('div');d.style.color=color;d.textContent=msg;logEl.appendChild(d);logEl.scrollTop=logEl.scrollHeight;while(logEl.children.length>6)logEl.removeChild(logEl.firstChild);}
+  function setActive(el,on){el&&(on?el.classList.add('active'):el.classList.remove('active'));}
+  function runCycle(){
+    nodes.forEach(n=>n.classList.remove('active'));
+    arrows.forEach(a=>{a.style.color='var(--border)';});
+    subs.forEach(s=>s.classList.remove('active'));
+    reqCount++;const prm=parseFloat((0.72+Math.random()*.23).toFixed(2));prmSum+=prm;prmCount++;
+    const skills=['crypto-security','defi-expert','code-quality','deep-research'];
+    setTimeout(()=>{setActive(nodes[0],true);arrows[0].style.color='var(--green)';addLog('→ POST /v1/chat/completions intercepted','#00ff88');},0);
+    setTimeout(()=>{setActive(nodes[0],false);setActive(nodes[1],true);setActive(subs[0],true);},500);
+    setTimeout(()=>{setActive(subs[1],true);addLog('  🎯 prm_score: '+prm,'#00ff88');},900);
+    setTimeout(()=>{setActive(subs[2],true);addLog('  💉 injecting 3 skills','#00c4ff');},1400);
+    setTimeout(()=>{arrows[1].style.color='var(--green)';addLog('  → forwarding to model','var(--muted)');},1900);
+    setTimeout(()=>{setActive(nodes[2],true);},2400);
+    setTimeout(()=>{setActive(nodes[2],false);arrows[2].style.color='#00c4ff';addLog('← response received','#00c4ff');},2900);
+    setTimeout(()=>{setActive(subs[3],true);skillCount++;addLog('  📚 skill learned: ['+skills[reqCount%skills.length]+']','#ffcb6b');},3300);
+    setTimeout(()=>{setActive(nodes[3],true);document.getElementById('pfStatReqs').textContent=reqCount;document.getElementById('pfStatPrm').textContent=(prmSum/prmCount).toFixed(2);document.getElementById('pfStatSkills').textContent=skillCount;document.getElementById('pfStatLatency').textContent=Math.floor(8+Math.random()*10)+'ms';},3700);
+    setTimeout(()=>{nodes.forEach(n=>n.classList.remove('active'));arrows.forEach(a=>a.style.color='var(--border)');},4400);
+  }
+  let started=false;
+  const obs=new IntersectionObserver(e=>{if(e[0].isIntersecting&&!started){started=true;runCycle();setInterval(runCycle,5500);}},{threshold:0.3});
+  obs.observe(document.getElementById('proxyFlow'));
+})();
+</script>
