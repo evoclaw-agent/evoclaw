@@ -114,6 +114,8 @@
 }
 </style>
 
+
+
 <style id="mobile-nav-fix">
 /* ── Mobile nav ── */
 @media (max-width: 900px) {
@@ -802,6 +804,8 @@ window.addEventListener('scroll',()=>{ document.getElementById('nav').classList.
 const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');obs.unobserve(x.target);}});},{threshold:.07});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 </script>
+
+
 
 <script id="mobile-nav-script">
 (function(){
