@@ -79,6 +79,142 @@
       .nav-cta { display:none !important; }
     }
   </style>
+  <style id="mobile-global-fix">
+    /* ===== GLOBAL MOBILE FIX ===== */
+    html {
+      overflow-x: hidden !important;
+      max-width: 100vw !important;
+    }
+    body {
+      overflow-x: hidden !important;
+      max-width: 100vw !important;
+      min-width: 0 !important;
+    }
+    *, *::before, *::after {
+      box-sizing: border-box !important;
+    }
+
+    @media (max-width: 768px) {
+      /* Fix all containers */
+      .container, .wrap, .inner, .nav-inner,
+      section, .section, header, footer,
+      [class*="section"], [class*="container"] {
+        max-width: 100% !important;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+        overflow-x: hidden !important;
+      }
+
+      /* Fix all grids - stack to 1 column */
+      [style*="grid-template-columns"],
+      [style*="display:grid"],
+      [style*="display: grid"] {
+        display: block !important;
+      }
+
+      .features-grid, .hero-stats, .acks, .fg-row,
+      .gs-grid, .how-grid, .stats-row, .footer-grid,
+      .steps-grid, .cards-grid, [class*="grid"] {
+        grid-template-columns: 1fr !important;
+        display: grid !important;
+      }
+
+      /* Fix hero stats specifically */
+      .hero-stats {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+
+      /* Fix terminal / code blocks that overflow */
+      .md-monitor, .monitor, .terminal, .term,
+      [class*="monitor"], [class*="terminal"],
+      pre, code, .code-block {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        font-size: 0.72rem !important;
+        white-space: pre-wrap !important;
+        word-break: break-all !important;
+      }
+
+      /* Fix inline styles with fixed widths */
+      [style*="420px"], [style*="480px"], [style*="600px"],
+      [style*="700px"], [style*="800px"], [style*="900px"],
+      [style*="1fr 420px"], [style*="1fr 480px"] {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+
+      /* Fix images */
+      img { max-width: 100% !important; height: auto !important; }
+
+      /* Fix text sizes */
+      h1 { font-size: clamp(1.8rem, 8vw, 3.5rem) !important; }
+      h2 { font-size: clamp(1.4rem, 5vw, 2.2rem) !important; }
+
+      /* Fix buttons */
+      .hero-actions, .cta-buttons, [class*="actions"],
+      [class*="buttons"] {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+        flex-wrap: wrap !important;
+      }
+
+      /* Fix how-it-works 2-column layout */
+      .how-inner, [style*="1fr 1fr"],
+      [style*="1fr 420px"], [style*="1fr 480px"],
+      .gs-grid, .docs-layout, .ask-layout,
+      .playground-layout {
+        grid-template-columns: 1fr !important;
+        display: grid !important;
+      }
+
+      /* Docs sidebar */
+      .docs-sidebar, .sidebar {
+        position: relative !important;
+        width: 100% !important;
+        max-height: 200px !important;
+        overflow-y: auto !important;
+        border-right: none !important;
+        border-bottom: 1px solid rgba(0,255,136,.1) !important;
+        padding: 12px !important;
+      }
+
+      /* Forms */
+      input, select, textarea, button {
+        max-width: 100% !important;
+        width: 100% !important;
+      }
+
+      /* Table */
+      table { display: block !important; overflow-x: auto !important; }
+
+      /* Fix any element with min-width */
+      * { min-width: 0 !important; }
+
+      /* Padding fix for sections */
+      .section, section {
+        padding-top: 48px !important;
+        padding-bottom: 48px !important;
+      }
+
+      /* Fix how section specifically - the one with terminal on right */
+      .how-section .inner,
+      .how-wrap {
+        flex-direction: column !important;
+        display: flex !important;
+      }
+
+      /* Nav fix - ensure logo left, hamburger right */
+      .nav-inner {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 0 16px !important;
+        gap: 0 !important;
+      }
+    }
+  </style>
 </head>
 <body>
 <nav class="nav" id="nav">
