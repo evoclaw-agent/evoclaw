@@ -1,228 +1,455 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <title>Ask EvoClaw — Live AI Agent</title>
-  <meta name="description" content="Chat with EvoClaw agent — it learns and evolves from every conversation.">
-  <meta property="og:title" content="Ask EvoClaw — Live AI Agent">
-  <meta property="og:image" content="https://evoclaw.tech/assets/og-image.png">
-  <link rel="icon" type="image/png" href="/assets/logo.png">
-  <link rel="stylesheet" href="/css/shared.css">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EvoClaw — Ask the Agent</title>
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://evoclaw.tech"/>
+  <meta property="og:title" content="EvoClaw — Self-Evolving AI Agent"/>
+  <meta property="og:description" content="EvoClaw continuously trains your AI agent from live conversations. No GPU. No data team. Just plug it in."/>
+  <meta property="og:image" content="https://evoclaw.tech/assets/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="EvoClaw — Self-Evolving AI Agent"/>
+  <meta name="twitter:description" content="EvoClaw continuously trains your AI agent from live conversations. No GPU. No data team. Just plug it in."/>
+  <meta name="twitter:image" content="https://evoclaw.tech/assets/og-image.png"/>
+  <meta name="description" content="Talk to the EvoClaw self-evolving agent. Real conversation. Real learning."/>
+  <link rel="stylesheet" href="css/shared.css"/>
+  <link rel="icon" type="image/png" href="data:image/png;base64,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"/>
+  <style>
+    .ask-wrap {
+      min-height: calc(100vh - 60px);
+      display: flex;
+      flex-direction: column;
+      padding: 80px 0 60px;
+    }
+    .ask-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .ask-header .badge {
+      font-family: var(--mono);
+      font-size: .65rem;
+      letter-spacing: .18em;
+      color: var(--green);
+      margin-bottom: 14px;
+      display: block;
+    }
+    .ask-header h1 {
+      font-size: 2.4rem;
+      font-weight: 300;
+      margin-bottom: 12px;
+    }
+    .ask-header p {
+      color: var(--muted);
+      font-size: .9rem;
+      font-weight: 300;
+      line-height: 1.8;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .ask-layout {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 20px;
+      max-width: 980px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .ask-main { display: flex; flex-direction: column; }
+    .chat-box {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex: 1;
+      min-height: 480px;
+      max-height: 560px;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-bottom: 14px;
+    }
+    .chat-welcome {
+      margin: auto;
+      text-align: center;
+    }
+    .chat-input-row {
+      display: flex;
+      gap: 10px;
+    }
+    .chat-input {
+      flex: 1;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 13px 16px;
+      color: var(--text);
+      font-size: .87rem;
+      font-family: var(--sans);
+      outline: none;
+      transition: border .2s;
+    }
+    .chat-input:focus { border-color: var(--green); }
+    .chat-send {
+      background: var(--green);
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      padding: 13px 26px;
+      font-family: var(--mono);
+      font-size: .7rem;
+      letter-spacing: .1em;
+      cursor: pointer;
+      font-weight: 700;
+      transition: opacity .2s;
+      white-space: nowrap;
+    }
+    .chat-send:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* Side panel */
+    .ask-side { display: flex; flex-direction: column; gap: 14px; }
+    .side-panel {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+    .side-title {
+      font-family: var(--mono);
+      font-size: .6rem;
+      letter-spacing: .14em;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .side-skill {
+      font-family: var(--mono);
+      font-size: .65rem;
+      color: var(--green);
+      background: var(--green-d);
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+      display: block;
+      animation: slideIn .3s ease;
+    }
+    .prm-val {
+      font-size: 2.4rem;
+      font-weight: 300;
+      letter-spacing: -.04em;
+      color: var(--green);
+      line-height: 1;
+    }
+    .prm-label {
+      font-family: var(--mono);
+      font-size: .58rem;
+      letter-spacing: .12em;
+      color: var(--dim);
+      margin-top: 4px;
+    }
+    .prm-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 3px;
+      margin-top: 12px;
+      overflow: hidden;
+    }
+    .prm-fill {
+      height: 100%;
+      background: var(--green);
+      border-radius: 3px;
+      width: 0%;
+      transition: width .6s ease;
+    }
+    .suggest-btn {
+      width: 100%;
+      text-align: left;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 9px 12px;
+      color: var(--muted);
+      font-size: .76rem;
+      cursor: pointer;
+      transition: border .15s, color .15s;
+      line-height: 1.5;
+      font-family: var(--sans);
+      margin-bottom: 6px;
+    }
+    .suggest-btn:hover { border-color: var(--green); color: var(--text); }
+
+    @keyframes slideIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+
+    /* Messages */
+    .msg { animation: slideIn .3s ease; }
+    .msg-role {
+      font-family: var(--mono);
+      font-size: .58rem;
+      letter-spacing: .12em;
+      margin-bottom: 5px;
+    }
+    .msg-role.user { color: var(--blue); }
+    .msg-role.agent { color: var(--green); }
+    .msg-bubble {
+      font-size: .85rem;
+      line-height: 1.78;
+      font-weight: 300;
+      white-space: pre-wrap;
+    }
+
+    @media(max-width:700px) {
+      .ask-layout { grid-template-columns: 1fr; }
+      .ask-side { order: -1; flex-direction: row; flex-wrap: wrap; }
+      .side-panel { flex: 1; min-width: 140px; }
+    }
+  </style>
 </head>
 <body>
 
-<nav>
+<nav class="nav" id="nav">
   <div class="nav-inner">
-    <a href="/index.html" class="nav-logo">
-      <img src="/assets/logo.png" alt="EvoClaw logo">
-      EVOCLAW
-    </a>
-    <ul class="nav-links">
-      <li><a href="/index.html">HOME</a></li>
-      <li><a href="/demo.html">LIVE DEMO</a></li>
-      <li><a href="/docs.html">DOCS</a></li>
-      <li><a href="/index.html#get-started">GET STARTED</a></li>
-      <li><a href="/ask.html" class="active">ASK EVOCLAW</a></li>
-      <li><a href="/playground.html" class="text-green">PLAYGROUND</a></li>
-      <li><a href="https://github.com/evoclaw-agent/evoclaw" class="btn-github" target="_blank">GITHUB →</a></li>
+    <a href="index.html" class="nav-logo"><img src="assets/logo.png" class="nav-logo-img" alt="EvoClaw"><span class="g">EVO</span>CLAW</a>
+        <ul class="nav-links">
+      <li><a href="index.html">HOME</a></li>
+      <li><a href="demo.html">LIVE DEMO</a></li>
+      <li><a href="docs.html">DOCS</a></li>
+      <li><a href="index.html#get-started">GET STARTED</a></li>
+      <li><a href="ask.html" style="color:var(--green)" class="active">ASK EVOCLAW</a></li>
+      <li><a href="playground.html" style="color:var(--green)">PLAYGROUND</a></li>
     </ul>
-    <button class="hamburger" id="hamburger" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
+    <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank" class="nav-cta">GITHUB →</a>
   </div>
 </nav>
-<div class="mobile-menu" id="mobileMenu">
-  <a href="/index.html">HOME</a>
-  <a href="/demo.html">LIVE DEMO</a>
-  <a href="/docs.html">DOCS</a>
-  <a href="/index.html#get-started">GET STARTED</a>
-  <a href="/ask.html" class="highlight">ASK EVOCLAW</a>
-  <a href="/playground.html" class="highlight">PLAYGROUND</a>
-  <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank">GITHUB →</a>
-</div>
 
-<main>
-<section style="border:none;padding-top:80px">
+<div class="ask-wrap">
   <div class="container">
-    <p class="section-tag">ASK EVOCLAW</p>
-    <h2 class="section-title">Talk to the <em>EvoClaw agent.</em></h2>
-    <p class="section-sub">The agent knows everything about EvoClaw and learns new skills from every conversation. Ask anything.</p>
+    <div class="ask-header">
+      <span class="badge">🦎 LIVE AGENT</span>
+      <h1>Ask <b>EvoClaw</b></h1>
+      <p>Real conversation with a self-evolving agent. Every message is scored and fed into the training loop.</p>
+    </div>
 
     <div class="ask-layout">
-      <!-- Chat -->
-      <div class="chat-container">
-        <div class="chat-header">
-          <img src="/assets/logo.png" alt="EvoClaw" class="chat-logo">
-          <span class="chat-title">EvoClaw Agent</span>
-          <span class="chat-status">● MEMORY ACTIVE</span>
-        </div>
-        <div class="chat-messages" id="chatMessages">
-          <div class="msg assistant">Hi! I'm the EvoClaw agent — I know everything about EvoClaw and I learn from every conversation. Ask me about features, how to get started, how I compare to MetaClaw, or anything else!</div>
-        </div>
-        <div class="suggestions" id="suggestions">
-          <button class="suggestion-chip" onclick="sendSuggestion(this)">What is EvoClaw?</button>
-          <button class="suggestion-chip" onclick="sendSuggestion(this)">EvoClaw vs MetaClaw?</button>
-          <button class="suggestion-chip" onclick="sendSuggestion(this)">How does skill injection work?</button>
-          <button class="suggestion-chip" onclick="sendSuggestion(this)">How do I get started?</button>
+      <!-- Main chat -->
+      <div class="ask-main">
+        <div class="chat-box" id="chatBox">
+          <div class="chat-welcome" id="chatWelcome">
+            <img src="assets/logo.png" style="width:56px;height:56px;object-fit:contain;margin-bottom:14px;display:block;margin-left:auto;margin-right:auto" alt="EvoClaw"/>
+            <div style="font-family:var(--mono);font-size:.68rem;color:var(--muted);letter-spacing:.12em;margin-bottom:8px">EVOCLAW AGENT READY</div>
+            <div style="font-size:.82rem;color:var(--dim);font-weight:300;line-height:1.7">Ask me anything about crypto, DeFi,<br>coding, or agentic workflows.</div>
+          </div>
         </div>
         <div class="chat-input-row">
-          <input type="text" class="chat-input" id="chatInput" placeholder="Ask the EvoClaw agent anything..." autocomplete="off">
-          <button class="btn-send" id="sendBtn" onclick="sendMessage()">SEND</button>
+          <input id="chatInput" class="chat-input" type="text"
+            placeholder="Ask the EvoClaw agent anything..."
+            onkeydown="if(event.key==='Enter') sendMsg()"
+          />
+          <button class="chat-send" id="chatSend" onclick="sendMsg()">SEND →</button>
+        </div>
+        <div style="text-align:center;margin-top:10px;font-family:var(--mono);font-size:.58rem;color:var(--dim);letter-spacing:.08em">
+          Powered by EvoClaw + Groq · Conversations train the agent automatically
         </div>
       </div>
 
-      <!-- Side panels -->
-      <div class="side-panels">
+      <!-- Side panel -->
+      <div class="ask-side">
+        <!-- PRM Score -->
         <div class="side-panel">
-          <h4>🧠 JUST LEARNED</h4>
-          <div id="justLearned" style="font-size:.78rem;color:rgba(224,255,224,.5);font-family:'JetBrains Mono',monospace">Waiting for conversation...</div>
-        </div>
-        <div class="side-panel">
-          <h4>📊 SESSION STATS</h4>
-          <div style="display:flex;flex-direction:column;gap:8px">
-            <div style="display:flex;justify-content:space-between;font-size:.78rem;font-family:'JetBrains Mono',monospace">
-              <span style="color:rgba(224,255,224,.5)">TOTAL SKILLS</span>
-              <span id="totalSkills" style="color:var(--green)">—</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:.78rem;font-family:'JetBrains Mono',monospace">
-              <span style="color:rgba(224,255,224,.5)">CONVERSATIONS</span>
-              <span id="totalConvs" style="color:var(--green)">—</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:.78rem;font-family:'JetBrains Mono',monospace">
-              <span style="color:rgba(224,255,224,.5)">PRM SCORE</span>
-              <span id="prmScore" style="color:var(--green)">—</span>
-            </div>
-          </div>
-        </div>
-        <div class="side-panel">
-          <h4>💉 SKILLS INJECTED</h4>
-          <div id="skillsInjected" style="font-size:.75rem;color:rgba(224,255,224,.5);font-family:'JetBrains Mono',monospace;line-height:1.8">—</div>
+          <div class="side-title">PRM SCORE</div>
+          <div class="prm-val" id="prmVal">—</div>
+          <div class="prm-label">PROCESS REWARD MODEL</div>
+          <div class="prm-bar"><div class="prm-fill" id="prmFill"></div></div>
         </div>
 
+        <!-- Skills injected -->
+        <div class="side-panel">
+          <div class="side-title">SKILLS INJECTED</div>
+          <div id="skillsList">
+            <div style="font-size:.75rem;color:var(--dim);font-weight:300">Skills appear here after first message</div>
+          </div>
+        </div>
+
+        <!-- Memory / learned skills -->
+        <div class="side-panel">
+          <div class="side-title">🧠 JUST LEARNED</div>
+          <div id="learnedSkill" style="font-size:.75rem;color:var(--dim);font-weight:300">Agent learns a new skill after each conversation</div>
+          <div style="margin-top:10px;font-family:var(--mono);font-size:.6rem;color:var(--dim)">TOTAL SKILLS: <span id="totalSkills" style="color:var(--green)">—</span></div>
+          <div style="font-family:var(--mono);font-size:.6rem;color:var(--dim)">CONVERSATIONS: <span id="totalConvs" style="color:var(--blue)">—</span></div>
+          <div style="font-family:var(--mono);font-size:.6rem;margin-top:6px" id="memoryStatus"></div>
+        </div>
+
+        <!-- Suggestions -->
+        <div class="side-panel">
+          <div class="side-title">TRY ASKING</div>
+          <button class="suggest-btn" onclick="suggest(this)">What's the difference between EvoClaw and MetaClaw?</button>
+          <button class="suggest-btn" onclick="suggest(this)">Explain how EvoClaw differs from fine-tuning</button>
+          <button class="suggest-btn" onclick="suggest(this)">What is skill injection in agentic systems?</button>
+          <button class="suggest-btn" onclick="suggest(this)">Analyze the risks of a new DeFi protocol</button>
+          <button class="suggest-btn" onclick="suggest(this)">Help me write a Python agent that auto-registers webhooks</button>
+        </div>
       </div>
     </div>
   </div>
-</section>
-</main>
+</div>
 
-<footer>
-  <div class="container">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <div class="footer-logo"><img src="/assets/logo.png" alt="EvoClaw">EVOCLAW</div>
-        <div class="footer-tagline">Self-evolving AI agent wrapper.<br>100% open source, MIT licensed.</div>
-      </div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="index.html" class="nav-logo"><img src="assets/logo.png" class="nav-logo-img" alt="EvoClaw"><span class="g">EVO</span>CLAW</a>
+      <p>Self-evolving AI agent wrapper. 100% open source, MIT licensed.</p>
+    </div>
+    <div class="footer-cols">
       <div class="footer-col">
         <h5>PAGES</h5>
-        <a href="/index.html">Home</a>
-        <a href="/demo.html">Live Demo</a>
-        <a href="/docs.html">Documentation</a>
-        <a href="/index.html#get-started">Get Started</a>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="demo.html">Live Demo</a></li>
+          <li><a href="docs.html">Documentation</a></li>
+          <li><a href="ask.html">Ask EvoClaw</a></li>
+        </ul>
       </div>
       <div class="footer-col">
         <h5>RESOURCES</h5>
-        <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank">GitHub</a>
-        <a href="https://openclaw.ai" target="_blank">OpenClaw</a>
+        <ul>
+          <li><a href="https://github.com/evoclaw-agent/evoclaw" target="_blank">GitHub</a></li>
+          <li><a href="https://openclaw.ai" target="_blank">OpenClaw</a></li>
+          <li><a href="https://www.thinkingmachines.ai/tinker/" target="_blank">Tinker</a></li>
+          <li><a href="https://github.com/aiming-lab/MetaClaw" target="_blank">MetaClaw</a></li>
+        </ul>
       </div>
     </div>
-    <div class="footer-bottom">
-      <span>© 2026 EvoClaw Contributors</span>
-      <span>MIT LICENSE</span>
-    </div>
+  </div>
+  <div class="footer-bot">
+    <span>© 2026 EvoClaw Contributors</span>
+    <span class="mit">MIT LICENSE</span>
   </div>
 </footer>
 
 <script>
-// Hamburger
-const hamburger = document.getElementById('hamburger');
-const mobileMenu = document.getElementById('mobileMenu');
-hamburger.addEventListener('click', () => {
-  hamburger.classList.toggle('open');
-  mobileMenu.classList.toggle('open');
-});
-mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-  hamburger.classList.remove('open');
-  mobileMenu.classList.remove('open');
-}));
+  const messages = [];
+  const chatBox = document.getElementById('chatBox');
+  const chatInput = document.getElementById('chatInput');
+  const chatSend = document.getElementById('chatSend');
+  const prmVal = document.getElementById('prmVal');
+  const prmFill = document.getElementById('prmFill');
+  const skillsList = document.getElementById('skillsList');
 
-let history = [];
-
-function sendSuggestion(btn) {
-  document.getElementById('chatInput').value = btn.textContent;
-  document.getElementById('suggestions').style.display = 'none';
-  sendMessage();
-}
-
-async function sendMessage() {
-  const input = document.getElementById('chatInput');
-  const msg = input.value.trim();
-  if (!msg) return;
-  input.value = '';
-  document.getElementById('sendBtn').disabled = true;
-  document.getElementById('suggestions').style.display = 'none';
-
-  appendMsg(msg, 'user');
-  const thinking = appendMsg('Thinking...', 'assistant thinking');
-
-  history.push({ role: 'user', content: msg });
-
-  try {
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: msg, history })
-    });
-    const data = await res.json();
-    thinking.remove();
-
-    const reply = data.reply || 'Sorry, I had trouble responding.';
-    appendMsg(reply, 'assistant');
-    history.push({ role: 'assistant', content: reply });
-
-    // Update stats
-    if (data.skillLearned) {
-      document.getElementById('justLearned').textContent = data.skillLearned;
-    }
-    if (data.totalSkills !== undefined) {
-      document.getElementById('totalSkills').textContent = data.totalSkills;
-    }
-    if (data.conversations !== undefined) {
-      document.getElementById('totalConvs').textContent = data.conversations;
-    }
-    if (data.prmScore !== undefined) {
-      document.getElementById('prmScore').textContent = data.prmScore.toFixed(2);
-    }
-    if (data.injectedSkills && data.injectedSkills.length) {
-      document.getElementById('skillsInjected').textContent = data.injectedSkills.join('\n');
-    }
-  } catch {
-    thinking.remove();
-    appendMsg('Connection error. Please try again.', 'assistant');
+  function suggest(btn) {
+    chatInput.value = btn.textContent;
+    chatInput.focus();
   }
-  document.getElementById('sendBtn').disabled = false;
-  input.focus();
-}
 
-function appendMsg(text, cls) {
-  const msgs = document.getElementById('chatMessages');
-  const div = document.createElement('div');
-  div.className = 'msg ' + cls;
-  div.textContent = text;
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-  return div;
-}
+  function addMsg(role, text) {
+    const welcome = document.getElementById('chatWelcome');
+    if (welcome) welcome.remove();
 
-document.getElementById('chatInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') sendMessage();
-});
+    const div = document.createElement('div');
+    div.className = 'msg';
 
-// Load stats
-fetch('/api/stats').then(r => r.json()).then(d => {
-  if (d.totalSkills !== undefined) document.getElementById('totalSkills').textContent = d.totalSkills;
-  if (d.conversations !== undefined) document.getElementById('totalConvs').textContent = d.conversations;
-}).catch(() => {});
+    const roleEl = document.createElement('div');
+    roleEl.className = 'msg-role ' + role;
+    roleEl.textContent = role === 'user' ? '▸ YOU' : '▸ EVOCLAW AGENT';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+    bubble.textContent = text;
+
+    div.appendChild(roleEl);
+    div.appendChild(bubble);
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function addTyping() {
+    const div = document.createElement('div');
+    div.id = 'typingIndicator';
+    div.className = 'msg';
+    div.innerHTML = '<div class="msg-role agent">▸ EVOCLAW AGENT</div><div class="msg-bubble" style="color:var(--muted);font-family:var(--mono)">···</div>';
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function updateMeta(meta) {
+    if (!meta) return;
+    const score = parseFloat(meta.prm_score);
+    prmVal.textContent = score.toFixed(2);
+    prmVal.style.color = score > 0.85 ? 'var(--green)' : score > 0.7 ? 'var(--blue)' : 'var(--orange)';
+    prmFill.style.width = (score * 100) + '%';
+
+    skillsList.innerHTML = '';
+    (meta.skills_injected || []).forEach(skill => {
+      const span = document.createElement('span');
+      span.className = 'side-skill';
+      span.textContent = skill;
+      skillsList.appendChild(span);
+    });
+
+    // Show learned skill
+    if (meta.new_skill_learned) {
+      const el = document.getElementById('learnedSkill');
+      el.style.color = 'var(--green)';
+      el.style.fontFamily = 'var(--mono)';
+      el.style.fontSize = '.7rem';
+      el.textContent = '✦ ' + meta.new_skill_learned;
+    }
+
+    // Update counters
+    if (meta.learned_skills_total !== undefined) {
+      document.getElementById('totalSkills').textContent = meta.learned_skills_total;
+    }
+    if (meta.conversations_total !== undefined) {
+      document.getElementById('totalConvs').textContent = meta.conversations_total;
+    }
+
+    // Memory status
+    const memEl = document.getElementById('memoryStatus');
+    if (meta.memory_active) {
+      memEl.innerHTML = '<span style="color:var(--green)">● MEMORY ACTIVE</span>';
+    } else {
+      memEl.innerHTML = '<span style="color:var(--dim)">○ MEMORY OFFLINE</span>';
+    }
+  }
+
+  async function sendMsg() {
+    const text = chatInput.value.trim();
+    if (!text) return;
+
+    chatInput.value = '';
+    chatInput.disabled = true;
+    chatSend.disabled = true;
+
+    addMsg('user', text);
+    messages.push({ role: 'user', content: text });
+    addTyping();
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages }),
+      });
+      const data = await res.json();
+      document.getElementById('typingIndicator')?.remove();
+
+      if (data.error) {
+        addMsg('agent', '⚠ Error: ' + data.error);
+      } else {
+        addMsg('agent', data.reply);
+        messages.push({ role: 'assistant', content: data.reply });
+        updateMeta(data.meta);
+      }
+    } catch (e) {
+      document.getElementById('typingIndicator')?.remove();
+      addMsg('agent', '⚠ Connection error. Please try again.');
+    }
+
+    chatInput.disabled = false;
+    chatSend.disabled = false;
+    chatInput.focus();
+  }
 </script>
 </body>
 </html>
