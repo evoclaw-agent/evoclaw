@@ -564,6 +564,12 @@
   }
 }
 </style>
+<style>
+@media(max-width:700px){
+  div[style*="grid-template-columns:1fr 300px"]{grid-template-columns:1fr!important;}
+  #pgTerminal{min-height:140px!important;font-size:.68rem!important;}
+}
+</style>
 </head>
 <body>
 
@@ -576,6 +582,7 @@
       <li><a href="docs.html">DOCS</a></li>
       <li><a href="index.html#get-started">GET STARTED</a></li>
       <li><a href="ask.html" style="color:var(--green)">ASK EVOCLAW</a></li>
+      <li><a href="playground.html" style="color:var(--green)" class="active">PLAYGROUND</a></li>
     </ul>
     <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank" class="nav-cta">GITHUB →</a>
   </div>

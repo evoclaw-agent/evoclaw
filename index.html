@@ -455,6 +455,15 @@
   .pf-icon img { width: 24px !important; height: 24px !important; }
 }
 </style>
+<style>
+@media(max-width:700px){
+  #proxyFlow>div:first-child{flex-wrap:wrap!important;gap:6px!important;}
+  .pf-node{min-width:72px!important;padding:10px 8px!important;font-size:.7rem;}
+  .pf-node-main{min-width:100px!important;}
+  .pf-arrow{padding:0 2px!important;font-size:1rem!important;}
+  #proxyFlow [style*="grid-template-columns:repeat(4"]{grid-template-columns:repeat(2,1fr)!important;}
+}
+</style>
 </head>
 <body>
 
@@ -466,7 +475,7 @@
       <li><a href="index.html" class="active">HOME</a></li>
       <li><a href="demo.html">LIVE DEMO</a></li>
       <li><a href="docs.html">DOCS</a></li>
-      <li><a href="#get-started">GET STARTED</a></li>
+      <li><a href="index.html#get-started">GET STARTED</a></li>
       <li><a href="ask.html" style="color:var(--green)">ASK EVOCLAW</a></li>
       <li><a href="playground.html" style="color:var(--green)">PLAYGROUND</a></li>
     </ul>
@@ -1462,6 +1471,15 @@
   .pf-icon img { width: 24px !important; height: 24px !important; }
 }
 </style>
+<style>
+@media(max-width:700px){
+  #proxyFlow>div:first-child{flex-wrap:wrap!important;gap:6px!important;}
+  .pf-node{min-width:72px!important;padding:10px 8px!important;font-size:.7rem;}
+  .pf-node-main{min-width:100px!important;}
+  .pf-arrow{padding:0 2px!important;font-size:1rem!important;}
+  #proxyFlow [style*="grid-template-columns:repeat(4"]{grid-template-columns:repeat(2,1fr)!important;}
+}
+</style>
 </head>
 <body>
 
@@ -2020,7 +2038,7 @@
       <p style="color:var(--muted);max-width:520px;margin:16px auto 0;line-height:1.85;font-size:.95rem;font-weight:300;">EvoClaw sits between your app and the AI model. Intercepts every request, scores it, injects skills, and learns — transparently.</p>
     </div>
     <div id="proxyFlow" style="max-width:860px;margin:0 auto;">
-      <div style="display:flex;align-items:center;justify-content:center;gap:0;overflow-x:auto;padding:8px 0;">
+      <div style="display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;overflow-x:auto;padding:8px 0;">
         <div class="pf-node" id="pfNode1"><div class="pf-icon" style="font-size:.65rem;font-family:var(--mono);color:var(--green);letter-spacing:.05em;">APP</div><div class="pf-label">YOUR APP</div><div class="pf-sub">sends request</div></div>
         <div class="pf-arrow" id="pfArrow1" style="font-size:1.4rem;color:var(--border);padding:0 8px;min-width:48px;text-align:center;position:relative;transition:color .3s;">→</div>
         <div class="pf-node pf-node-main" id="pfNode2">
