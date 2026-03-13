@@ -100,38 +100,38 @@
   <aside class="sidebar">
     <div class="sb-section">
       <div class="sb-section-title">Getting Started</div>
-      <button class="sb-link active" onclick=\"navTo('intro',this)\"><span class="sb-dot"></span>Introduction</button>
-      <button class="sb-link" onclick=\"navTo('install',this)\"><span class="sb-dot"></span>Installation</button>
-      <button class="sb-link" onclick=\"navTo('quickstart',this)\"><span class="sb-dot"></span>Quick Start</button>
-      <button class="sb-link" onclick=\"navTo('prerequisites',this)\"><span class="sb-dot"></span>Prerequisites</button>
+      <button class="sb-link active" onclick="navTo('intro',this)"><span class="sb-dot"></span>Introduction</button>
+      <button class="sb-link" onclick="navTo('install',this)"><span class="sb-dot"></span>Installation</button>
+      <button class="sb-link" onclick="navTo('quickstart',this)"><span class="sb-dot"></span>Quick Start</button>
+      <button class="sb-link" onclick="navTo('prerequisites',this)"><span class="sb-dot"></span>Prerequisites</button>
     </div>
     <div class="sb-section">
       <div class="sb-section-title">Architecture</div>
-      <button class="sb-link" onclick=\"navTo('overview',this)\"><span class="sb-dot"></span>System Overview</button>
-      <button class="sb-link" onclick=\"navTo('proxy',this)\"><span class="sb-dot"></span>EvoClawProxy</button>
-      <button class="sb-link" onclick=\"navTo('buffer',this)\"><span class="sb-dot"></span>ConversationBuffer</button>
-      <button class="sb-link" onclick=\"navTo('prm',this)\"><span class="sb-dot"></span>RewardModel (PRM)</button>
-      <button class="sb-link" onclick=\"navTo('trainer',this)\"><span class="sb-dot"></span>EvoClawTrainer</button>
+      <button class="sb-link" onclick="navTo('overview',this)"><span class="sb-dot"></span>System Overview</button>
+      <button class="sb-link" onclick="navTo('proxy',this)"><span class="sb-dot"></span>EvoClawProxy</button>
+      <button class="sb-link" onclick="navTo('buffer',this)"><span class="sb-dot"></span>ConversationBuffer</button>
+      <button class="sb-link" onclick="navTo('prm',this)"><span class="sb-dot"></span>RewardModel (PRM)</button>
+      <button class="sb-link" onclick="navTo('trainer',this)"><span class="sb-dot"></span>EvoClawTrainer</button>
     </div>
     <div class="sb-section">
       <div class="sb-section-title">Skills</div>
-      <button class="sb-link" onclick=\"navTo('skills-intro',this)\"><span class="sb-dot"></span>Skill System</button>
-      <button class="sb-link" onclick=\"navTo('skill-injection',this)\"><span class="sb-dot"></span>Skill Injection</button>
-      <button class="sb-link" onclick=\"navTo('skill-evolution',this)\"><span class="sb-dot"></span>Skill Evolution</button>
-      <button class="sb-link" onclick=\"navTo('custom-skills',this)\"><span class="sb-dot"></span>Custom Skills</button>
+      <button class="sb-link" onclick="navTo('skills-intro',this)"><span class="sb-dot"></span>Skill System</button>
+      <button class="sb-link" onclick="navTo('skill-injection',this)"><span class="sb-dot"></span>Skill Injection</button>
+      <button class="sb-link" onclick="navTo('skill-evolution',this)"><span class="sb-dot"></span>Skill Evolution</button>
+      <button class="sb-link" onclick="navTo('custom-skills',this)"><span class="sb-dot"></span>Custom Skills</button>
     </div>
     <div class="sb-section">
       <div class="sb-section-title">Configuration</div>
-      <button class="sb-link" onclick=\"navTo('config-ref',this)\"><span class="sb-dot"></span>EvoClawConfig</button>
-      <button class="sb-link" onclick=\"navTo('learning-modes',this)\"><span class="sb-dot"></span>Learning Modes</button>
-      <button class="sb-link" onclick=\"navTo('models',this)\"><span class="sb-dot"></span>Supported Models</button>
+      <button class="sb-link" onclick="navTo('config-ref',this)"><span class="sb-dot"></span>EvoClawConfig</button>
+      <button class="sb-link" onclick="navTo('learning-modes',this)"><span class="sb-dot"></span>Learning Modes</button>
+      <button class="sb-link" onclick="navTo('models',this)"><span class="sb-dot"></span>Supported Models</button>
     </div>
     <div class="sb-section">
       <div class="sb-section-title">Guides</div>
-      <button class="sb-link" onclick=\"navTo('deploy',this)\"><span class="sb-dot"></span>Deployment Guide</button>
-      <button class="sb-link" onclick=\"navTo('troubleshoot',this)\"><span class="sb-dot"></span>Troubleshooting</button>
-      <button class="sb-link" onclick=\"navTo('faq',this)\"><span class="sb-dot"></span>FAQ</button>
-      <button class="sb-link" onclick=\"navTo('changelog',this)\"><span class="sb-dot"></span>Changelog</button>
+      <button class="sb-link" onclick="navTo('deploy',this)"><span class="sb-dot"></span>Deployment Guide</button>
+      <button class="sb-link" onclick="navTo('troubleshoot',this)"><span class="sb-dot"></span>Troubleshooting</button>
+      <button class="sb-link" onclick="navTo('faq',this)"><span class="sb-dot"></span>FAQ</button>
+      <button class="sb-link" onclick="navTo('changelog',this)"><span class="sb-dot"></span>Changelog</button>
     </div>
   </aside>
 
@@ -145,17 +145,17 @@
       <p>EvoClaw is a self-evolving AI agent wrapper that turns live OpenClaw conversations into continuous training data. It wraps your model behind an OpenAI-compatible API proxy, intercepts every turn, scores it, injects skills, trains via cloud LoRA on Tinker, and hot-swaps weights — all while your users are typing.</p>
 
       <div class="note">
-        <strong>📦 Version 0.1.0</strong> — EvoClaw is in active development. The API is stable but may have minor breaking changes before v1.0. See the <a href="#" onclick=\"navTo('changelog',this)\">changelog</a> for updates.
+        <strong>📦 Version 0.1.0</strong> — EvoClaw is in active development. The API is stable but may have minor breaking changes before v1.0. See the <a href="#" onclick="navTo('changelog',this)">changelog</a> for updates.
       </div>
 
       <div class="g2" style="margin:24px 0;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
         <div class="cell" style="padding:20px;">
           <div class="cell-title" style="font-size:.82rem;">🚀 New to EvoClaw?</div>
-          <p class="cell-text" style="font-size:.78rem;">Start with the <a href="#" onclick=\"navTo('quickstart',this)\">Quick Start guide</a> — you'll have a running agent in 5 minutes.</p>
+          <p class="cell-text" style="font-size:.78rem;">Start with the <a href="#" onclick="navTo('quickstart',this)">Quick Start guide</a> — you'll have a running agent in 5 minutes.</p>
         </div>
         <div class="cell" style="padding:20px;">
           <div class="cell-title" style="font-size:.82rem;">⚙️ Already set up?</div>
-          <p class="cell-text" style="font-size:.78rem;">Jump to the <a href="#" onclick=\"navTo('config-ref',this)\">Config Reference</a> or <a href="#" onclick=\"navTo('skills-intro',this)\">Skills Guide</a>.</p>
+          <p class="cell-text" style="font-size:.78rem;">Jump to the <a href="#" onclick="navTo('config-ref',this)">Config Reference</a> or <a href="#" onclick="navTo('skills-intro',this)">Skills Guide</a>.</p>
         </div>
       </div>
     </div>
