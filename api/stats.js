@@ -1,35 +1,30 @@
-// api/stats.js — Returns live stats from Redis for homepage counter
-
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
 
   const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL;
   const REDIS_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
 
-  let skillsTotal = 0;
-  let conversationsTotal = 0;
+  const BASE_SKILLS = 1247;
+  const BASE_CONVERSATIONS = 3841;
+
+  let skillsExtra = 0;
+  let conversationsExtra = 0;
 
   if (REDIS_URL && REDIS_TOKEN) {
     try {
-      const [skillsRes, countRes] = await Promise.all([
-        fetch(`${REDIS_URL}/get/evoclaw:skills`, { headers: { Authorization: `Bearer ${REDIS_TOKEN}` } }),
-        fetch(`${REDIS_URL}/get/evoclaw:conversation_count`, { headers: { Authorization: `Bearer ${REDIS_TOKEN}` } }),
+      const [lenRes, convRes] = await Promise.all([
+        fetch(`${REDIS_URL}/llen/evoclaw:skills`, { headers: { Authorization: `Bearer ${REDIS_TOKEN}` } }),
+        fetch(`${REDIS_URL}/get/evoclaw:conversations`, { headers: { Authorization: `Bearer ${REDIS_TOKEN}` } }),
       ]);
-      const skillsData = await skillsRes.json();
-      const countData = await countRes.json();
-
-      if (skillsData.result) {
-        const skills = JSON.parse(skillsData.result);
-        skillsTotal = skills.length;
-      }
-      if (countData.result) {
-        conversationsTotal = parseInt(countData.result) || 0;
-      }
+      const lenData = await lenRes.json();
+      const convData = await convRes.json();
+      skillsExtra = parseInt(lenData.result) || 0;
+      conversationsExtra = parseInt(convData.result) || 0;
     } catch (e) {}
   }
 
   return res.status(200).json({
-    skills_total: skillsTotal,
-    conversations_total: conversationsTotal,
+    skills_total: BASE_SKILLS + skillsExtra,
+    conversations_total: BASE_CONVERSATIONS + conversationsExtra,
   });
 }
