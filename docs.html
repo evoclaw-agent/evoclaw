@@ -573,7 +573,72 @@ WantedBy=multi-user.target</pre></div>
   </main>
 </div>
 
-<footer class="footer">
+
+    <hr>
+    <h2 id="lora-training">LoRA Training</h2>
+    <p>EvoClaw supports cloud-based LoRA fine-tuning via <a href="https://www.thinkingmachines.ai/tinker/" target="_blank">Tinker</a>. No GPU required — training runs entirely on Tinker's infrastructure.</p>
+
+    <h3>Supported Models</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Model</th><th>Size</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>moonshotai/Kimi-K2.5</td><td>~200B MoE</td><td>Best quality. Recommended.</td></tr>
+          <tr><td>Qwen/Qwen3-4B</td><td>4B</td><td>Fast, low cost.</td></tr>
+          <tr><td>meta-llama/Llama-3.1-8B</td><td>8B</td><td>Balanced.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Setup</h3>
+    <p>Get a Tinker API key at <a href="https://www.thinkingmachines.ai/tinker/" target="_blank">thinkingmachines.ai/tinker</a>, then run:</p>
+    <div class="code-block">
+      <div class="cb-bar"><span class="cb-lang">bash</span><button class="cb-copy" onclick="copyCode(this)">COPY</button></div>
+      <div class="cb-body"><pre><span class="fn">evoclaw</span> init</pre></div>
+    </div>
+    <p>During setup, select your model and paste your Tinker API key when prompted. Config is saved to <code>~/.evoclaw/config.json</code>.</p>
+
+    <h3>Start Training</h3>
+    <div class="code-block">
+      <div class="cb-bar"><span class="cb-lang">bash</span><button class="cb-copy" onclick="copyCode(this)">COPY</button></div>
+      <div class="cb-body"><pre><span class="fn">evoclaw</span> start</pre></div>
+    </div>
+    <p>EvoClaw will automatically collect conversations, score them with the PRM, and trigger LoRA training on Tinker when enough data is buffered.</p>
+
+    <h3>How It Works</h3>
+    <div class="features-grid">
+      <div class="feat">
+        <span class="feat-icon">☁️</span>
+        <div class="feat-title">No GPU Needed</div>
+        <div class="feat-text">All training runs on Tinker cloud. Your machine only needs a network connection.</div>
+        <span class="feat-tag">CLOUD</span>
+      </div>
+      <div class="feat">
+        <span class="feat-icon">🔄</span>
+        <div class="feat-title">Auto-Triggered</div>
+        <div class="feat-text">Training fires automatically when the conversation buffer reaches the threshold.</div>
+        <span class="feat-tag">AUTOMATIC</span>
+      </div>
+      <div class="feat">
+        <span class="feat-icon">🔥</span>
+        <div class="feat-title">Hot-Swap Weights</div>
+        <div class="feat-text">New LoRA weights are loaded without restarting the proxy. Zero downtime.</div>
+        <span class="feat-tag">LIVE</span>
+      </div>
+    </div>
+
+    <h3>Configuration</h3>
+    <div class="code-block">
+      <div class="cb-bar"><span class="cb-lang">json</span></div>
+      <div class="cb-body"><pre>{
+  <span class="st">"tinker_api_key"</span>: <span class="st">"your_key_here"</span>,
+  <span class="st">"model"</span>: <span class="st">"moonshotai/Kimi-K2.5"</span>,
+  <span class="st">"lora_rank"</span>: <span class="kw">32</span>,
+  <span class="st">"train_every_n"</span>: <span class="kw">10</span>
+}</pre></div>
+    </div>
+
+    <footer class="footer">
   <div class="footer-inner">
     <div class="footer-brand">
       <a href="index.html" class="nav-logo"><img src="assets/logo.png" class="nav-logo-img" alt="EvoClaw"><span class="g">EVO</span>CLAW</a>
