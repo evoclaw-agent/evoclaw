@@ -464,14 +464,57 @@ html, body { overflow-x: hidden !important; max-width: 100vw !important; width: 
       <div class="step-card reveal">
         <div class="step-num">02</div>
         <div class="step-body">
-          <h3>Get a free Groq API key</h3>
-          <p>EvoClaw uses Groq to score and improve your agent. Completely free.</p>
-          <ol style="color:var(--muted);font-size:.85rem;line-height:2.2;padding-left:20px;margin-bottom:14px;">
-            <li>Open <a href="https://console.groq.com" target="_blank" style="color:var(--blue)">console.groq.com</a></li>
-            <li>Click <strong style="color:var(--text)">Sign Up</strong> and create free account</li>
-            <li>Go to <strong style="color:var(--text)">API Keys</strong> &rarr; click <strong style="color:var(--text)">Create API Key</strong></li>
-            <li>Copy the key &mdash; it starts with <span class="ic">gsk_...</span></li>
-          </ol>
+          <h3>Get an API key</h3>
+          <p>EvoClaw works with any OpenAI-compatible API. Pick the one that fits you:</p>
+
+          <!-- Provider cards -->
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:16px;">
+
+            <div style="background:var(--bg);border:1px solid var(--green-b);border-radius:8px;padding:14px 16px;">
+              <div style="font-family:var(--mono);font-size:.6rem;color:var(--green);letter-spacing:.1em;margin-bottom:6px;">FREE &nbsp;★ RECOMMENDED</div>
+              <div style="font-weight:700;font-size:.9rem;margin-bottom:4px;">Groq</div>
+              <div style="font-size:.78rem;color:var(--muted);margin-bottom:10px;">Free tier. Very fast. Best for getting started.</div>
+              <a href="https://console.groq.com" target="_blank" style="font-family:var(--mono);font-size:.7rem;color:var(--blue);text-decoration:none;">console.groq.com →</a>
+              <div style="font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:6px;">Key starts with <span class="ic">gsk_</span></div>
+            </div>
+
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px 16px;">
+              <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.1em;margin-bottom:6px;">FREE MODELS AVAILABLE</div>
+              <div style="font-weight:700;font-size:.9rem;margin-bottom:4px;">OpenRouter</div>
+              <div style="font-size:.78rem;color:var(--muted);margin-bottom:10px;">Access 100+ models. Many free options.</div>
+              <a href="https://openrouter.ai/keys" target="_blank" style="font-family:var(--mono);font-size:.7rem;color:var(--blue);text-decoration:none;">openrouter.ai →</a>
+              <div style="font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:6px;">Key starts with <span class="ic">sk-or-</span></div>
+            </div>
+
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px 16px;">
+              <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.1em;margin-bottom:6px;">PAID</div>
+              <div style="font-weight:700;font-size:.9rem;margin-bottom:4px;">OpenAI</div>
+              <div style="font-size:.78rem;color:var(--muted);margin-bottom:10px;">GPT-4o, GPT-4o-mini and more.</div>
+              <a href="https://platform.openai.com/api-keys" target="_blank" style="font-family:var(--mono);font-size:.7rem;color:var(--blue);text-decoration:none;">platform.openai.com →</a>
+              <div style="font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:6px;">Key starts with <span class="ic">sk-</span></div>
+            </div>
+
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px 16px;">
+              <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.1em;margin-bottom:6px;">PAID</div>
+              <div style="font-weight:700;font-size:.9rem;margin-bottom:4px;">Anthropic</div>
+              <div style="font-size:.78rem;color:var(--muted);margin-bottom:10px;">Claude models. High quality responses.</div>
+              <a href="https://console.anthropic.com" target="_blank" style="font-family:var(--mono);font-size:.7rem;color:var(--blue);text-decoration:none;">console.anthropic.com →</a>
+              <div style="font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:6px;">Key starts with <span class="ic">sk-ant-</span></div>
+            </div>
+
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px 16px;">
+              <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.1em;margin-bottom:6px;">PAID</div>
+              <div style="font-weight:700;font-size:.9rem;margin-bottom:4px;">Together AI</div>
+              <div style="font-size:.78rem;color:var(--muted);margin-bottom:10px;">Open source models. $25 free credits.</div>
+              <a href="https://api.together.xyz" target="_blank" style="font-family:var(--mono);font-size:.7rem;color:var(--blue);text-decoration:none;">api.together.xyz →</a>
+              <div style="font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:6px;">Key starts with <span class="ic">tog-</span></div>
+            </div>
+
+          </div>
+
+          <p style="font-size:.82rem;background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.15);border-radius:6px;padding:10px 14px;color:var(--text)">
+            <strong>Tip for beginners:</strong> Start with <strong>Groq</strong> — it is completely free and requires no credit card. You can switch to any other provider later by running <span class="ic">evoclaw init</span> again.
+          </p>
         </div>
       </div>
 
@@ -555,7 +598,7 @@ html, body { overflow-x: hidden !important; max-width: 100vw !important; width: 
         </div>
         <div>
           <div style="font-family:var(--mono);font-size:.75rem;color:var(--green);margin-bottom:4px;">GROQ_API_KEY not set</div>
-          <div style="font-size:.82rem;color:var(--muted);">Run <span class="ic">evoclaw init</span> again and paste your key from <a href="https://console.groq.com" target="_blank" style="color:var(--blue)">console.groq.com</a></div>
+          <div style="font-size:.82rem;color:var(--muted);">Run <span class="ic">evoclaw init</span> again and paste your API key. Get a free one at <a href="https://console.groq.com" target="_blank" style="color:var(--blue)">console.groq.com</a> or use any OpenAI-compatible provider.</div>
         </div>
         <div>
           <div style="font-family:var(--mono);font-size:.75rem;color:var(--green);margin-bottom:4px;">Tinker init error: billing</div>
