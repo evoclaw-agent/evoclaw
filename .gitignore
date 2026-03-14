@@ -1,0 +1,10 @@
+
+fix_*.py
+check_*.py
+add_*.py
+verify_*.py
+status_*.py
+fixdocs*.py
+emergency_*.py
+*.pyc
+__pycache__/
