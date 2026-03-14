@@ -837,9 +837,28 @@ html, body {
           <div class="error-banner" id="keyError">Invalid API key. Please check and try again.</div>
 
           <div class="field">
-            <label>GROQ API KEY</label>
-            <input type="password" id="apiKeyInput" placeholder="gsk_xxxxxxxxxxxxxxxxxxxx" autocomplete="off"/>
-            <div class="hint">Get your free key at <a href="https://console.groq.com" target="_blank">console.groq.com</a> — free tier: 14,400 requests/day</div>
+            <label id="pgApiLabel">API KEY</label>
+
+            <!-- Provider dropdown -->
+            <select id="pgProviderSelect" onchange="pgOnProviderChange()" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:.72rem;padding:8px 10px;outline:none;cursor:pointer;margin-bottom:8px;">
+              <option value="groq"       data-url="https://api.groq.com/openai/v1"          data-ph="gsk_..."    data-label="Groq API Key"       data-hint="Free · 14,400 req/day · console.groq.com">⚡ Groq (Free)</option>
+              <option value="openrouter" data-url="https://openrouter.ai/api/v1"             data-ph="sk-or-..."  data-label="OpenRouter API Key" data-hint="Free models available · openrouter.ai">🔀 OpenRouter (Free models)</option>
+              <option value="openai"     data-url="https://api.openai.com/v1"                data-ph="sk-..."     data-label="OpenAI API Key"     data-hint="GPT-4o, GPT-4o-mini · platform.openai.com">🤖 OpenAI</option>
+              <option value="anthropic"  data-url="https://api.anthropic.com/v1"             data-ph="sk-ant-..." data-label="Anthropic API Key"  data-hint="Claude models · console.anthropic.com">🧠 Anthropic</option>
+              <option value="together"   data-url="https://api.together.xyz/v1"              data-ph="tog-..."    data-label="Together AI Key"    data-hint="$25 free credits · api.together.xyz">🤝 Together AI</option>
+              <option value="mistral"    data-url="https://api.mistral.ai/v1"                data-ph="..."        data-label="Mistral API Key"    data-hint="Mistral models · console.mistral.ai">🌊 Mistral</option>
+              <option value="deepseek"   data-url="https://api.deepseek.com/v1"              data-ph="sk-..."     data-label="DeepSeek API Key"   data-hint="Very affordable · platform.deepseek.com">🔮 DeepSeek</option>
+              <option value="custom"     data-url=""                                          data-ph="sk-..."     data-label="API Key"            data-hint="Any OpenAI-compatible endpoint">⚙️ Custom endpoint</option>
+            </select>
+
+            <!-- Custom URL (only for custom) -->
+            <div id="pgCustomUrlRow" style="display:none;margin-bottom:8px;">
+              <input type="text" id="pgCustomUrl" placeholder="https://your-api.com/v1"
+                style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:.72rem;padding:8px 10px;outline:none;"/>
+            </div>
+
+            <input type="password" id="apiKeyInput" placeholder="gsk_..." autocomplete="off"/>
+            <div class="hint" id="pgApiHint">Free · 14,400 req/day · <a href="https://console.groq.com" target="_blank">console.groq.com</a></div>
           </div>
 
           <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:24px;">
@@ -1476,6 +1495,49 @@ html, body {
     a.addEventListener('click', closeMenu);
   });
 })();
+
+  // ── Playground multi-provider ──
+  function pgOnProviderChange() {
+    var sel = document.getElementById('pgProviderSelect');
+    if (!sel) return;
+    var opt = sel.options[sel.selectedIndex];
+    var label = opt.getAttribute('data-label') || 'API Key';
+    var ph    = opt.getAttribute('data-ph') || 'sk-...';
+    var url   = opt.getAttribute('data-url') || '';
+    var hint  = opt.getAttribute('data-hint') || '';
+    var isCustom = sel.value === 'custom';
+
+    var labelEl = document.getElementById('pgApiLabel');
+    if (labelEl) labelEl.textContent = label;
+
+    var input = document.getElementById('apiKeyInput');
+    if (input) input.placeholder = ph;
+
+    var hintEl = document.getElementById('pgApiHint');
+    if (hintEl) hintEl.textContent = hint;
+
+    var customRow = document.getElementById('pgCustomUrlRow');
+    if (customRow) customRow.style.display = isCustom ? 'block' : 'none';
+
+    // Store API URL for requests
+    window._pgApiUrl = isCustom
+      ? (document.getElementById('pgCustomUrl') || {}).value || ''
+      : url;
+
+    localStorage.setItem('pg_provider', sel.value);
+    localStorage.setItem('pg_api_url', window._pgApiUrl);
+
+    // Load saved key
+    var savedKey = localStorage.getItem('pg_key_' + sel.value) || '';
+    if (input) input.value = savedKey;
+  }
+
+  // Restore on load
+  document.addEventListener('DOMContentLoaded', function() {
+    var saved = localStorage.getItem('pg_provider') || 'groq';
+    var sel = document.getElementById('pgProviderSelect');
+    if (sel) { sel.value = saved; pgOnProviderChange(); }
+  });
 </script>
 </body>
 </html>
