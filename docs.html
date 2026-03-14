@@ -483,8 +483,7 @@ You are a helpful AI assistant.
 
     <h3>Production setup with systemd</h3>
     <div class="code-block">
-      <div class="cb-bar"><span class="cb-lang">bash</span><button class="cb-copy" onclick="copyCode(this)">COPY</button>
-      <button class="sb-link" onclick="docNav('lora-training')"><span class="sb-dot"></span>LoRA Training</button></div>
+      <div class="cb-bar"><span class="cb-lang">bash</span><button class="cb-copy" onclick="copyCode(this)">COPY</button></div>
       <div class="cb-body"><pre><span class="cm"># /etc/systemd/system/evoclaw.service</span>
 [Unit]
 Description=EvoClaw Self-Evolving Agent
@@ -494,7 +493,7 @@ After=network.target
 User=ubuntu
 WorkingDirectory=/opt/evoclaw
 Environment=<span class="st">"TINKER_API_KEY=your_key_here"</span>
-ExecStart=/usr/bin/python3 examples/run_with_skills.py
+ExecStart=/usr/bin/evoclaw start
 Restart=always
 RestartSec=5
 
