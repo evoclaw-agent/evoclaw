@@ -1161,6 +1161,89 @@ html, body {
 
 <!-- ── QUICK START ── -->
 <hr class="div"/>
+
+<!-- ── LORA TRAINING ── -->
+<hr class="div"/>
+<section class="section section-alt" id="lora-training">
+  <div class="container">
+    <div class="section-divider reveal"><span>LORA TRAINING</span></div>
+    <h2 class="section-title reveal">Cloud LoRA training — <strong>fully automatic.</strong></h2>
+    <p class="section-sub reveal">Every conversation trains your model. EvoClaw batches turns, submits to <a href="https://www.thinkingmachines.ai/tinker/" target="_blank" style="color:var(--green)">Tinker cloud</a>, and hot-swaps updated weights — all in the background. No GPU, no downtime, no manual steps.</p>
+
+    <div class="features-grid reveal">
+      <div class="feat">
+        <span class="feat-icon">☁️</span>
+        <div class="feat-title">No GPU Required</div>
+        <p class="feat-text">Training runs entirely on Tinker cloud. Any machine with network access can run the full pipeline.</p>
+        <span class="feat-tag">CLOUD-NATIVE</span>
+      </div>
+      <div class="feat">
+        <span class="feat-icon">🔄</span>
+        <div class="feat-title">Hot-Swap Weights</div>
+        <p class="feat-text">New LoRA weights replace old ones automatically after each step. Zero downtime, zero restarts.</p>
+        <span class="feat-tag">ZERO DOWNTIME</span>
+      </div>
+      <div class="feat">
+        <span class="feat-icon">🌙</span>
+        <div class="feat-title">Kimi-K2.5</div>
+        <p class="feat-text">Same model as MetaClaw. ~200B MoE, best reasoning and long context. $4.40/M tokens on Tinker.</p>
+        <span class="feat-tag">SAME AS METACLAW</span>
+      </div>
+      <div class="feat">
+        <span class="feat-icon">⚡</span>
+        <div class="feat-title">Qwen3-4B Free</div>
+        <p class="feat-text">Lightweight alternative on Tinker free tier. Great for development and constrained budgets.</p>
+        <span class="feat-tag">FREE TIER</span>
+      </div>
+      <div class="feat">
+        <span class="feat-icon">📊</span>
+        <div class="feat-title">GRPO + OPD</div>
+        <p class="feat-text">Two learning modes — Reinforcement Learning (GRPO) or On-Policy Distillation. One config field.</p>
+        <span class="feat-tag">DUAL MODE</span>
+      </div>
+      <div class="feat">
+        <span class="feat-icon">💰</span>
+        <div class="feat-title">Pay Per Use</div>
+        <p class="feat-text">No subscription. Top up Tinker balance and pay only for actual training compute. Start from $5.</p>
+        <span class="feat-tag">FROM $5</span>
+      </div>
+    </div>
+
+    <div class="section-divider reveal" style="margin-top:48px;"><span>HOW TO USE LORA</span></div>
+    <h3 class="section-title reveal" style="font-size:1.2rem;margin-bottom:1.5rem;">Set up in <strong>3 steps.</strong></h3>
+
+    <div class="list reveal">
+      <div class="list-row">
+        <div class="list-n">01</div>
+        <div class="list-c">
+          <div class="list-title">Get your Tinker API Key</div>
+          <div class="list-desc">Sign up at <a href="https://tinker-console.thinkingmachines.ai" target="_blank" style="color:var(--green)">tinker-console.thinkingmachines.ai</a> &rarr; API Keys &rarr; Create API Key. Copy the key starting with <code>tm1-...</code>. Top up at least <strong>$5</strong> under Billing &rarr; Add to balance.</div>
+        </div>
+      </div>
+      <div class="list-row">
+        <div class="list-n">02</div>
+        <div class="list-c">
+          <div class="list-title">Run evoclaw init</div>
+          <div class="list-desc">Run <code>evoclaw init</code> in terminal. Paste your Groq key (free at <a href="https://console.groq.com" target="_blank" style="color:var(--green)">console.groq.com</a>), then your Tinker key. Choose model <strong>3 — Kimi-K2.5</strong> for best results, or model 1 — Qwen3-4B for free tier.</div>
+        </div>
+      </div>
+      <div class="list-row">
+        <div class="list-n">03</div>
+        <div class="list-c">
+          <div class="list-title">Start proxy — LoRA trains automatically</div>
+          <div class="list-desc">Run <code>evoclaw start</code>. You will see <code>Tinker: ✅ connected</code>. Point your OpenAI client to <code>http://localhost:8080/v1</code> and chat normally. Every 32 conversations, EvoClaw auto-submits a LoRA job and hot-swaps the new weights.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btns reveal" style="margin-top:2rem;">
+      <a href="https://tinker-console.thinkingmachines.ai" target="_blank" class="btn btn-g">Get Tinker API Key &rarr;</a>
+      <a href="install.html" class="btn btn-o">Full Install Guide &rarr;</a>
+      <a href="docs.html#lora-training" class="btn btn-o">LoRA Docs &rarr;</a>
+    </div>
+  </div>
+</section>
+
 <section class="section section-alt">
   <div class="container">
     <div class="section-divider reveal"><span>QUICK START</span></div>
@@ -1198,107 +1281,7 @@ html, body {
 <hr class="div"/>
 <section class="section-sm">
   <div class="container">
-    <div class="section-divider reveal"><span>
-<!-- LORA TRAINING SECTION -->
-<section class="section" id="lora-training">
-  <div class="container">
-    <div class="section-divider reveal"><span>LORA TRAINING</span></div>
-    <h2 class="section-title reveal">Cloud LoRA training — <strong>fully automatic.</strong></h2>
-    <p class="section-sub reveal">
-      Every conversation trains your model. EvoClaw batches turns, submits to
-      <a href="https://www.thinkingmachines.ai/tinker/" target="_blank" style="color:var(--green)">Tinker cloud</a>,
-      and hot-swaps updated weights — all in the background. No GPU, no downtime, no manual steps.
-    </p>
-
-    <div class="features-grid reveal">
-      <div class="feat">
-        <span class="feat-icon">☁️</span>
-        <div class="feat-title">No GPU Required</div>
-        <div class="feat-text">Training runs entirely on Tinker cloud. Any machine with network access can run the full EvoClaw pipeline.</div>
-        <span class="feat-tag">CLOUD-NATIVE</span>
-      </div>
-      <div class="feat">
-        <span class="feat-icon">🔄</span>
-        <div class="feat-title">Hot-Swap Weights</div>
-        <div class="feat-text">New LoRA weights replace old ones automatically after each training step. Zero downtime, zero restarts.</div>
-        <span class="feat-tag">ZERO DOWNTIME</span>
-      </div>
-      <div class="feat">
-        <span class="feat-icon">🌙</span>
-        <div class="feat-title">Kimi-K2.5</div>
-        <div class="feat-text">Same model as MetaClaw. ~200B MoE, best reasoning, long context. $4.40/M tokens on Tinker.</div>
-        <span class="feat-tag">SAME AS METACLAW</span>
-      </div>
-      <div class="feat">
-        <span class="feat-icon">⚡</span>
-        <div class="feat-title">Qwen3-4B Free Tier</div>
-        <div class="feat-text">Lightweight alternative on Tinker free tier. Great for development, testing, and constrained budgets.</div>
-        <span class="feat-tag">FREE TIER</span>
-      </div>
-      <div class="feat">
-        <span class="feat-icon">📊</span>
-        <div class="feat-title">GRPO + OPD</div>
-        <div class="feat-text">Two learning modes — Reinforcement Learning (GRPO) or On-Policy Distillation (OPD). One config field to switch.</div>
-        <span class="feat-tag">DUAL MODE</span>
-      </div>
-      <div class="feat">
-        <span class="feat-icon">💰</span>
-        <div class="feat-title">Pay Per Use</div>
-        <div class="feat-text">No subscription. Top up Tinker balance and pay only for actual training compute. Start from $5.</div>
-        <span class="feat-tag">FROM $5</span>
-      </div>
-    </div>
-
-    <div class="section-divider reveal" style="margin-top:52px;"><span>HOW TO USE LORA</span></div>
-    <h3 class="section-title reveal" style="font-size:1.3rem;">Set up LoRA training <strong>in 3 steps.</strong></h3>
-
-    <div class="list reveal" style="margin-top:1.5rem;">
-      <div class="list-row">
-        <div class="list-n">01</div>
-        <div class="list-c">
-          <div class="list-title">Get your Tinker API Key</div>
-          <div class="list-desc">
-            Sign up at <a href="https://tinker-console.thinkingmachines.ai" target="_blank" style="color:var(--green)">tinker-console.thinkingmachines.ai</a>
-            &rarr; go to <strong>API Keys</strong> &rarr; click <strong>Create API Key</strong>.
-            Copy the key starting with <code>tm1-...</code>. Then top up at least <strong>$5</strong> under
-            <strong>Billing &rarr; Add to balance</strong>.
-          </div>
-        </div>
-      </div>
-      <div class="list-row">
-        <div class="list-n">02</div>
-        <div class="list-c">
-          <div class="list-title">Run evoclaw init and paste your keys</div>
-          <div class="list-desc">
-            Run <code>evoclaw init</code> in your terminal. When prompted, paste your Groq API key (free at
-            <a href="https://console.groq.com" target="_blank" style="color:var(--green)">console.groq.com</a>),
-            then your Tinker API key. Choose <strong>model 3 — moonshotai/Kimi-K2.5</strong> for best results
-            (same as MetaClaw), or model 1 — Qwen3-4B for free tier.
-          </div>
-        </div>
-      </div>
-      <div class="list-row">
-        <div class="list-n">03</div>
-        <div class="list-c">
-          <div class="list-title">Start the proxy and chat — LoRA trains automatically</div>
-          <div class="list-desc">
-            Run <code>evoclaw start</code>. You will see <code>Tinker: connected</code> in the output.
-            Point your OpenAI client to <code>http://localhost:8080/v1</code> and chat normally.
-            Every <code>32 conversations</code>, EvoClaw automatically submits a LoRA training job to Tinker
-            and hot-swaps the updated weights. Your agent improves with every conversation.
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="btns reveal" style="margin-top:2rem;">
-      <a href="https://tinker-console.thinkingmachines.ai" target="_blank" class="btn btn-g">Get Tinker API Key &rarr;</a>
-      <a href="install.html" class="btn btn-o">Full Install Guide &rarr;</a>
-      <a href="docs.html#lora-training" class="btn btn-o">LoRA Docs &rarr;</a>
-    </div>
-  </div>
-</section>
-<hr class="div"/>
+    
 
 
 BUILT ON OPEN SOURCE</span></div>
