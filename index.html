@@ -1201,60 +1201,64 @@ html, body {
     <div class="section-divider reveal"><span>
 <!-- LORA TRAINING SECTION -->
 <hr class="div"/>
+<!-- LORA TRAINING SECTION -->
 <section class="section" id="lora-training">
-  <div class="section-inner">
+  <div class="container">
     <div class="section-divider reveal"><span>LORA TRAINING</span></div>
     <h2 class="section-title reveal">Continuous learning via <strong>cloud LoRA.</strong></h2>
     <p class="section-sub reveal">
-      EvoClaw automatically submits training jobs to <a href="https://www.thinkingmachines.ai/tinker/" target="_blank" style="color:var(--green)">Tinker cloud</a> — no GPU needed.
-      Every batch of conversations becomes a LoRA fine-tuning step. Updated weights hot-swap in with zero downtime.
+      EvoClaw automatically submits training jobs to
+      <a href="https://www.thinkingmachines.ai/tinker/" target="_blank" style="color:var(--green)">Tinker cloud</a>
+      — no GPU needed. Every <code>batch_size</code> conversations triggers a LoRA fine-tuning step.
+      Updated weights hot-swap in automatically. Zero downtime.
     </p>
 
-    <div class="feat-grid reveal" style="margin:2.5rem 0;">
-      <div class="feat">
-        <div class="feat-icon">☁️</div>
-        <div class="feat-label">NO GPU</div>
-        <p>Training runs entirely on Tinker cloud. Any machine with internet access can run the full EvoClaw pipeline.</p>
-        <span class="feat-tag">CLOUD-NATIVE</span>
+    <div class="g3 reveal">
+      <div class="cell">
+        <span class="cell-icon">☁️</span>
+        <div class="cell-title">No GPU Required</div>
+        <div class="cell-text">Training runs entirely on Tinker cloud. Any machine with network access can run the full EvoClaw pipeline.</div>
+        <span class="cell-tag">CLOUD-NATIVE</span>
       </div>
-      <div class="feat">
-        <div class="feat-icon">🔄</div>
-        <div class="feat-label">HOT-SWAP</div>
-        <p>New LoRA weights replace old ones automatically after each training step. Zero downtime, zero restarts.</p>
-        <span class="feat-tag">ZERO DOWNTIME</span>
+      <div class="cell">
+        <span class="cell-icon">🔄</span>
+        <div class="cell-title">Hot-Swap Weights</div>
+        <div class="cell-text">New LoRA weights replace old ones automatically after each training step. Zero downtime, zero restarts.</div>
+        <span class="cell-tag">ZERO DOWNTIME</span>
       </div>
-      <div class="feat">
-        <div class="feat-icon">🌙</div>
-        <div class="feat-label">KIMI-K2.5</div>
-        <p>Same model as MetaClaw. ~200B MoE, best reasoning, long context. $4.40/M tokens on Tinker.</p>
-        <span class="feat-tag">SAME AS METACLAW</span>
+      <div class="cell">
+        <span class="cell-icon">🌙</span>
+        <div class="cell-title">Kimi-K2.5</div>
+        <div class="cell-text">Same model as MetaClaw. ~200B MoE, best reasoning and long context. $4.40/M tokens on Tinker.</div>
+        <span class="cell-tag">SAME AS METACLAW</span>
       </div>
-      <div class="feat">
-        <div class="feat-icon">⚡</div>
-        <div class="feat-label">QWEN3-4B FREE</div>
-        <p>Lightweight alternative on Tinker free tier. Great for development, testing, and constrained budgets.</p>
-        <span class="feat-tag">FREE TIER</span>
+      <div class="cell">
+        <span class="cell-icon">⚡</span>
+        <div class="cell-title">Qwen3-4B Free Tier</div>
+        <div class="cell-text">Lightweight alternative available on Tinker free tier. Great for development and testing.</div>
+        <span class="cell-tag">FREE TIER</span>
       </div>
-      <div class="feat">
-        <div class="feat-icon">📊</div>
-        <div class="feat-label">GRPO + OPD</div>
-        <p>Two learning modes — Reinforcement Learning (GRPO) or On-Policy Distillation. One config field to switch.</p>
-        <span class="feat-tag">DUAL MODE</span>
+      <div class="cell">
+        <span class="cell-icon">📊</span>
+        <div class="cell-title">GRPO + OPD</div>
+        <div class="cell-text">Two learning modes — Reinforcement Learning (GRPO) or On-Policy Distillation. One config field to switch.</div>
+        <span class="cell-tag">DUAL MODE</span>
       </div>
-      <div class="feat">
-        <div class="feat-icon">💰</div>
-        <div class="feat-label">PAY PER USE</div>
-        <p>No subscription. Top up Tinker balance and pay only for actual training compute. Start from $5.</p>
-        <span class="feat-tag">FROM $5</span>
+      <div class="cell">
+        <span class="cell-icon">💰</span>
+        <div class="cell-title">Pay Per Use</div>
+        <div class="cell-text">No subscription. Top up Tinker balance and pay only for actual training compute. Start from $5.</div>
+        <span class="cell-tag">FROM $5</span>
       </div>
     </div>
 
-    <div style="text-align:center;margin-top:2rem;" class="reveal">
+    <div class="btns reveal" style="margin-top:2.5rem;">
       <a href="https://tinker-console.thinkingmachines.ai" target="_blank" class="btn btn-g">Get Tinker API Key →</a>
-      <a href="docs.html#lora-training" class="btn btn-o" style="margin-left:.8rem;">Read LoRA Docs →</a>
+      <a href="docs.html#lora-training" class="btn btn-o">Read LoRA Docs →</a>
     </div>
   </div>
 </section>
+<hr class="div"/>
 
 
 BUILT ON OPEN SOURCE</span></div>
