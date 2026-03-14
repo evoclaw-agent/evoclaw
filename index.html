@@ -1198,7 +1198,50 @@ html, body {
 <hr class="div"/>
 <section class="section-sm">
   <div class="container">
-    <div class="section-divider reveal"><span>BUILT ON OPEN SOURCE</span></div>
+    <div class="section-divider reveal"><span>
+<!-- LORA TRAINING SECTION -->
+<hr class="div"/>
+<section class="section" id="lora-training">
+  <div class="section-inner">
+    <div class="section-divider reveal"><span>LORA TRAINING</span></div>
+    <h2 class="section-title reveal">Continuous learning via <strong>cloud LoRA.</strong></h2>
+    <p class="section-sub reveal">
+      EvoClaw automatically submits training jobs to <a href="https://www.thinkingmachines.ai/tinker/" target="_blank" style="color:var(--green)">Tinker cloud</a> — no GPU needed.
+      Every batch of conversations becomes a LoRA fine-tuning step. Updated weights hot-swap in with zero downtime.
+    </p>
+
+    <div class="lora-grid reveal" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem;margin:2rem 0;">
+      <div class="feat-card" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.5rem;">
+        <div style="font-size:1.5rem;margin-bottom:.5rem;">☁️</div>
+        <div style="font-weight:700;color:var(--green);font-size:.8rem;letter-spacing:.1em;">NO GPU</div>
+        <div style="margin-top:.4rem;color:var(--text);font-size:.9rem;">Training runs entirely on Tinker cloud. Any machine with internet can run EvoClaw.</div>
+      </div>
+      <div class="feat-card" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.5rem;">
+        <div style="font-size:1.5rem;margin-bottom:.5rem;">🔄</div>
+        <div style="font-weight:700;color:var(--green);font-size:.8rem;letter-spacing:.1em;">HOT-SWAP</div>
+        <div style="margin-top:.4rem;color:var(--text);font-size:.9rem;">New weights replace old ones automatically after each training step. Zero downtime.</div>
+      </div>
+      <div class="feat-card" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.5rem;">
+        <div style="font-size:1.5rem;margin-bottom:.5rem;">🌙</div>
+        <div style="font-weight:700;color:var(--green);font-size:.8rem;letter-spacing:.1em;">KIMI-K2.5</div>
+        <div style="margin-top:.4rem;color:var(--text);font-size:.9rem;">Same model as MetaClaw. ~200B MoE, best reasoning, long context. $4.40/M tokens.</div>
+      </div>
+      <div class="feat-card" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.5rem;">
+        <div style="font-size:1.5rem;margin-bottom:.5rem;">⚡</div>
+        <div style="font-weight:700;color:var(--green);font-size:.8rem;letter-spacing:.1em;">QWEN3-4B FREE</div>
+        <div style="margin-top:.4rem;color:var(--text);font-size:.9rem;">Lightweight alternative. Free tier on Tinker. Great for development and testing.</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:1.5rem;">
+      <a href="https://tinker-console.thinkingmachines.ai" target="_blank" class="btn btn-g">Get Tinker API Key →</a>
+      <a href="docs.html#lora-training" class="btn btn-o" style="margin-left:.8rem;">Read LoRA Docs →</a>
+    </div>
+  </div>
+</section>
+
+
+BUILT ON OPEN SOURCE</span></div>
     <div class="acks reveal">
       <a href="https://openclaw.ai" target="_blank">
         <div class="ack"><span class="ack-icon">🦀</span><div class="ack-name">OpenClaw</div><div class="ack-desc">Core agent framework</div></div>

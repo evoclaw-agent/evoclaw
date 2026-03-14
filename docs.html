@@ -129,7 +129,125 @@
     </div>
     <div class="sb-section">
       <div class="sb-section-title">Guides</div>
-      <button class="sb-link" onclick="navTo('deploy',this)"><span class="sb-dot"></span>Deployment Guide</button>
+      <button class="sb-link" onclick="navTo('deploy',this)"><span class="sb-dot"></span>
+<!-- LoRA TRAINING -->
+<section class="section" id="lora-training">
+  <div class="section-inner">
+    <div class="section-divider reveal"><span>LORA TRAINING</span></div>
+    <h2 class="section-title reveal">Cloud LoRA Training <strong>via Tinker</strong></h2>
+    <p class="section-sub reveal">
+      EvoClaw offloads all training to <a href="https://www.thinkingmachines.ai/tinker/" target="_blank">Tinker cloud</a> — no GPU required on your end.
+      Every <code>batch_size</code> conversations, a LoRA fine-tuning job is submitted automatically.
+      Updated weights are hot-swapped into the live server with zero downtime.
+    </p>
+
+    <div class="doc-block reveal">
+      <h3>How it works</h3>
+      <ol class="doc-steps">
+        <li><strong>Intercept</strong> — Every conversation turn passes through the EvoClaw proxy.</li>
+        <li><strong>Score</strong> — PRM scores each turn (0.0–1.0) via a judge LLM.</li>
+        <li><strong>Buffer</strong> — Turns accumulate until <code>batch_size</code> is reached (default: 32).</li>
+        <li><strong>Train</strong> — Batch is submitted to Tinker for LoRA fine-tuning on your chosen model.</li>
+        <li><strong>Hot-swap</strong> — New weights replace old ones automatically. No restart needed.</li>
+      </ol>
+    </div>
+
+    <div class="doc-block reveal">
+      <h3>Setup Tinker API Key</h3>
+      <p>Get your API key at <a href="https://tinker-console.thinkingmachines.ai" target="_blank">tinker-console.thinkingmachines.ai</a> then run:</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+        <pre><code><span class="cm"># Option 1 — via evoclaw init (recommended)</span>
+evoclaw init
+<span class="cm"># Paste your Tinker API key when prompted</span>
+
+<span class="cm"># Option 2 — via environment variable</span>
+<span class="kw">export</span> TINKER_API_KEY=<span class="str">"tm1-xxxxxxxxxxxxxxxxxxxx"</span></code></pre>
+      </div>
+    </div>
+
+    <div class="doc-block reveal">
+      <h3>Supported Models &amp; Pricing</h3>
+      <table class="doc-table">
+        <thead>
+          <tr>
+            <th>MODEL</th>
+            <th>SIZE</th>
+            <th>TRAIN COST</th>
+            <th>USE CASE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>moonshotai/Kimi-K2.5</code></td>
+            <td>~200B MoE</td>
+            <td>$4.40 / M tokens</td>
+            <td>Best quality — same as MetaClaw ⭐</td>
+          </tr>
+          <tr>
+            <td><code>deepseek/DeepSeek-V3.1</code></td>
+            <td>671B MoE</td>
+            <td>$3.38 / M tokens</td>
+            <td>Near Kimi quality, ~25% cheaper</td>
+          </tr>
+          <tr>
+            <td><code>Qwen/Qwen3-32B</code></td>
+            <td>32B</td>
+            <td>$1.47 / M tokens</td>
+            <td>Best value for production</td>
+          </tr>
+          <tr>
+            <td><code>Qwen/Qwen3-4B</code></td>
+            <td>4B</td>
+            <td>$0.22 / M tokens</td>
+            <td>Lightweight, development &amp; testing</td>
+          </tr>
+          <tr>
+            <td><code>meta-llama/Llama-3.2-1B</code></td>
+            <td>1B</td>
+            <td>$0.09 / M tokens</td>
+            <td>Ultra-cheap, high volume</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="hint">💡 With $10 on Tinker + Kimi-K2.5: ~70 training batches (~2,240 conversations). With Qwen3-4B: ~1,400 batches.</p>
+    </div>
+
+    <div class="doc-block reveal">
+      <h3>Config Example</h3>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+        <pre><code><span class="kw">from</span> evoclaw <span class="kw">import</span> EvoClawConfig
+
+config = EvoClawConfig(
+    model_name=<span class="str">"moonshotai/Kimi-K2.5"</span>,  <span class="cm"># Tinker model</span>
+    lora_rank=<span class="num">32</span>,                        <span class="cm"># LoRA rank</span>
+    batch_size=<span class="num">32</span>,                       <span class="cm"># Turns per training step</span>
+    loss_fn=<span class="str">"importance_sampling"</span>,        <span class="cm"># or "ppo", "cispo"</span>
+    use_prm=<span class="kw">True</span>,                         <span class="cm"># Score every turn</span>
+    use_skills=<span class="kw">True</span>,                      <span class="cm"># Inject skills</span>
+    enable_skill_evolution=<span class="kw">True</span>,          <span class="cm"># Auto-generate skills</span>
+)</code></pre>
+      </div>
+    </div>
+
+    <div class="doc-block reveal">
+      <h3>Get Tinker API Key</h3>
+      <ol class="doc-steps">
+        <li>Buka <a href="https://tinker-console.thinkingmachines.ai/auth/sign-up" target="_blank">tinker-console.thinkingmachines.ai</a> → Sign up</li>
+        <li>Masuk ke <strong>API Keys</strong> → klik <strong>Create API Key</strong></li>
+        <li>Copy key yang diawali <code>tm1-...</code></li>
+        <li>Top up balance minimal $5 di <strong>Billing</strong> → <strong>Add to balance</strong></li>
+        <li>Jalankan <code>evoclaw init</code> dan paste key saat diminta</li>
+      </ol>
+      <a href="https://tinker-console.thinkingmachines.ai" target="_blank" class="btn btn-g" style="margin-top:1rem;display:inline-block;">Get Tinker API Key →</a>
+    </div>
+
+  </div>
+</section>
+
+
+Deployment Guide</button>
       <button class="sb-link" onclick="navTo('troubleshoot',this)"><span class="sb-dot"></span>Troubleshooting</button>
       <button class="sb-link" onclick="navTo('faq',this)"><span class="sb-dot"></span>FAQ</button>
       <button class="sb-link" onclick="navTo('changelog',this)"><span class="sb-dot"></span>Changelog</button>
