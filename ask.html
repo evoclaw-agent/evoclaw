@@ -138,7 +138,7 @@
       <div class="side-title">🔑 API Key</div>
       <div id="providerLabel" style="font-family:var(--mono);font-size:.62rem;color:var(--muted);margin-bottom:6px">Groq API Key</div>
       <div class="api-key-row">
-        <input class="api-key-input" id="apiKeyInput" type="password" placeholder="gsk_..." />
+        <input class="api-key-input" id="apiKeyInput" type="password" id="apiKeyInput" placeholder="gsk_..."  />
         <button class="api-save-btn" onclick="saveKey()">SAVE</button>
       </div>
       <div class="api-status" id="apiStatus" style="color:var(--dim)">No key saved</div>
@@ -360,6 +360,93 @@ async function sendMsg() {
 
 window.addEventListener('scroll', function(){ document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 10); });
 onProviderChange();
+
+  // ── Multi-provider support ──
+  function onProviderChange() {
+    const sel = document.getElementById('providerSelect');
+    const opt = sel.options[sel.selectedIndex];
+    const label = opt.getAttribute('data-label');
+    const ph    = opt.getAttribute('data-ph');
+    const url   = opt.getAttribute('data-url');
+    const isFree = opt.getAttribute('data-free') === 'true';
+    const isCustom = sel.value === 'custom';
+
+    // Update label + placeholder
+    const labelEl = document.getElementById('apiKeyLabel');
+    if (labelEl) labelEl.textContent = label;
+    const input = document.getElementById('apiKeyInput');
+    if (input) input.placeholder = ph;
+
+    // Show/hide custom URL row
+    const customRow = document.getElementById('customUrlRow');
+    if (customRow) customRow.style.display = isCustom ? 'block' : 'none';
+
+    // Update "get free key" link
+    const getKeyLink = document.getElementById('getKeyLink');
+    if (getKeyLink) {
+      const links = {
+        groq:       { href: 'https://console.groq.com',            text: 'get free key →' },
+        openrouter: { href: 'https://openrouter.ai/keys',          text: 'get free key →' },
+        openai:     { href: 'https://platform.openai.com/api-keys', text: 'get key →' },
+        anthropic:  { href: 'https://console.anthropic.com',       text: 'get key →' },
+        together:   { href: 'https://api.together.xyz',            text: '$25 free →' },
+        mistral:    { href: 'https://console.mistral.ai',          text: 'get key →' },
+        custom:     { href: '#',                                    text: '' },
+      };
+      const info = links[sel.value] || { href: '#', text: '' };
+      getKeyLink.href = info.href;
+      getKeyLink.textContent = info.text;
+      getKeyLink.style.display = info.text ? 'inline' : 'none';
+    }
+
+    // Store selected provider
+    localStorage.setItem('evoclaw_provider', sel.value);
+    localStorage.setItem('evoclaw_api_url', isCustom ? '' : url);
+
+    // Load saved key for this provider
+    const savedKey = localStorage.getItem('evoclaw_key_' + sel.value) || '';
+    if (input) {
+      input.value = savedKey;
+      const status = document.getElementById('apiKeyStatus');
+      if (status) status.textContent = savedKey ? 'Key saved ✓' : 'No key saved';
+    }
+  }
+
+  function saveApiKey() {
+    const sel = document.getElementById('providerSelect');
+    const input = document.getElementById('apiKeyInput');
+    const key = input ? input.value.trim() : '';
+    const provider = sel ? sel.value : 'groq';
+
+    if (!key) {
+      const s = document.getElementById('apiKeyStatus');
+      if (s) s.textContent = 'Please enter a key first';
+      return;
+    }
+
+    localStorage.setItem('evoclaw_key_' + provider, key);
+    localStorage.setItem('evoclaw_api_key', key);
+
+    // Save custom URL if needed
+    if (provider === 'custom') {
+      const urlInput = document.getElementById('customUrlInput');
+      if (urlInput) localStorage.setItem('evoclaw_api_url', urlInput.value.trim());
+    }
+
+    const s = document.getElementById('apiKeyStatus');
+    if (s) { s.textContent = 'Key saved ✓'; s.style.color = 'var(--green)'; }
+  }
+
+  // Restore provider on load
+  window.addEventListener('DOMContentLoaded', function() {
+    const savedProvider = localStorage.getItem('evoclaw_provider') || 'groq';
+    const sel = document.getElementById('providerSelect');
+    if (sel) {
+      sel.value = savedProvider;
+      onProviderChange();
+    }
+  });
+
 </script>
 </body>
 </html>
