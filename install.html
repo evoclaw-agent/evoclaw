@@ -419,6 +419,158 @@ html, body { overflow-x: hidden !important; max-width: 100vw !important; width: 
 
 <hr class="div"/>
 
+
+<hr class="div"/>
+
+<!-- BEGINNER GUIDE -->
+<section class="section">
+  <div class="container">
+    <div class="section-divider reveal"><span>BEGINNER GUIDE</span></div>
+    <h2 class="section-title reveal">New to EvoClaw? <b>Start here.</b></h2>
+    <p class="section-sub reveal">Never used a Python package before? No problem. Follow these steps and you will have EvoClaw running in under 5 minutes.</p>
+
+    <div class="steps-grid">
+
+      <div class="step-card reveal">
+        <div class="step-num">00</div>
+        <div class="step-body">
+          <h3>Check Python version</h3>
+          <p>EvoClaw requires Python 3.10 or newer. Open terminal and run:</p>
+          <div class="qs-panel" style="margin-bottom:8px">
+            <div class="qs-body" style="padding:14px 20px">
+              <div><span class="dim">$</span> <span class="fn">python</span> --version</div>
+              <div><span class="cm"># Should show: Python 3.10 or higher</span></div>
+            </div>
+          </div>
+          <p>Not installed? Download from <a href="https://python.org" target="_blank" style="color:var(--blue)">python.org</a> — check <strong>Add Python to PATH</strong> during install.</p>
+        </div>
+      </div>
+
+      <div class="step-card reveal">
+        <div class="step-num">01</div>
+        <div class="step-body">
+          <h3>Install EvoClaw</h3>
+          <p>Open Command Prompt (Windows) or Terminal (Mac/Linux) and run:</p>
+          <div class="qs-panel" style="margin-bottom:8px">
+            <div class="qs-body" style="padding:14px 20px">
+              <div><span class="dim">$</span> <span class="fn">pip</span> install evoclaw</div>
+              <div>&nbsp;</div>
+              <div><span class="st">Successfully installed evoclaw-0.2.1</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card reveal">
+        <div class="step-num">02</div>
+        <div class="step-body">
+          <h3>Get a free Groq API key</h3>
+          <p>EvoClaw uses Groq to score and improve your agent. Completely free.</p>
+          <ol style="color:var(--muted);font-size:.85rem;line-height:2.2;padding-left:20px;margin-bottom:14px;">
+            <li>Open <a href="https://console.groq.com" target="_blank" style="color:var(--blue)">console.groq.com</a></li>
+            <li>Click <strong style="color:var(--text)">Sign Up</strong> and create free account</li>
+            <li>Go to <strong style="color:var(--text)">API Keys</strong> &rarr; click <strong style="color:var(--text)">Create API Key</strong></li>
+            <li>Copy the key &mdash; it starts with <span class="ic">gsk_...</span></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="step-card reveal">
+        <div class="step-num">03</div>
+        <div class="step-body">
+          <h3>Run setup</h3>
+          <p>This saves your API key. You only need to do this once.</p>
+          <div class="qs-panel" style="margin-bottom:8px">
+            <div class="qs-body" style="padding:14px 20px">
+              <div><span class="dim">$</span> <span class="fn">evoclaw</span> init</div>
+              <div>&nbsp;</div>
+              <div><span class="st">EvoClaw Setup</span></div>
+              <div><span class="dim">  Groq API key:</span> <span class="st">gsk_xxxx</span> <span class="cm"># paste your key here</span></div>
+              <div><span class="dim">  Tinker API key:</span> <span class="cm"># press Enter to skip (optional)</span></div>
+              <div><span class="dim">  Model [1-3]:</span> <span class="st">1</span> <span class="cm"># type 1 for Qwen3-4B (recommended)</span></div>
+            </div>
+          </div>
+          <p style="font-size:.82rem;background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.15);border-radius:6px;padding:10px 14px;color:var(--text)">
+            Tinker API key is optional &mdash; press Enter to skip. EvoClaw still works with skill injection and PRM scoring without it.
+          </p>
+        </div>
+      </div>
+
+      <div class="step-card reveal">
+        <div class="step-num">04</div>
+        <div class="step-body">
+          <h3>Start EvoClaw</h3>
+          <p>Start the proxy. Keep this terminal window open while using EvoClaw.</p>
+          <div class="qs-panel" style="margin-bottom:8px">
+            <div class="qs-body" style="padding:14px 20px">
+              <div><span class="dim">$</span> <span class="fn">evoclaw</span> start</div>
+              <div>&nbsp;</div>
+              <div><span class="dim">  EvoClaw Proxy v0.2.1</span></div>
+              <div><span class="dim">  &rarr; localhost:</span><span class="st">8080</span></div>
+              <div><span class="dim">  &rarr; Skills: </span><span class="st">11 loaded</span></div>
+              <div><span class="st">  Agent is now self-evolving.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card reveal">
+        <div class="step-num">05</div>
+        <div class="step-body">
+          <h3>Test it works</h3>
+          <p>Open a <strong>new terminal window</strong> and run this Python code:</p>
+          <div class="qs-panel" style="margin-bottom:8px">
+            <div class="qs-body" style="padding:14px 20px">
+              <div><span class="cm"># Install OpenAI SDK first</span></div>
+              <div><span class="fn">pip</span> install openai</div>
+              <div>&nbsp;</div>
+              <div><span class="va">from</span> openai <span class="va">import</span> OpenAI</div>
+              <div>&nbsp;</div>
+              <div>client = OpenAI(</div>
+              <div>&nbsp;&nbsp;base_url=<span class="st">"http://localhost:8080/v1"</span>,</div>
+              <div>&nbsp;&nbsp;api_key=<span class="st">"any-string"</span>,</div>
+              <div>)</div>
+              <div>&nbsp;</div>
+              <div>response = client.chat.completions.create(</div>
+              <div>&nbsp;&nbsp;model=<span class="st">"llama-3.3-70b-versatile"</span>,</div>
+              <div>&nbsp;&nbsp;messages=[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="st">"Hello!"</span>}]</div>
+              <div>)</div>
+              <div>print(response.choices[0].message.content)</div>
+              <div><span class="cm"># EvoClaw learns from every conversation automatically</span></div>
+            </div>
+          </div>
+          <p>Every conversation now trains your agent. The more you chat, the smarter it gets.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Troubleshooting -->
+    <div style="margin-top:40px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:28px 32px;" class="reveal">
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:20px;">Common Issues</h3>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div>
+          <div style="font-family:var(--mono);font-size:.75rem;color:var(--green);margin-bottom:4px;">command not found: evoclaw</div>
+          <div style="font-size:.82rem;color:var(--muted);">Try: <span class="ic">python -m evoclaw init</span> instead, or reinstall with <span class="ic">pip install evoclaw</span></div>
+        </div>
+        <div>
+          <div style="font-family:var(--mono);font-size:.75rem;color:var(--green);margin-bottom:4px;">GROQ_API_KEY not set</div>
+          <div style="font-size:.82rem;color:var(--muted);">Run <span class="ic">evoclaw init</span> again and paste your key from <a href="https://console.groq.com" target="_blank" style="color:var(--blue)">console.groq.com</a></div>
+        </div>
+        <div>
+          <div style="font-family:var(--mono);font-size:.75rem;color:var(--green);margin-bottom:4px;">Tinker init error: billing</div>
+          <div style="font-size:.82rem;color:var(--muted);">Normal! Press Enter to skip Tinker during setup. Skill injection still works 100% for free.</div>
+        </div>
+        <div>
+          <div style="font-family:var(--mono);font-size:.75rem;color:var(--green);margin-bottom:4px;">Connection refused localhost:8080</div>
+          <div style="font-size:.82rem;color:var(--muted);">Make sure <span class="ic">evoclaw start</span> is running in a separate terminal window first.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
 <!-- CLI REFERENCE -->
 <section class="section">
   <div class="container">
