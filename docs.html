@@ -186,10 +186,7 @@
     <div class="code-block">
       <div class="cb-bar"><span class="cb-lang">bash</span><button class="cb-copy" onclick="copyCode(this)">COPY</button></div>
       <div class="cb-body"><pre><span class="cm"># Recommended: Kimi-2.5 (~200B MoE)</span>
-<span class="fn">bash</span> openclaw_model_kimi.sh
-
-<span class="cm"># Lightweight alternative: Qwen3-4B</span>
-<span class="fn">bash</span> openclaw_model_qwen.sh</pre></div>
+<span class="fn">evoclaw</span> init</pre></div>
     </div>
 
     <h3>Step 2 — Set your Tinker API key</h3>
@@ -203,16 +200,13 @@
     <div class="code-block">
       <div class="cb-bar"><span class="cb-lang">bash</span><button class="cb-copy" onclick="copyCode(this)">COPY</button></div>
       <div class="cb-body"><pre><span class="cm"># Basic RL training mode</span>
-<span class="fn">python</span> examples/run_conversation_rl.py
-
-<span class="cm"># With skills + evolution enabled</span>
-<span class="fn">python</span> examples/run_with_skills.py</pre></div>
+<span class="fn">evoclaw</span> start</pre></div>
     </div>
 
     <p>You should see output like:</p>
     <div class="code-block">
       <div class="cb-bar"><span class="cb-lang">output</span></div>
-      <div class="cb-body"><pre><span class="op">🦎 EvoClaw v0.1.0 starting...</span>
+      <div class="cb-body"><pre><span class="op">🦎 EvoClaw v0.2.1 starting...</span>
 <span class="cm">   → Model:       moonshotai/Kimi-2.5</span>
 <span class="cm">   → Proxy port:  30000</span>
 <span class="cm">   → Tinker URL:  http://localhost:8080</span>
@@ -471,8 +465,8 @@ You are a helpful AI assistant.
     <table class="param-table">
       <thead><tr><th>MODEL</th><th>SIZE</th><th>USE CASE</th><th>SCRIPT</th></tr></thead>
       <tbody>
-        <tr><td>moonshotai/Kimi-2.5</td><td>~200B MoE</td><td>Recommended. Best quality, long context, strong reasoning.</td><td>openclaw_model_kimi.sh</td></tr>
-        <tr><td>Qwen/Qwen3-4B</td><td>4B</td><td>Lightweight. Fast iteration, lower API costs, constrained environments.</td><td>openclaw_model_qwen.sh</td></tr>
+        <tr><td>moonshotai/Kimi-2.5</td><td>~200B MoE</td><td>Recommended. Best quality, long context, strong reasoning.</td><td>evoclaw init</td></tr>
+        <tr><td>Qwen/Qwen3-4B</td><td>4B</td><td>Lightweight. Fast iteration, lower API costs, constrained environments.</td><td>evoclaw init</td></tr>
         <tr><td>Any OpenAI-compatible</td><td>—</td><td>Set model_name to any Tinker-supported model identifier.</td><td>—</td></tr>
       </tbody>
     </table>
@@ -549,7 +543,7 @@ WantedBy=multi-user.target</pre></div>
     <h2 id="changelog">Changelog</h2>
 
     <div class="changelog-item latest">
-      <div class="cl-version">v0.1.0 — Initial Release</div>
+      <div class="cl-version">v0.2.1 — Initial Release</div>
       <div class="cl-date">March 2026</div>
       <ul>
         <li>Initial open-source release of EvoClaw</li>
