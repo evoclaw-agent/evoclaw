@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="apple-touch-icon" href="assets/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8"/>
+  <title>EvoClaw — Telegram & Discord Integration</title>
+  <meta name="description" content="Connect EvoClaw to Telegram and Discord. Your self-evolving AI agent, live in your favorite chat app."/>
+  <link rel="stylesheet" href="css/shared.css"/>
+  <style>
+    .hero-wrap {
+      padding-top: 58px;
+      min-height: 55vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 10% 50%, rgba(0,255,135,.05) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 90% 20%, rgba(0,196,255,.03) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-grid-line {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 80px 80px;
+      opacity: .25; pointer-events: none;
+    }
+    .hero-content { position: relative; z-index: 1; width: 100%; padding: 60px 0; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--green-d); border: 1px solid var(--green-b);
+      padding: 6px 14px; border-radius: var(--r);
+      font-family: var(--mono); font-size: .66rem; letter-spacing: .1em;
+      color: var(--green); margin-bottom: 32px;
+    }
+    .hero-badge::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green); animation: pulse 2s ease infinite;
+    }
+    .hero-title {
+      font-size: clamp(2.2rem, 4vw, 3.4rem); font-weight: 300;
+      letter-spacing: -.03em; line-height: 1.12; color: var(--text); margin-bottom: 6px;
+    }
+    .hero-title b { font-weight: 700; }
+    .hero-title-line2 {
+      font-size: clamp(2.2rem, 4vw, 3.4rem); font-weight: 700;
+      letter-spacing: -.03em; line-height: 1.12; color: var(--green);
+      margin-bottom: 24px; display: block;
+    }
+    .hero-desc {
+      font-size: 1rem; color: var(--muted); max-width: 520px;
+      line-height: 1.82; margin-bottom: 32px; font-weight: 300;
+    }
+
+    /* Platform tabs */
+    .platform-tabs {
+      display: flex;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      margin-bottom: 48px;
+      width: fit-content;
+    }
+    .ptab {
+      font-family: var(--mono);
+      font-size: .7rem;
+      letter-spacing: .08em;
+      padding: 12px 28px;
+      background: var(--bg2);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: none;
+    }
+    .ptab:hover { background: var(--surface); color: var(--text); }
+    .ptab.active { background: var(--green-d); color: var(--green); border-bottom: 2px solid var(--green); }
+    .ptab-icon { font-size: 1rem; }
+
+    /* Section tabs content */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Step cards */
+    .steps { display: flex; flex-direction: column; gap: 0; }
+    .step {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      background: var(--bg2);
+      transition: background .15s;
+    }
+    .step:first-child { border-radius: var(--r) var(--r) 0 0; }
+    .step:last-child { border-bottom: 1px solid var(--border); border-radius: 0 0 var(--r) var(--r); }
+    .step:hover { background: var(--surface); }
+
+    .step-num {
+      font-family: var(--mono);
+      font-size: .72rem;
+      color: var(--green);
+      font-weight: 700;
+      padding: 24px 0 24px 22px;
+      border-right: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      padding-top: 26px;
+    }
+    .step-body { padding: 22px 28px; }
+    .step-title {
+      font-size: .92rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .step-desc {
+      font-size: .82rem;
+      color: var(--muted);
+      line-height: 1.75;
+      font-weight: 300;
+      margin-bottom: 14px;
+    }
+    .step-desc:last-child { margin-bottom: 0; }
+
+    /* Code blocks */
+    .code-block {
+      background: #030508;
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      margin-top: 12px;
+    }
+    .code-bar {
+      background: var(--surface);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .code-lang {
+      font-family: var(--mono);
+      font-size: .58rem;
+      letter-spacing: .1em;
+      color: var(--muted);
+    }
+    .code-copy {
+      font-family: var(--mono);
+      font-size: .58rem;
+      letter-spacing: .08em;
+      color: var(--muted);
+      background: none;
+      border: 1px solid var(--border2);
+      border-radius: 3px;
+      padding: 3px 10px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .code-copy:hover { color: var(--green); border-color: var(--green-b); }
+    .code-copy.copied { color: var(--green); }
+    pre {
+      padding: 18px 20px;
+      font-family: var(--mono);
+      font-size: .74rem;
+      line-height: 1.9;
+      overflow-x: auto;
+      margin: 0;
+    }
+    .kw { color: var(--blue); }
+    .st { color: var(--green); }
+    .cm { color: var(--muted); font-style: italic; }
+    .fn { color: #ffcb6b; }
+    .va { color: #c792ea; }
+    .hl { background: rgba(0,255,135,.06); display: block; margin: 0 -20px; padding: 0 20px; }
+
+    /* Tip box */
+    .tip {
+      background: var(--green-d);
+      border: 1px solid var(--green-b);
+      border-radius: var(--r);
+      padding: 14px 18px;
+      font-size: .82rem;
+      color: var(--text);
+      line-height: 1.7;
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .tip-icon { color: var(--green); flex-shrink: 0; font-size: .9rem; margin-top: 1px; }
+    .tip b { color: var(--green); font-weight: 500; }
+
+    .warn {
+      background: rgba(255,140,66,.06);
+      border: 1px solid rgba(255,140,66,.2);
+      border-radius: var(--r);
+      padding: 14px 18px;
+      font-size: .82rem;
+      color: var(--text);
+      line-height: 1.7;
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+    }
+    .warn-icon { color: var(--orange); flex-shrink: 0; }
+    .warn b { color: var(--orange); font-weight: 500; }
+
+    /* Commands table */
+    .cmd-grid {
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      margin-top: 12px;
+    }
+    .cmd-row {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      border-bottom: 1px solid var(--border);
+      transition: background .12s;
+    }
+    .cmd-row:last-child { border-bottom: none; }
+    .cmd-row:hover { background: var(--surface); }
+    .cmd-key {
+      font-family: var(--mono);
+      font-size: .72rem;
+      color: var(--green);
+      padding: 12px 16px;
+      border-right: 1px solid var(--border);
+    }
+    .cmd-val {
+      font-size: .8rem;
+      color: var(--muted);
+      padding: 12px 16px;
+      line-height: 1.65;
+    }
+
+    /* Platform cards */
+    .platform-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      margin-bottom: 48px;
+    }
+    .platform-card {
+      background: var(--bg);
+      padding: 32px 28px;
+      transition: background .15s;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .platform-card:hover { background: var(--surface); }
+    .platform-icon { font-size: 2rem; margin-bottom: 16px; display: block; }
+    .platform-name {
+      font-family: var(--mono);
+      font-size: .84rem;
+      font-weight: 500;
+      color: var(--text);
+      letter-spacing: .06em;
+      margin-bottom: 8px;
+    }
+    .platform-desc { font-size: .82rem; color: var(--muted); line-height: 1.7; font-weight: 300; }
+    .platform-tag {
+      display: inline-block;
+      margin-top: 14px;
+      font-family: var(--mono);
+      font-size: .58rem;
+      letter-spacing: .12em;
+      color: var(--green);
+      background: var(--green-d);
+      border: 1px solid var(--green-b);
+      padding: 3px 8px;
+      border-radius: 3px;
+    }
+
+    /* Inline badge */
+    .badge-g {
+      font-family: var(--mono);
+      font-size: .58rem;
+      letter-spacing: .1em;
+      background: var(--green-d);
+      border: 1px solid var(--green-b);
+      color: var(--green);
+      padding: 2px 8px;
+      border-radius: 3px;
+      vertical-align: middle;
+    }
+    .badge-b {
+      font-family: var(--mono);
+      font-size: .58rem;
+      letter-spacing: .1em;
+      background: var(--blue-d);
+      border: 1px solid var(--blue-b);
+      color: var(--blue);
+      padding: 2px 8px;
+      border-radius: 3px;
+      vertical-align: middle;
+    }
+
+    /* Hamburger */
+    .hamburger { display: none; flex-direction: column; gap: 5px; padding: 8px; cursor: pointer; background: none; border: none; }
+    .hamburger span { display: block; width: 20px; height: 2px; background: var(--muted); border-radius: 2px; transition: all .2s; }
+    .mobile-menu { display: none; position: fixed; top: 58px; left: 0; right: 0; background: var(--bg2); border-bottom: 1px solid var(--border); z-index: 199; padding: 16px 24px; flex-direction: column; gap: 4px; }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { font-family: var(--mono); font-size: .78rem; color: var(--muted); padding: 10px 12px; border-radius: var(--r); transition: all .15s; }
+    .mobile-menu a:hover { color: var(--text); background: var(--surface); }
+    .mobile-menu a.active { color: var(--green); background: var(--green-d); }
+    .mobile-overlay { display: none; position: fixed; inset: 0; z-index: 198; }
+    .mobile-overlay.open { display: block; }
+    .mobile-github-btn { display: none; }
+
+    @media (max-width: 768px) {
+      .platform-cards { grid-template-columns: 1fr; }
+      .cmd-row { grid-template-columns: 140px 1fr; }
+      .hamburger { display: flex; }
+      .nav-links { display: none !important; }
+      .nav-cta { display: none !important; }
+      .mobile-github-btn { display: block; }
+    }
+    @media (min-width: 769px) {
+      .nav-links { display: flex !important; }
+      .nav-cta { display: block !important; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="assets/logo.png" class="nav-logo-img" alt="EvoClaw">
+      <span class="g">EVO</span>CLAW
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">HOME</a></li>
+      <li><a href="demo.html">LIVE DEMO</a></li>
+      <li><a href="docs.html">DOCS</a></li>
+      <li><a href="index.html#get-started">GET STARTED</a></li>
+      <li><a href="install.html">INSTALL</a></li>
+      <li><a href="integrations.html" class="active">INTEGRATIONS</a></li>
+      <li><a href="ask.html">ASK EVOCLAW</a></li>
+    </ul>
+    <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank" class="nav-cta">GITHUB →</a>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="mobile-overlay" id="mobileOverlay"></div>
+<div class="mobile-menu" id="mobileMenu">
+  <button style="align-self:flex-end;color:var(--muted);font-size:1.2rem;background:none;border:none;cursor:pointer;padding:4px 8px;" id="mobileClose">✕</button>
+  <a href="index.html">HOME</a>
+  <a href="demo.html">LIVE DEMO</a>
+  <a href="docs.html">DOCS</a>
+  <a href="install.html">INSTALL</a>
+  <a href="integrations.html" class="active">INTEGRATIONS</a>
+  <a href="ask.html">ASK EVOCLAW</a>
+  <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank" class="mobile-github-btn" style="margin-top:8px;background:var(--green);color:#000;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;padding:10px 16px;border-radius:var(--r);font-weight:500;">GITHUB →</a>
+</div>
+
+<!-- HERO -->
+<div class="hero-wrap">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-line"></div>
+  <div class="hero-content">
+    <div class="container">
+      <div class="hero-badge">INTEGRATIONS</div>
+      <h1 class="hero-title">EvoClaw on <b>Telegram</b></h1>
+      <span class="hero-title-line2">& Discord.</span>
+      <p class="hero-desc">
+        Connect your self-evolving agent to Telegram and Discord in minutes.
+        Your users chat. Your agent learns. Zero extra setup.
+      </p>
+      <div class="btns">
+        <a href="#telegram" class="btn btn-g">📱 Telegram Tutorial</a>
+        <a href="#discord" class="btn btn-o">💬 Discord Tutorial</a>
+        <a href="install.html" class="btn btn-o">← Back to Install</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- WHAT YOU GET -->
+<section class="section-sm section-alt">
+  <div class="container">
+    <span class="label">WHAT YOU GET</span>
+    <h2 class="section-title">One agent. <b>Two platforms.</b></h2>
+    <p class="section-sub">Deploy EvoClaw on Telegram, Discord, or both. Every conversation goes through the same learning loop.</p>
+
+    <div class="platform-cards">
+      <a href="#telegram" class="platform-card">
+        <span class="platform-icon">📱</span>
+        <div class="platform-name">TELEGRAM</div>
+        <p class="platform-desc">Simple setup. Works on any device. Your bot lives in Telegram — users just send messages and the agent responds, learns, and evolves.</p>
+        <span class="platform-tag">5 MINUTE SETUP</span>
+      </a>
+      <a href="#discord" class="platform-card">
+        <span class="platform-icon">💬</span>
+        <div class="platform-name">DISCORD</div>
+        <p class="platform-desc">Full server integration. Slash commands, embed cards, per-channel memory. Perfect for communities and developer teams.</p>
+        <span class="platform-tag">SLASH COMMANDS</span>
+      </a>
+    </div>
+
+    <div class="g3">
+      <div class="cell">
+        <span class="cell-icon">🧬</span>
+        <div class="cell-title">Learns from every message</div>
+        <p class="cell-text">Every conversation in Telegram or Discord feeds the LoRA training loop. More users = faster evolution.</p>
+        <span class="cell-tag">AUTO TRAINING</span>
+      </div>
+      <div class="cell">
+        <span class="cell-icon">⚡</span>
+        <div class="cell-title">Same agent, all platforms</div>
+        <p class="cell-text">One EvoClaw instance. Both bots point to the same proxy. Skills learned on Telegram improve Discord responses too.</p>
+        <span class="cell-tag">SHARED BRAIN</span>
+      </div>
+      <div class="cell">
+        <span class="cell-icon">🔒</span>
+        <div class="cell-title">Runs on your server</div>
+        <p class="cell-text">The bot runs on your VPS. Your conversations never leave your infrastructure. Full privacy, full control.</p>
+        <span class="cell-tag">SELF-HOSTED</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- TELEGRAM TUTORIAL -->
+<section class="section" id="telegram">
+  <div class="container">
+    <span class="label">TELEGRAM</span>
+    <h2 class="section-title">Set up your <b>Telegram bot.</b></h2>
+    <p class="section-sub">5 steps. Takes about 5 minutes. No coding required.</p>
+
+    <div class="steps" style="margin-bottom:48px;">
+
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-body">
+          <div class="step-title">Install EvoClaw (if you haven't)</div>
+          <p class="step-desc">Make sure EvoClaw is installed and the proxy is running on port 8080.</p>
+          <div class="code-block">
+            <div class="code-bar"><span class="code-lang">BASH</span><button class="code-copy" onclick="copyCode(this)">COPY</button></div>
+            <pre>pip install evoclaw
+evoclaw init
+evoclaw start</pre>
+          </div>
+          <div class="tip">
+            <span class="tip-icon">✓</span>
+            <span>Verify proxy is running: <code>curl http://localhost:8080/v1/models</code> — should return a JSON response.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-body">
+          <div class="step-title">Create a bot via BotFather</div>
+          <p class="step-desc">BotFather is Telegram's official bot for creating other bots. Open Telegram and follow these steps:</p>
+          <div class="list" style="margin-top:12px;">
+            <div class="list-row">
+              <div class="list-n">1</div>
+              <div class="list-c">
+                <div class="list-title">Open Telegram → Search <code>@BotFather</code></div>
+                <div class="list-desc">Find the verified BotFather bot (has a blue checkmark).</div>
+              </div>
+            </div>
+            <div class="list-row">
+              <div class="list-n">2</div>
+              <div class="list-c">
+                <div class="list-title">Send <code>/newbot</code></div>
+                <div class="list-desc">BotFather will ask for a name and username for your bot.</div>
+              </div>
+            </div>
+            <div class="list-row">
+              <div class="list-n">3</div>
+              <div class="list-c">
+                <div class="list-title">Choose a name and username</div>
+                <div class="list-desc">Example name: <code>EvoClaw Agent</code> — username must end in <code>_bot</code>, e.g. <code>evoclaw_agent_bot</code></div>
+              </div>
+            </div>
+            <div class="list-row">
+              <div class="list-n">4</div>
+              <div class="list-c">
+                <div class="list-title">Copy the token BotFather gives you</div>
+                <div class="list-desc">Looks like: <code>1234567890:ABCdef...</code> — keep this safe, never share publicly.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-body">
+          <div class="step-title">Download the Telegram bot file</div>
+          <p class="step-desc">Get the bot script from the EvoClaw repo.</p>
+          <div class="code-block">
+            <div class="code-bar"><span class="code-lang">BASH</span><button class="code-copy" onclick="copyCode(this)">COPY</button></div>
+            <pre>cd ~/evoclaw/repo
+<span class="cm"># File sudah ada jika kamu pull dari GitHub</span>
+ls evoclaw_telegram.py</pre>
+          </div>
+          <div class="tip">
+            <span class="tip-icon">✓</span>
+            <span>Kalau file belum ada: <code>git pull origin main</code> dari folder repo.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-body">
+          <div class="step-title">Install dependencies & jalankan</div>
+          <p class="step-desc">Install library yang dibutuhkan, lalu jalankan bot di screen supaya tetap hidup.</p>
+          <div class="code-block">
+            <div class="code-bar"><span class="code-lang">BASH</span><button class="code-copy" onclick="copyCode(this)">COPY</button></div>
+            <pre><span class="cm"># Install dependencies</span>
+pip install python-telegram-bot openai --break-system-packages
+
+<span class="cm"># Jalankan di background (screen)</span>
+screen -dmS tg-bot bash -c <span class="st">"cd ~/evoclaw/repo && TELEGRAM_BOT_TOKEN='TOKEN_KAMU' python3 evoclaw_telegram.py"</span>
+
+<span class="cm"># Cek sudah running</span>
+screen -ls</pre>
+          </div>
+          <div class="warn">
+            <span class="warn-icon">⚠</span>
+            <span>Ganti <b>TOKEN_KAMU</b> dengan token dari BotFather. Jangan share token di tempat publik!</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">05</div>
+        <div class="step-body">
+          <div class="step-title">Test bot kamu!</div>
+          <p class="step-desc">Buka Telegram, cari username bot yang kamu buat, dan kirim pesan pertama.</p>
+          <div class="list" style="margin-top:12px;">
+            <div class="list-row">
+              <div class="list-n">→</div>
+              <div class="list-c">
+                <div class="list-title">Kirim <code>/start</code></div>
+                <div class="list-desc">Bot akan balas dengan pesan selamat datang.</div>
+              </div>
+            </div>
+            <div class="list-row">
+              <div class="list-n">→</div>
+              <div class="list-c">
+                <div class="list-title">Chat biasa</div>
+                <div class="list-desc">Kirim pesan apapun — bot akan balas dan agent belajar dari conversation ini.</div>
+              </div>
+            </div>
+            <div class="list-row">
+              <div class="list-n">→</div>
+              <div class="list-c">
+                <div class="list-title">Cek <code>/stats</code></div>
+                <div class="list-desc">Lihat berapa conversations dan skills yang sudah agent pelajari.</div>
+              </div>
+            </div>
+          </div>
+          <div class="tip">
+            <span class="tip-icon">✓</span>
+            <span><b>Agent sudah belajar</b> ketika kamu lihat log di VPS: <code>PRM score=0.xx | conv=N | skills=N</code></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Telegram Commands -->
+    <span class="label">TELEGRAM COMMANDS</span>
+    <h3 class="section-title" style="font-size:1.4rem;">Available commands.</h3>
+    <div class="cmd-grid">
+      <div class="cmd-row">
+        <div class="cmd-key">/start</div>
+        <div class="cmd-val">Welcome message dan penjelasan cara pakai bot</div>
+      </div>
+      <div class="cmd-row">
+        <div class="cmd-key">/stats</div>
+        <div class="cmd-val">Lihat statistik agent: skills, conversations, status Tinker LoRA</div>
+      </div>
+      <div class="cmd-row">
+        <div class="cmd-key">/skills</div>
+        <div class="cmd-val">List semua skill categories yang sudah dipelajari agent</div>
+      </div>
+      <div class="cmd-row">
+        <div class="cmd-key">/reset</div>
+        <div class="cmd-val">Hapus history conversation kamu — mulai fresh</div>
+      </div>
+      <div class="cmd-row">
+        <div class="cmd-key">/help</div>
+        <div class="cmd-val">Tampilkan semua commands dan cara kerja EvoClaw</div>
+      </div>
+      <div class="cmd-row">
+        <div class="cmd-key">Pesan biasa</div>
+        <div class="cmd-val">Chat langsung dengan agent — tidak perlu prefix apapun</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- DISCORD TUTORIAL -->
+<section class="section section-alt" id="discord">
+  <div class="container">
+    <span class="label">DISCORD</span>
+    <h2 class="section-title">Set up your <b>Discord bot.</b></h2>
+    <p class="section-sub">Lebih banyak fitur dari Telegram — embed cards, slash commands, dan per-channel memory.</p>
+
+    <div class="steps" style="margin-bottom:48px;">
+
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-body">
+          <div class="step-title">Buat aplikasi di Discord Developer Portal</div>
+          <p class="step-desc">Pergi ke <a href="https://discord.com/developers/applications" target="_blank" style="color:var(--blue)">discord.com/developers/applications</a> dan buat app baru.</p>
+          <div class="list" style="margin-top:12px;">
+            <div class="list-row">
+              <div class="list-n">1</div>
+              <div class="list-c">
+                <div class="list-title">Klik <code>New Application</code></div>
+                <div class="list-desc">Kasih nama, contoh: <code>EvoClaw</code></div>
+              </div>
+            </div>
+            <div class="list-row">
+              <div class="list-n">2</div>
+              <div class="list-c">
+                <div class="list-title">Klik <code>Bot</code> di menu kiri → <code>Reset Token</code></div>
+                <div class="list-desc">Copy token yang muncul — simpan dengan aman.</div>
+              </div>
+            </div>
+            <div class="list-row">
+              <div class="list-n">3</div>
+              <div class="list-c">
+                <div class="list-title">Enable Privileged Intents</div>
+                <div class="list-desc">Scroll ke bawah di halaman Bot → aktifkan <code>MESSAGE CONTENT INTENT</code> dan <code>SERVER MEMBERS INTENT</code> → Save Changes.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-body">
+          <div class="step-title">Invite bot ke server Discord kamu</div>
+          <p class="step-desc">Generate invite URL dan add bot ke server.</p>
+          <div class="list" style="margin-top:12px;">
+            <div class="list-row">
+              <div class="list-n">1</div>
+              <div class="list-c">
+                <div class="list-title">Klik <code>OAuth2</code> → <code>URL Generator</code></div>
+                <div class="list-desc">Di menu kiri Developer Portal.</div>
+              </div>
+            </div>
+            <div class="list-row">
+              <div class="list-n">2</div>
+              <div class="list-c">
+                <div class="list-title">Centang Scopes: <code>bot</code></div>
+                <div class="list-desc">Centang permissions: Send Messages, Read Message History, Use Slash Commands, View Channels.</div>
+              </div>
+            </div>
+            <div class="list-row">
+              <div class="list-n">3</div>
+              <div class="list-c">
+                <div class="list-title">Copy Generated URL → buka di browser</div>
+                <div class="list-desc">Pilih server kamu → klik Authorize.</div>
+              </div>
+            </div>
+          </div>
+          <div class="code-block" style="margin-top:12px;">
+            <div class="code-bar"><span class="code-lang">INVITE URL (ganti CLIENT_ID)</span><button class="code-copy" onclick="copyCode(this)">COPY</button></div>
+            <pre>https://discord.com/api/oauth2/authorize?client_id=<span class="va">CLIENT_ID</span>&permissions=277025508352&scope=bot</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-body">
+          <div class="step-title">Install dependencies & jalankan bot</div>
+          <p class="step-desc">Sama seperti Telegram — jalankan di screen supaya tetap hidup 24/7.</p>
+          <div class="code-block">
+            <div class="code-bar"><span class="code-lang">BASH</span><button class="code-copy" onclick="copyCode(this)">COPY</button></div>
+            <pre><span class="cm"># Install dependencies</span>
+pip install discord.py openai --break-system-packages
+
+<span class="cm"># Jalankan di background</span>
+screen -dmS dc-bot bash -c <span class="st">"cd ~/evoclaw/repo && DISCORD_BOT_TOKEN='TOKEN_KAMU' python3 evoclaw_discord.py"</span>
+
+<span class="cm"># Cek running</span>
+screen -ls</pre>
+          </div>
+          <div class="warn">
+            <span class="warn-icon">⚠</span>
+            <span>Ganti <b>TOKEN_KAMU</b> dengan token dari Discord Developer Portal. Jangan pernah share token!</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-body">
+          <div class="step-title">Test di server Discord</div>
+          <p class="step-desc">Buka server Discord kamu dan test bot.</p>
+          <div class="list" style="margin-top:12px;">
+            <div class="list-row">
+              <div class="list-n">→</div>
+              <div class="list-c">
+                <div class="list-title">Mention bot: <code>@EvoClaw halo!</code></div>
+                <div class="list-desc">Bot langsung balas dengan embed card.</div>
+              </div>
+            </div>
+            <div class="list-row">
+              <div class="list-n">→</div>
+              <div class="list-c">
+                <div class="list-title">Gunakan slash command: <code>/ask apa itu LoRA?</code></div>
+                <div class="list-desc">Slash commands tersedia di semua channel.</div>
+              </div>
+            </div>
+            <div class="list-row">
+              <div class="list-n">→</div>
+              <div class="list-c">
+                <div class="list-title">Ketik <code>!stats</code></div>
+                <div class="list-desc">Lihat statistik agent langsung di Discord.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Discord Commands -->
+    <span class="label">DISCORD COMMANDS</span>
+    <h3 class="section-title" style="font-size:1.4rem;">Available commands.</h3>
+    <div class="cmd-grid">
+      <div class="cmd-row">
+        <div class="cmd-key">@EvoClaw [pesan]</div>
+        <div class="cmd-val">Mention bot di channel manapun — bot langsung balas</div>
+      </div>
+      <div class="cmd-row">
+        <div class="cmd-key">/ask [pertanyaan]</div>
+        <div class="cmd-val">Slash command — tanya langsung ke agent</div>
+      </div>
+      <div class="cmd-row">
+        <div class="cmd-key">!stats</div>
+        <div class="cmd-val">Lihat agent stats dalam embed card: skills, conversations, Tinker status</div>
+      </div>
+      <div class="cmd-row">
+        <div class="cmd-key">!skills</div>
+        <div class="cmd-val">Tampilkan semua skill categories dalam embed card</div>
+      </div>
+      <div class="cmd-row">
+        <div class="cmd-key">!reset</div>
+        <div class="cmd-val">Clear conversation history untuk channel ini</div>
+      </div>
+      <div class="cmd-row">
+        <div class="cmd-key">!help</div>
+        <div class="cmd-val">Lihat semua commands dan cara kerja EvoClaw</div>
+      </div>
+      <div class="cmd-row">
+        <div class="cmd-key">/reset</div>
+        <div class="cmd-val">Slash command untuk clear history (hanya terlihat oleh kamu)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- TROUBLESHOOTING -->
+<section class="section">
+  <div class="container">
+    <span class="label">TROUBLESHOOTING</span>
+    <h2 class="section-title">Kalau ada <b>masalah.</b></h2>
+    <p class="section-sub">Solusi untuk masalah yang paling umum.</p>
+
+    <div class="g2" style="margin-bottom:24px;">
+      <div class="cell">
+        <div class="cell-title">Bot tidak balas</div>
+        <p class="cell-text">Pastikan EvoClaw proxy running: <code>evoclaw status</code><br><br>Cek bot screen masih hidup: <code>screen -ls</code><br><br>Pastikan token benar dan tidak expired.</p>
+      </div>
+      <div class="cell">
+        <div class="cell-title">Error "proxy connection refused"</div>
+        <p class="cell-text">EvoClaw proxy tidak running. Jalankan: <code>evoclaw start</code><br><br>Pastikan port 8080 tidak dipakai proses lain: <code>ss -tlnp | grep 8080</code></p>
+      </div>
+      <div class="cell">
+        <div class="cell-title">Bot mati setelah disconnect SSH</div>
+        <p class="cell-text">Gunakan <code>screen</code> untuk run di background. Jangan jalankan langsung di terminal SSH.<br><br>Command: <code>screen -dmS tg-bot bash -c "..."</code></p>
+      </div>
+      <div class="cell">
+        <div class="cell-title">Discord "Message Content Intent" error</div>
+        <p class="cell-text">Enable di Developer Portal: Bot → Privileged Gateway Intents → MESSAGE CONTENT INTENT → ON → Save Changes.</p>
+      </div>
+    </div>
+
+    <!-- Check all running -->
+    <div class="code-block">
+      <div class="code-bar"><span class="code-lang">CEK SEMUA STATUS</span><button class="code-copy" onclick="copyCode(this)">COPY</button></div>
+      <pre><span class="cm"># Lihat semua screen yang running</span>
+screen -ls
+
+<span class="cm"># Harusnya ada:</span>
+<span class="st">tg-bot         (Detached) ✅</span>
+<span class="st">dc-bot         (Detached) ✅</span>
+<span class="st">evoclaw-proxy  (Detached) ✅</span>
+<span class="st">evoclaw-agent  (Detached) ✅</span>
+
+<span class="cm"># Cek proxy</span>
+evoclaw status
+
+<span class="cm"># Masuk ke screen tertentu untuk lihat log</span>
+screen -r tg-bot</pre>
+    </div>
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- CTA -->
+<section class="section-sm section-alt">
+  <div class="container" style="text-align:center;">
+    <span class="label" style="text-align:center;display:block;">READY?</span>
+    <h2 class="section-title" style="text-align:center;">Start deploying <b>your agent.</b></h2>
+    <p class="section-sub" style="text-align:center;max-width:460px;margin:0 auto 32px;">Both bots take less than 10 minutes to deploy. Your agent starts learning from the first message.</p>
+    <div class="btns" style="justify-content:center;">
+      <a href="#telegram" class="btn btn-g btn-lg">📱 Setup Telegram</a>
+      <a href="#discord" class="btn btn-o btn-lg">💬 Setup Discord</a>
+      <a href="docs.html" class="btn btn-o btn-lg">Read Docs →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/logo.png" class="nav-logo-img" alt="EvoClaw">
+        <span class="g">EVO</span>CLAW
+      </a>
+      <p>Self-evolving AI agent. No GPU. No data team. Just results.</p>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col">
+        <h5>Product</h5>
+        <ul>
+          <li><a href="demo.html">Live Demo</a></li>
+          <li><a href="install.html">Install</a></li>
+          <li><a href="docs.html">Docs</a></li>
+          <li><a href="integrations.html">Integrations</a></li>
+          <li><a href="memory.html">Memory Dashboard</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Resources</h5>
+        <ul>
+          <li><a href="https://github.com/evoclaw-agent/evoclaw" target="_blank">GitHub</a></li>
+          <li><a href="https://x.com/evoclaw_" target="_blank">𝕏 Twitter</a></li>
+          <li><a href="https://bankr.bot/launches/0xC768C116D57037F15767C25663770F8ac3B23bA3" target="_blank">Bankr</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bot">
+    <span>© 2026 EvoClaw. MIT License.</span>
+    <span class="mit">MIT</span>
+  </div>
+</footer>
+
+<script>
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 10);
+});
+
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+const mobileOverlay = document.getElementById('mobileOverlay');
+const mobileClose = document.getElementById('mobileClose');
+
+function openMenu() { mobileMenu.classList.add('open'); mobileOverlay.classList.add('open'); }
+function closeMenu() { mobileMenu.classList.remove('open'); mobileOverlay.classList.remove('open'); }
+
+hamburger.addEventListener('click', openMenu);
+mobileOverlay.addEventListener('click', closeMenu);
+mobileClose.addEventListener('click', closeMenu);
+
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = 'COPIED!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1800);
+  });
+}
+
+// Reveal on scroll
+const reveals = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+}, { threshold: 0.1 });
+reveals.forEach(r => obs.observe(r));
+</script>
+
+</body>
+</html>
