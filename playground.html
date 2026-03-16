@@ -765,6 +765,68 @@ html, body {
   /* Tables / long content */
   table { display: block !important; overflow-x: auto !important; }
 }
+
+/* ── CA TOKEN WIDGET ── */
+.ca-token-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--green-d);
+  border: 1px solid var(--green-b);
+  border-radius: var(--r);
+  padding: 5px 12px 5px 6px;
+  cursor: pointer;
+  transition: all .2s;
+  margin: 0 4px;
+  font-family: var(--mono);
+  font-size: .68rem;
+  letter-spacing: .08em;
+  color: var(--green);
+  user-select: none;
+}
+.ca-token-wrap:hover {
+  background: rgba(0,255,135,.12);
+  border-color: var(--green);
+  transform: translateY(-1px);
+}
+.ca-token-logo {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.ca-token-label { font-weight: 600; }
+.ca-tooltip {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface);
+  border: 1px solid var(--green-b);
+  border-radius: var(--r);
+  padding: 8px 14px;
+  font-family: var(--mono);
+  font-size: .65rem;
+  letter-spacing: .06em;
+  color: var(--green);
+  white-space: nowrap;
+  z-index: 999;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0,255,135,.1);
+  pointer-events: none;
+}
+.ca-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -5px; left: 50%;
+  width: 8px; height: 8px;
+  background: var(--surface);
+  border-left: 1px solid var(--green-b);
+  border-top: 1px solid var(--green-b);
+  transform: translateX(-50%) rotate(45deg);
+}
+.ca-token-wrap:hover .ca-tooltip { display: block; }
 </style>
 </head>
 <body>
@@ -782,7 +844,12 @@ html, body {
       <li><a href="playground.html" style="color:var(--green)" class="active">PLAYGROUND</a></li>
     </ul>
     <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank" class="nav-cta">GITHUB →</a>
-      <a href="https://x.com/evoclaw_" target="_blank" class="nav-cta" style="background:transparent;border:1px solid var(--border2);color:var(--text);margin-left:6px;">𝕏</a>
+    <div class="ca-token-wrap" onclick="copyCA()" title="Copy Contract Address">
+      <img src="assets/logo.png" class="ca-token-logo" alt="$EVOCLAW">
+      <span class="ca-token-label">$EVOCLAW</span>
+      <div class="ca-tooltip">📋 COPY CA<br><span style="color:var(--muted);font-size:.6rem;">0xC768...3bA3</span></div>
+    </div>
+    <a href="https://x.com/evoclaw_" target="_blank" class="nav-cta" style="background:transparent;border:1px solid var(--border2);color:var(--text);">𝕏</a>
       <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
@@ -1547,6 +1614,27 @@ html, body {
     var sel = document.getElementById('pgProviderSelect');
     if (sel) { sel.value = saved; pgOnProviderChange(); }
   });
+</script>
+<script>
+function copyCA() {
+  navigator.clipboard.writeText('0xC768C116D57037F15767C25663770F8ac3B23bA3').then(function() {
+    // Update nav widget
+    var lbl = document.querySelector('.ca-token-label');
+    if (lbl) {
+      var orig = lbl.innerHTML;
+      lbl.innerHTML = '✅ COPIED!';
+      setTimeout(function(){ lbl.innerHTML = orig; }, 1800);
+    }
+    // Update CA bar button
+    var btn = document.getElementById('ca-btn');
+    if (btn) {
+      var origBtn = btn.innerHTML;
+      btn.innerHTML = '✅ COPIED';
+      btn.style.color = 'var(--green)';
+      setTimeout(function(){ btn.innerHTML = origBtn; btn.style.color = ''; }, 1800);
+    }
+  });
+}
 </script>
 </body>
 </html>
