@@ -1,16 +1,8 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false,
   "rewrites": [
-    { "source": "/api/submit", "destination": "/api/submit.js" },
-    { "source": "/api/chat", "destination": "/api/chat.js" },
-    { "source": "/api/stats", "destination": "/api/stats.js" }
-  ],
-  "redirects": [
-    { "source": "/index.html", "destination": "/", "permanent": true },
-    { "source": "/demo.html", "destination": "/demo", "permanent": true },
-    { "source": "/docs.html", "destination": "/docs", "permanent": true },
-    { "source": "/ask.html", "destination": "/ask", "permanent": true },
-    { "source": "/404.html", "destination": "/404", "permanent": true }
+    {
+      "source": "/api/:path*",
+      "destination": "http://194.233.67.196/api/:path*"
+    }
   ]
 }

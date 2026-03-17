@@ -325,7 +325,7 @@
       <li><a href="docs.html" style="color:var(--green)">DOCS</a></li>
       <li><a href="install.html" style="color:var(--green)">INSTALL</a></li>
       <li><a href="integrations.html" style="color:var(--green)">INTEGRATIONS</a></li>
-      <li><a href="dashboard.html" class="active">DASHBOARD</a></li>
+      <li><a href="marketplace.html" class="active">MARKETPLACE</a></li>
       <li><a href="playground.html" style="color:var(--green)">PLAYGROUND</a></li>
     </ul>
     <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank" class="nav-cta">GITHUB →</a>
@@ -340,7 +340,7 @@
   <a href="docs.html">DOCS</a>
   <a href="install.html">INSTALL</a>
   <a href="integrations.html">INTEGRATIONS</a>
-  <a href="dashboard.html" class="active">DASHBOARD</a>
+  <a href="marketplace.html" class="active">MARKETPLACE</a>
   <a href="playground.html">PLAYGROUND</a>
 </div>
 
@@ -761,7 +761,7 @@ hamburger.addEventListener('click', () => { mobileMenu.classList.toggle('open');
 mobileOverlay.addEventListener('click', () => { mobileMenu.classList.remove('open'); mobileOverlay.classList.remove('open'); });
 
 // ── REAL API ──
-const API = 'http://194.233.67.196/api';
+const API = '/api';
 
 async function loadRealSkills() {
   try {
