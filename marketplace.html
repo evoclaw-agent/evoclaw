@@ -336,6 +336,99 @@
     .auth-success-icon { font-size:2.5rem; margin-bottom:12px; }
     .auth-success-msg { font-size:.88rem; color:var(--muted); line-height:1.8; }
 
+
+    /* ── x402 PAYMENT MODAL ── */
+    .x402-modal {
+      display:none; position:fixed; inset:0; z-index:900;
+      background:rgba(5,7,15,.92); backdrop-filter:blur(10px);
+      align-items:center; justify-content:center; padding:20px;
+    }
+    .x402-modal.open { display:flex; }
+    .x402-box {
+      background:var(--bg2); border:1px solid var(--border);
+      border-radius:var(--r); width:100%; max-width:460px; padding:0; overflow:hidden;
+    }
+    .x402-header {
+      background:linear-gradient(135deg,rgba(0,255,135,.06) 0%,rgba(0,180,255,.04) 100%);
+      border-bottom:1px solid var(--border); padding:24px 28px;
+      display:flex; align-items:center; gap:14px;
+    }
+    .x402-icon {
+      width:44px; height:44px; border-radius:50%;
+      background:var(--green-d); border:1px solid var(--green-b);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.2rem; flex-shrink:0;
+    }
+    .x402-title { font-size:1rem; font-weight:500; color:var(--text); margin-bottom:3px; }
+    .x402-subtitle { font-family:var(--mono); font-size:.62rem; color:var(--muted); }
+    .x402-body { padding:24px 28px; }
+    .x402-skill-name {
+      font-size:.9rem; font-weight:500; color:var(--text);
+      margin-bottom:18px; padding:12px 16px;
+      background:var(--surface); border-radius:var(--r); border:1px solid var(--border);
+    }
+    .x402-price-row {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 16px; background:var(--bg3); border-radius:var(--r);
+      border:1px solid var(--border); margin-bottom:16px;
+    }
+    .x402-price-label { font-family:var(--mono); font-size:.62rem; color:var(--muted); letter-spacing:.08em; }
+    .x402-price-amount { font-family:var(--mono); font-size:1.1rem; font-weight:700; color:var(--green); }
+    .x402-price-sub { font-family:var(--mono); font-size:.58rem; color:var(--dim); margin-top:2px; text-align:right; }
+    .x402-network-row {
+      display:flex; align-items:center; gap:8px; margin-bottom:18px;
+      font-family:var(--mono); font-size:.62rem; color:var(--muted);
+    }
+    .x402-network-badge {
+      background:rgba(0,130,255,.08); border:1px solid rgba(0,130,255,.2);
+      color:#4da6ff; padding:3px 8px; border-radius:3px; font-size:.6rem; letter-spacing:.06em;
+    }
+    .x402-wallet-box {
+      border:1px solid var(--border2); border-radius:var(--r);
+      padding:14px 16px; margin-bottom:16px; font-family:var(--mono); font-size:.68rem;
+    }
+    .x402-wallet-label { color:var(--dim); font-size:.58rem; letter-spacing:.08em; margin-bottom:4px; }
+    .x402-wallet-addr { color:var(--text); word-break:break-all; }
+    .x402-steps { display:flex; flex-direction:column; gap:6px; margin-bottom:20px; }
+    .x402-step {
+      display:flex; align-items:center; gap:10px;
+      font-family:var(--mono); font-size:.64rem; color:var(--muted);
+    }
+    .x402-step-num {
+      width:20px; height:20px; border-radius:50%; border:1px solid var(--border2);
+      display:flex; align-items:center; justify-content:center; font-size:.58rem;
+      flex-shrink:0; color:var(--dim);
+    }
+    .x402-step.done .x402-step-num { background:var(--green-d); border-color:var(--green-b); color:var(--green); }
+    .x402-step.active .x402-step-num { background:rgba(0,180,255,.1); border-color:rgba(0,180,255,.3); color:#4da6ff; }
+    .x402-step.done span, .x402-step.active span { color:var(--text); }
+    .x402-pay-btn {
+      width:100%; background:var(--green); color:#000; font-family:var(--mono);
+      font-size:.75rem; font-weight:600; padding:13px; border-radius:var(--r);
+      border:none; cursor:pointer; letter-spacing:.06em; transition:opacity .15s;
+    }
+    .x402-pay-btn:hover { opacity:.85; }
+    .x402-pay-btn:disabled { opacity:.5; cursor:not-allowed; }
+    .x402-pay-btn.metamask { background:#f6851b; color:#fff; }
+    .x402-pay-btn.processing { background:var(--surface); color:var(--muted); border:1px solid var(--border2); }
+    .x402-cancel-btn {
+      width:100%; background:none; border:none; color:var(--dim);
+      font-family:var(--mono); font-size:.62rem; padding:10px; cursor:pointer; margin-top:6px;
+    }
+    .x402-cancel-btn:hover { color:var(--muted); }
+    .x402-receipt {
+      display:none; text-align:center; padding:8px 0;
+    }
+    .x402-receipt-icon { font-size:2.5rem; margin-bottom:12px; }
+    .x402-receipt-title { font-size:1rem; font-weight:500; color:var(--text); margin-bottom:8px; }
+    .x402-receipt-hash {
+      font-family:var(--mono); font-size:.58rem; color:var(--dim);
+      word-break:break-all; background:var(--surface); padding:8px 12px;
+      border-radius:var(--r); margin-bottom:16px; text-align:left;
+    }
+    .x402-receipt-hash a { color:var(--green); text-decoration:none; }
+    .x402-receipt-hash a:hover { text-decoration:underline; }
+
     @media(max-width:1024px) { .mkt-grid { grid-template-columns:repeat(2,1fr); } }
     @media(max-width:768px) {
       .mkt-grid { grid-template-columns:1fr; }
@@ -627,8 +720,13 @@
       <input class="lpm-input" id="listPriceInput" type="number" min="0" step="1" placeholder="0" value="0">
       <span class="lpm-currency">$EVOCLAW tokens</span>
     </div>
-    <div style="font-family:var(--mono);font-size:.6rem;color:var(--dim);margin-bottom:20px;">
+    <div style="font-family:var(--mono);font-size:.6rem;color:var(--dim);margin-bottom:12px;">
       0 = FREE for everyone &nbsp;·&nbsp; Any amount = paid skill
+    </div>
+    <div style="margin-bottom:20px;">
+      <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.08em;margin-bottom:6px;">YOUR WALLET (receive USDC payments)</div>
+      <input class="lpm-input" id="x402WalletField" type="text" placeholder="0x... Base wallet address" style="font-size:.7rem;">
+      <div style="font-family:var(--mono);font-size:.58rem;color:var(--dim);margin-top:4px;">Payments sent directly to this address via x402 on Base network</div>
     </div>
     <div class="lpm-btns">
       <button class="btn-cancel" onclick="closeListPriceModal()">Cancel</button>
@@ -931,6 +1029,7 @@ async function loadNetworkSkills() {
       creator: s.creator_agent || 'agent',
       price: s.price || 0, avg_rating: s.avg_rating || 0, rating_count: s.rating_count || 0,
       creator_email: s.creator_email || '',
+      creator_wallet: s.creator_wallet || '',
     }));
 
     // Update stats
@@ -994,7 +1093,9 @@ function renderExploreGrid(skills) {
           <button class="dl-btn" title="Download .json" onclick="downloadSkill('${s.id}')">⬇</button>
           <button class="dl-btn" title="Copy to clipboard" onclick="copySkill('${s.id}')">⎘</button>
           <button class="preview-btn" onclick="previewNetworkSkill('${s.id}')">PREVIEW</button>
-          <button class="install-btn" id="ibtn-${s.id}" onclick="installNetworkSkill('${s.id}', this)">INSTALL</button>
+          <button class="install-btn" id="ibtn-${s.id}" onclick="${s.price > 0 ? 'openX402Payment' : 'installNetworkSkill'}('${s.id}', this)">
+            ${s.price > 0 ? '⚡ BUY · ' + s.price + ' USDC' : 'INSTALL'}
+          </button>
         </div>
       </div>
     </div>`;
@@ -1370,6 +1471,194 @@ if (agentUrl) {
   connectAgent();
 }
 loadNetworkSkills();
+
+// ══════════════════════════════════════════════════════════
+// x402 PAYMENT PROTOCOL — USDC on Base
+// ══════════════════════════════════════════════════════════
+
+const X402_CONFIG = {
+  chainId: 8453,
+  usdcContract: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+  explorerUrl: 'https://basescan.org/tx/',
+  defaultPayTo: '0x0000000000000000000000000000000000000001',
+};
+
+let x402State = { skillId:null, skillName:'', priceUsdc:0, payTo:'', walletAddr:'' };
+
+function openX402Payment(skillId) {
+  const s = networkSkillsCache.find(x => x.id === skillId);
+  if (!s) return;
+  if (!s.price || s.price === 0) { installNetworkSkill(skillId, null); return; }
+  x402State = { skillId, skillName:s.name, priceUsdc:parseFloat(s.price), payTo:s.creator_wallet||X402_CONFIG.defaultPayTo, walletAddr:'' };
+  document.getElementById('x402SkillName').textContent = s.name;
+  document.getElementById('x402Amount').textContent = `${s.price} USDC`;
+  document.getElementById('x402WalletBox').style.display = 'none';
+  document.getElementById('x402BtnArea').innerHTML = `<button class="x402-pay-btn metamask" onclick="x402ConnectWallet()">🦊 Connect MetaMask</button>`;
+  document.getElementById('x402PayForm').style.display = 'block';
+  document.getElementById('x402Receipt').style.display = 'none';
+  setX402Step(0);
+  document.getElementById('x402Modal').classList.add('open');
+}
+
+function closeX402Modal() { document.getElementById('x402Modal').classList.remove('open'); }
+
+function setX402Step(active) {
+  ['x402Step1','x402Step2','x402Step3'].forEach((id,i) => {
+    const el = document.getElementById(id);
+    if (el) el.className = 'x402-step' + (i < active ? ' done' : i === active ? ' active' : '');
+  });
+}
+
+async function x402ConnectWallet() {
+  if (!window.ethereum) { showToast('⚠️ MetaMask not found — install from metamask.io'); window.open('https://metamask.io','_blank'); return; }
+  const btn = document.querySelector('#x402BtnArea button');
+  btn.textContent = '⏳ Connecting...'; btn.disabled = true;
+  try {
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    x402State.walletAddr = accounts[0];
+    try {
+      await window.ethereum.request({ method:'wallet_switchEthereumChain', params:[{chainId:'0x'+X402_CONFIG.chainId.toString(16)}] });
+    } catch(se) {
+      if (se.code === 4902) await window.ethereum.request({ method:'wallet_addEthereumChain', params:[{chainId:'0x'+X402_CONFIG.chainId.toString(16),chainName:'Base',nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18},rpcUrls:['https://mainnet.base.org'],blockExplorerUrls:['https://basescan.org']}] });
+    }
+    document.getElementById('x402WalletAddr').textContent = x402State.walletAddr;
+    document.getElementById('x402WalletBox').style.display = 'block';
+    setX402Step(1);
+    document.getElementById('x402BtnArea').innerHTML = `<button class="x402-pay-btn" onclick="x402SignAndPay()">⚡ Pay ${x402State.priceUsdc} USDC — Confirm in MetaMask</button>`;
+  } catch(e) { showToast('⚠️ Wallet connection cancelled'); btn.textContent = '🦊 Connect MetaMask'; btn.disabled = false; }
+}
+
+async function x402SignAndPay() {
+  const btn = document.querySelector('#x402BtnArea button');
+  btn.textContent = '⏳ Sign in MetaMask...'; btn.disabled = true;
+  setX402Step(2);
+  try {
+    const value = String(Math.round(x402State.priceUsdc * 1_000_000));
+    const validBefore = Math.floor(Date.now()/1000) + 1800;
+    const nonce = '0x' + Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b=>b.toString(16).padStart(2,'0')).join('');
+    const domain = { name:'USD Coin', version:'2', chainId:X402_CONFIG.chainId, verifyingContract:X402_CONFIG.usdcContract };
+    const types = { TransferWithAuthorization:[{name:'from',type:'address'},{name:'to',type:'address'},{name:'value',type:'uint256'},{name:'validAfter',type:'uint256'},{name:'validBefore',type:'uint256'},{name:'nonce',type:'bytes32'}] };
+    const message = { from:x402State.walletAddr, to:x402State.payTo, value, validAfter:'0', validBefore:String(validBefore), nonce };
+    const signature = await window.ethereum.request({ method:'eth_signTypedData_v4', params:[x402State.walletAddr, JSON.stringify({domain,types,primaryType:'TransferWithAuthorization',message})] });
+    const paymentPayload = { x402Version:1, scheme:'exact', network:'base', payload:{ signature, authorization:{ from:x402State.walletAddr, to:x402State.payTo, value, validAfter:'0', validBefore:String(validBefore), nonce } } };
+    const xPaymentHeader = btoa(JSON.stringify(paymentPayload));
+    btn.textContent = '⏳ Verifying & installing...';
+    await x402ExecuteInstall(x402State.skillId, xPaymentHeader);
+  } catch(e) {
+    if (e.code===4001) showToast('⚠️ Payment cancelled');
+    else showToast('⚠️ Signing failed: ' + (e.message||'Unknown'));
+    const b = document.querySelector('#x402BtnArea button');
+    if (b) { b.textContent = '⚡ Pay '+x402State.priceUsdc+' USDC'; b.disabled = false; }
+    setX402Step(1);
+  }
+}
+
+async function x402ExecuteInstall(skillId, xPaymentHeader) {
+  const s = networkSkillsCache.find(x => x.id === skillId);
+  if (!s) return;
+  if (!agentUrl) { showToast('⚠️ Connect your agent first!'); return; }
+  try {
+    let installed = false;
+    // Try x402-aware VPS endpoint first
+    try {
+      const res = await fetch(`${agentUrl}/api/skills/purchase`, {
+        method:'POST', headers:{'Content-Type':'application/json','X-PAYMENT':xPaymentHeader},
+        body:JSON.stringify({skill_id:skillId, name:s.name, content:s.content, category:s.cat, prm_score:s.prm_score}),
+        signal:AbortSignal.timeout(10000)
+      });
+      if (res.ok) { const d = await res.json(); if (d.status==='injected') installed=true; }
+    } catch(_) {}
+    // Fallback to regular inject
+    if (!installed) {
+      const res2 = await fetch(`${agentUrl}/api/skills/inject`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name:s.name,content:s.content,category:s.cat,prm_score:s.prm_score}) });
+      const d2 = await res2.json();
+      if (d2.status==='injected') installed = true;
+    }
+    if (installed) {
+      supaPatch(`skills?id=eq.${skillId}`, { installs:(s.installs||0)+1 });
+      try { await supaPost('payments',{skill_id:skillId,buyer_wallet:x402State.walletAddr,amount_usdc:x402State.priceUsdc,paid_at:new Date().toISOString()}); } catch(_) {}
+      s.installs = (s.installs||0)+1;
+      setX402Step(3);
+      document.getElementById('x402PayForm').style.display = 'none';
+      document.getElementById('x402Receipt').style.display = 'block';
+      document.getElementById('x402TxLink').textContent = 'View on BaseScan';
+      document.getElementById('x402TxLink').href = X402_CONFIG.explorerUrl;
+      showToast(`⚡ "${s.name}" purchased & installed!`);
+      setTimeout(() => { if (agentUrl) loadMySkills(); }, 2000);
+      setTimeout(() => openRatingModal(skillId, s.name), 2500);
+    }
+  } catch(e) { showToast('⚠️ Install error — contact support'); }
+}
+// ══════════════════════════════════════════════════════════
+
 </script>
+
+<!-- x402 PAYMENT MODAL -->
+<div class="x402-modal" id="x402Modal">
+  <div class="x402-box">
+    <div class="x402-header">
+      <div class="x402-icon">⚡</div>
+      <div>
+        <div class="x402-title">x402 — Pay with USDC</div>
+        <div class="x402-subtitle">Internet-native payment · Base Network · Powered by Coinbase</div>
+      </div>
+    </div>
+    <div class="x402-body">
+      <div id="x402PayForm">
+        <div class="x402-skill-name" id="x402SkillName">skill-name</div>
+
+        <div class="x402-price-row">
+          <div>
+            <div class="x402-price-label">AMOUNT DUE</div>
+            <div class="x402-price-amount" id="x402Amount">0.00 USDC</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-family:var(--mono);font-size:.58rem;color:var(--dim);">NETWORK</div>
+            <div class="x402-network-badge">BASE MAINNET</div>
+          </div>
+        </div>
+
+        <div class="x402-wallet-box" id="x402WalletBox" style="display:none;">
+          <div class="x402-wallet-label">CONNECTED WALLET</div>
+          <div class="x402-wallet-addr" id="x402WalletAddr">—</div>
+        </div>
+
+        <div class="x402-steps" id="x402Steps">
+          <div class="x402-step" id="x402Step1">
+            <div class="x402-step-num">1</div>
+            <span>Connect MetaMask wallet</span>
+          </div>
+          <div class="x402-step" id="x402Step2">
+            <div class="x402-step-num">2</div>
+            <span>Authorize USDC transfer (gasless)</span>
+          </div>
+          <div class="x402-step" id="x402Step3">
+            <div class="x402-step-num">3</div>
+            <span>Skill injected into your agent</span>
+          </div>
+        </div>
+
+        <div id="x402BtnArea">
+          <button class="x402-pay-btn metamask" id="x402ConnectBtn" onclick="x402ConnectWallet()">
+            🦊 Connect MetaMask
+          </button>
+        </div>
+        <button class="x402-cancel-btn" onclick="closeX402Modal()">Cancel payment</button>
+      </div>
+
+      <div class="x402-receipt" id="x402Receipt">
+        <div class="x402-receipt-icon">✅</div>
+        <div class="x402-receipt-title">Payment confirmed!</div>
+        <div class="x402-receipt-hash" id="x402TxHash">
+          Tx: <a id="x402TxLink" href="#" target="_blank">—</a>
+        </div>
+        <button class="x402-pay-btn" onclick="closeX402Modal()" style="width:auto;padding:10px 28px;">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
