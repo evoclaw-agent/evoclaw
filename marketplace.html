@@ -862,7 +862,9 @@ async function loadMySkills() {
         catClass: s.category === 'coding' ? 'blue' : s.category === 'security' ? 'orange' : '',
         score: Math.round((s.prm_score || 0.8) * 100),
         prm_score: s.prm_score || 0.8,
-        uses: s.uses || 0, status: s.status || 'private', content: s.content || '',
+        uses: s.uses || 0,
+        status: (new Set(networkSkillsCache.map(ns=>ns.name))).has(s.name||`skill-${i}`) ? 'listed' : (s.status||'private'),
+        content: s.content || '',
       }));
 
       document.getElementById('totalSkills').textContent = data.total;
@@ -1068,7 +1070,9 @@ function renderExploreGrid(skills) {
     const sc = s.score >= 90 ? 'expert' : s.score >= 75 ? 'inter' : 'begin';
     const lvl = s.score >= 90 ? 'EXPERT' : s.score >= 75 ? 'INTERMEDIATE' : 'BEGINNER';
     const preview = (s.content || 'No description').slice(0, 85) + ((s.content||'').length > 85 ? '...' : '');
-    const priceLabel = (!s.price || s.price === 0) ? '<span class="price-tag free">FREE</span>' : `<span class="price-tag paid">${s.price} $EVO</span>`;
+    const rawP = parseFloat(s.price||0);
+    const dispP = rawP >= 1000 ? (rawP/1000000).toFixed(2) : rawP.toFixed ? rawP.toFixed(2) : rawP;
+    const priceLabel = (!rawP || rawP === 0) ? '<span class="price-tag free">FREE</span>' : `<span class="price-tag paid">${dispP} USDC</span>`;
     const starsHtml = renderStars(s.avg_rating || 0, s.rating_count || 0);
     return `
     <div class="mkt-card">
@@ -1098,8 +1102,10 @@ function renderExploreGrid(skills) {
           <button class="dl-btn" title="Download .json" onclick="downloadSkill('${s.id}')">⬇</button>
           <button class="dl-btn" title="Copy to clipboard" onclick="copySkill('${s.id}')">⎘</button>
           <button class="preview-btn" onclick="previewNetworkSkill('${s.id}')">PREVIEW</button>
-          <button class="install-btn" id="ibtn-${s.id}" onclick="${s.price > 0 ? 'openX402Payment' : 'installNetworkSkill'}('${s.id}', this)">
-            ${s.price > 0 ? '⚡ BUY · ' + s.price + ' USDC' : 'INSTALL'}
+          ${isMySkill(s) ? `<button class="act-btn sell" onclick="unlistFromExplore('${s.id}', this)" style="font-size:.58rem;padding:6px 10px;">UNLIST</button>` : ''}
+          ${isMySkill(s) ? `<button class="dl-btn" onclick="editSkillPrice('${s.id}')" title="Edit price" style="padding:6px 10px;">✏</button>` : ''}
+          <button class="install-btn" id="ibtn-${s.id}" onclick="${s.price > 0 && !isMySkill(s) ? 'openX402Payment' : 'installNetworkSkill'}('${s.id}', this)" ${isMySkill(s) ? 'style="background:var(--surface);color:var(--muted);border-color:var(--border2);cursor:default;"' : ''}>
+            ${isMySkill(s) ? 'YOUR SKILL' : s.price > 0 ? '⚡ BUY · ' + (parseFloat(s.price)>=1000?(parseFloat(s.price)/1000000).toFixed(2):parseFloat(s.price).toFixed(2)) + ' USDC' : 'INSTALL'}
           </button>
         </div>
       </div>
@@ -1132,7 +1138,9 @@ function previewNetworkSkill(skillId) {
   const lvl = s.score >= 90 ? 'EXPERT' : s.score >= 75 ? 'INTERMEDIATE' : 'BEGINNER';
   document.getElementById('modalTitle').textContent = s.name;
   document.getElementById('modalSub').textContent = `Network skill · ${s.cat} · ${s.installs} installs · by ${s.creator_email || s.creator}`;
-  const priceStr = (!s.price || s.price === 0) ? '<span style="color:var(--green)">FREE</span>' : `<span style="color:var(--orange)">${parseFloat(s.price) > 1000 ? (parseFloat(s.price)/1000000).toFixed(2) : parseFloat(s.price)} USDC</span>`;
+  const _rp = parseFloat(s.price||0);
+  const _dp = _rp >= 1000 ? (_rp/1000000).toFixed(2) : _rp.toFixed(2);
+  const priceStr = (!_rp || _rp === 0) ? '<span style="color:var(--green)">FREE</span>' : `<span style="color:var(--orange)">${_dp} USDC</span>`;
   document.getElementById('modalPrice').innerHTML = `Price: ${priceStr}`;
   document.getElementById('modalActionBtn').textContent = agentUrl ? 'Install to My Agent' : 'Connect Agent to Install';
   document.getElementById('modalActionBtn').onclick = () => { installNetworkSkill(skillId, null); closeModal(); };
@@ -1598,6 +1606,35 @@ async function x402ExecuteInstall(skillId, xPaymentHeader) {
   } catch(e) { showToast('⚠️ Install error — contact support'); }
 }
 // ══════════════════════════════════════════════════════════
+
+
+// ── HELPER: check if network skill belongs to current agent ──
+function isMySkill(s) {
+  if (!agentUrl) return false;
+  const myHost = agentUrl.replace('https://','').replace('http://','').replace(/\/$/,'');
+  const sHost = (s.creator||'').replace('https://','').replace('http://','').replace(/\/$/,'');
+  return sHost && myHost && sHost === myHost;
+}
+async function unlistFromExplore(skillId, btn) {
+  if (btn) { btn.textContent = '...'; btn.disabled = true; }
+  try {
+    await fetch(SUPA_URL+'/rest/v1/skills?id=eq.'+skillId, { method:'DELETE', headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY} });
+    const s = networkSkillsCache.find(x => x.id === skillId);
+    if (s) { const mi = mySkillsCache.findIndex(x => x.name===s.name); if (mi>-1) mySkillsCache[mi].status='private'; }
+    showToast('Skill unlisted');
+    loadNetworkSkills(); renderMySkills(mySkillsCache);
+  } catch(e) { showToast('Could not unlist'); if(btn){btn.textContent='UNLIST';btn.disabled=false;} }
+}
+function editSkillPrice(skillId) {
+  const s = networkSkillsCache.find(x => x.id === skillId);
+  if (!s) return;
+  const cur = parseFloat(s.price||0)>=1000?(parseFloat(s.price)/1000000).toFixed(2):parseFloat(s.price||0).toFixed(2);
+  const np = prompt('New price for "'+s.name+'" (0=FREE):', cur);
+  if (np===null) return;
+  const p = parseFloat(np);
+  if (isNaN(p)||p<0){showToast('Invalid price');return;}
+  supaPatch('skills?id=eq.'+skillId,{price:p}).then(()=>{s.price=p;showToast('Price updated to '+(p>0?p+' USDC':'FREE'));loadNetworkSkills();});
+}
 
 </script>
 
