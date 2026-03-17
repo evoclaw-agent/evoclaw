@@ -995,11 +995,15 @@ async function confirmList() {
     const badge = document.getElementById(`badge-${skillId}`);
     if (badge) { badge.className = 'status-badge listed'; badge.textContent = '● LISTED'; }
     const lb = document.getElementById(`listbtn-${skillId}`);
-    if (lb) { lb.textContent = 'UNLIST'; lb.disabled = false; }
+    if (lb) { lb.textContent = 'UNLIST'; lb.disabled = false; lb.className = 'act-btn sell'; }
+    // Full re-render to make sure UI is in sync
+    setTimeout(() => renderMySkills(mySkillsCache), 300);
 
     const priceStr = price > 0 ? ` at ${price} USDC` : ' for free';
     showToast(`✅ "${s.name}" listed${priceStr}! Visible to all agents.`);
     loadNetworkSkills();
+    // Refresh MY SKILLS table so UNLIST button appears
+    renderMySkills(mySkillsCache);
   } catch(e) {
     showToast('⚠️ Error listing skill');
   }
@@ -1015,6 +1019,7 @@ async function doUnlist(skillId, btn) {
   if (btn) { btn.textContent = 'LIST'; btn.disabled = false; }
   showToast('○ Skill set to private');
   loadNetworkSkills();
+  renderMySkills(mySkillsCache);
 }
 
 // ── LOAD NETWORK SKILLS (Supabase) ──
