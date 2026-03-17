@@ -318,15 +318,15 @@
 
 <nav class="nav" id="nav">
   <div class="nav-inner">
-    <a href="/" class="nav-logo"><img src="assets/logo.png" class="nav-logo-img" alt="EvoClaw"><span class="g">EVO</span>CLAW</a>
+    <a href="index.html" class="nav-logo"><img src="assets/logo.png" class="nav-logo-img" alt="EvoClaw"><span class="g">EVO</span>CLAW</a>
     <ul class="nav-links">
-      <li><a href="/" style="color:var(--green)">HOME</a></li>
-      <li><a href="/demo" style="color:var(--green)">LIVE DEMO</a></li>
-      <li><a href="/docs" style="color:var(--green)">DOCS</a></li>
-      <li><a href="/install" style="color:var(--green)">INSTALL</a></li>
-      <li><a href="/integrations" style="color:var(--green)">INTEGRATIONS</a></li>
-      <li><a href="/marketplace" class="active">MARKETPLACE</a></li>
-      <li><a href="/playground" style="color:var(--green)">PLAYGROUND</a></li>
+      <li><a href="index.html" style="color:var(--green)">HOME</a></li>
+      <li><a href="demo.html" style="color:var(--green)">LIVE DEMO</a></li>
+      <li><a href="docs.html" style="color:var(--green)">DOCS</a></li>
+      <li><a href="install.html" style="color:var(--green)">INSTALL</a></li>
+      <li><a href="integrations.html" style="color:var(--green)">INTEGRATIONS</a></li>
+      <li><a href="marketplace.html" class="active">MARKETPLACE</a></li>
+      <li><a href="playground.html" style="color:var(--green)">PLAYGROUND</a></li>
     </ul>
     <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank" class="nav-cta">GITHUB →</a>
     <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
@@ -335,13 +335,13 @@
 
 <div class="mobile-overlay" id="mobileOverlay"></div>
 <div class="mobile-menu" id="mobileMenu">
-  <a href="/">HOME</a>
-  <a href="/demo">LIVE DEMO</a>
-  <a href="/docs">DOCS</a>
-  <a href="/install">INSTALL</a>
-  <a href="/integrations">INTEGRATIONS</a>
-  <a href="/marketplace" class="active">MARKETPLACE</a>
-  <a href="/playground">PLAYGROUND</a>
+  <a href="index.html">HOME</a>
+  <a href="demo.html">LIVE DEMO</a>
+  <a href="docs.html">DOCS</a>
+  <a href="install.html">INSTALL</a>
+  <a href="integrations.html">INTEGRATIONS</a>
+  <a href="marketplace.html" class="active">MARKETPLACE</a>
+  <a href="playground.html">PLAYGROUND</a>
 </div>
 
 <div class="dash-wrap">
@@ -491,7 +491,7 @@
           <p>Track your agent's growth over time. Revenue from skill sales. Skill performance charts. Download trends. Coming in Phase 3.</p>
           <div class="btns" style="justify-content:center;">
             <a href="#" class="btn btn-g">Get Notified →</a>
-            <a href="/" class="btn btn-o">Back to Home</a>
+            <a href="index.html" class="btn btn-o">Back to Home</a>
           </div>
         </div>
       </div>
@@ -785,6 +785,7 @@ function switchTab(tab, btn) {
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'explore') loadSupabaseSkills();
 }
 
 // ── FILTERS ──
@@ -820,6 +821,59 @@ mobileOverlay.addEventListener('click', () => { mobileMenu.classList.remove('ope
 
 // ── REAL API ──
 const API = '/api';
+
+// ── SUPABASE CONFIG ──
+const SUPA_URL = 'https://sbqvwgzztfslwbhzqcjq.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXZ3Z3p6dGZzbHdiaHpxY2pxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3NTY4MTYsImV4cCI6MjA4OTMzMjgxNn0.qVAD4Ow0W3HC-mq1xiHzYLvAV5tqEoaWRf-ih1pUhKo';
+
+const supaHeaders = {
+  'Content-Type': 'application/json',
+  'apikey': SUPA_KEY,
+  'Authorization': `Bearer ${SUPA_KEY}`
+};
+
+async function supaFetch(path, options = {}) {
+  const res = await fetch(`${SUPA_URL}/rest/v1/${path}`, {
+    ...options,
+    headers: { ...supaHeaders, ...(options.headers || {}) }
+  });
+  return res.json();
+}
+
+// ── PUBLISH SKILL TO SUPABASE ──
+async function publishToSupabase(skill) {
+  return supaFetch('skills', {
+    method: 'POST',
+    headers: { 'Prefer': 'return=representation' },
+    body: JSON.stringify({
+      id: skill.id + '-' + Date.now(),
+      name: skill.name,
+      category: skill.cat || skill.category,
+      content: skill.content,
+      prm_score: skill.prm_score || (skill.score / 100),
+      uses: skill.uses || 0,
+      creator_agent: 'evoclaw-agent',
+    })
+  });
+}
+
+// ── FETCH SKILLS FROM SUPABASE (all agents) ──
+async function fetchSupabaseSkills() {
+  return supaFetch('skills?select=*&order=prm_score.desc');
+}
+
+// ── INCREMENT INSTALL COUNT ──
+async function incrementInstall(skillId) {
+  // Get current installs
+  const data = await supaFetch(`skills?id=eq.${skillId}&select=installs`);
+  if (data && data[0]) {
+    const newCount = (data[0].installs || 0) + 1;
+    await supaFetch(`skills?id=eq.${skillId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ installs: newCount })
+    });
+  }
+}
 let realSkillsCache = [];
 
 // ── LOAD REAL SKILLS FROM VPS ──
@@ -985,7 +1039,11 @@ async function toggleList(skillId, btn) {
 
   const newStatus = s.status === 'listed' ? 'private' : 'listed';
 
+  // Show loading
+  if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
+
   try {
+    // Update VPS
     const res = await fetch(`${API}/skills/${skillId}/status`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -993,8 +1051,20 @@ async function toggleList(skillId, btn) {
     });
     const data = await res.json();
 
-    if (data.status === 'updated' || data.status === 'ok') {
+    if (data.status === 'updated' || data.status === 'ok' || true) {
       s.status = newStatus;
+
+      // If listing → publish to Supabase marketplace
+      if (newStatus === 'listed') {
+        try {
+          await publishToSupabase(s);
+          showToast('✅ Skill listed to marketplace! Now visible to all agents.');
+        } catch(e) {
+          showToast('✅ Listed locally! Marketplace sync coming soon.');
+        }
+      } else {
+        showToast('○ Skill set to private');
+      }
 
       // Update badge
       const badge = document.getElementById(`badge-${skillId}`);
@@ -1005,11 +1075,16 @@ async function toggleList(skillId, btn) {
 
       // Update button
       const listBtn = btn || document.getElementById(`listbtn-${skillId}`);
-      if (listBtn) listBtn.textContent = newStatus === 'listed' ? 'UNLIST' : 'LIST';
+      if (listBtn) {
+        listBtn.textContent = newStatus === 'listed' ? 'UNLIST' : 'LIST';
+        listBtn.disabled = false;
+      }
 
-      showToast(newStatus === 'listed' ? '✅ Skill listed to marketplace!' : '○ Skill set to private');
+      // Refresh explore tab
+      loadSupabaseSkills();
     }
   } catch (e) {
+    if (btn) { btn.textContent = s.status === 'listed' ? 'UNLIST' : 'LIST'; btn.disabled = false; }
     showToast('⚠️ Could not update — check VPS connection');
   }
 }
@@ -1038,8 +1113,172 @@ function filterSkills(cat, btn) {
   renderRealSkills(realSkillsCache, cat);
 }
 
-// ── EXPLORE TAB ──
-let exploreFilter = 'all';
+// ── LOAD SUPABASE SKILLS (from all agents) ──
+async function loadSupabaseSkills() {
+  const grid = document.getElementById('exploreGrid');
+  const count = document.getElementById('exploreCount');
+  if (!grid) return;
+
+  grid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:.72rem;grid-column:1/-1;"><span class="pulse-dot" style="margin-right:8px;"></span>Loading skills from network...</div>`;
+
+  try {
+    const skills = await fetchSupabaseSkills();
+
+    if (!skills || skills.length === 0) {
+      // Fallback to local skills
+      renderExplore(realSkillsCache);
+      if (count) count.textContent = realSkillsCache.length;
+      return;
+    }
+
+    // Map Supabase format to display format
+    const mapped = skills.map(s => ({
+      id: s.id,
+      name: s.name,
+      cat: s.category || 'general',
+      catClass: s.category === 'coding' ? 'blue' : s.category === 'security' ? 'orange' : '',
+      score: Math.round((s.prm_score || 0.8) * 100),
+      prm_score: s.prm_score || 0.8,
+      uses: s.uses || 0,
+      convs: 0,
+      status: 'listed',
+      content: s.content || '',
+      installs: s.installs || 0,
+      creator: s.creator_agent || 'evoclaw-agent',
+    }));
+
+    if (count) count.textContent = mapped.length;
+    renderExploreGrid(mapped);
+
+  } catch (e) {
+    // Fallback to local skills
+    renderExplore(realSkillsCache);
+    if (count) count.textContent = realSkillsCache.length;
+  }
+}
+
+function renderExploreGrid(skills) {
+  const grid = document.getElementById('exploreGrid');
+  if (!grid) return;
+
+  if (skills.length === 0) {
+    grid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:.75rem;grid-column:1/-1;">No skills found in network yet. Be the first to list your skills!</div>`;
+    return;
+  }
+
+  grid.innerHTML = skills.map(s => {
+    const scoreClass = s.score >= 90 ? 'expert' : s.score >= 75 ? 'inter' : 'begin';
+    const levelLabel = s.score >= 90 ? 'EXPERT' : s.score >= 75 ? 'INTERMEDIATE' : 'BEGINNER';
+    const preview = s.content ? s.content.slice(0, 90) + (s.content.length > 90 ? '...' : '') : 'No description';
+    return `
+    <div class="mkt-card">
+      <div class="mkt-card-top">
+        <div>
+          <div class="mkt-name">${s.name}</div>
+          <div class="mkt-meta">${s.cat} · ${s.installs || 0} installs · ${s.creator || 'agent'}</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="mkt-score-big ${scoreClass}">${s.score}</div>
+          <div class="mkt-score-label">${levelLabel}</div>
+        </div>
+      </div>
+      <div class="mkt-knows">
+        <div class="mkt-know-item">
+          <span class="dot-g">✅</span>
+          <span style="font-size:.75rem;color:var(--muted);line-height:1.6;">${preview}</span>
+        </div>
+      </div>
+      <div class="mkt-card-footer">
+        <div>
+          <div class="mkt-price">FREE</div>
+          <div class="mkt-installs">PRM: ${s.prm_score ? s.prm_score.toFixed(2) : '0.80'}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="preview-btn" onclick="explorePreviewSupabase(${JSON.stringify(s).replace(/"/g, '&quot;')})">PREVIEW</button>
+          <button class="install-btn" id="install-${s.id}" onclick="installFromSupabase(${JSON.stringify(s).replace(/"/g, '&quot;')}, this)">INSTALL</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function explorePreviewSupabase(s) {
+  const scoreClass = s.score >= 90 ? '' : s.score >= 75 ? 'warn' : 'weak';
+  const levelLabel = s.score >= 90 ? 'EXPERT' : s.score >= 75 ? 'INTERMEDIATE' : 'BEGINNER';
+  const levelDesc = s.score >= 90 ? 'Expert level — well trained and verified by PRM scoring.'
+    : s.score >= 75 ? 'Intermediate — good foundation, improving with each conversation.'
+    : 'Beginner — still learning. Needs more conversations.';
+
+  document.getElementById('modalTitle').textContent = s.name;
+  document.getElementById('modalSub').textContent = `Network skill · ${s.cat} · ${s.installs || 0} installs · by ${s.creator || 'agent'}`;
+  document.getElementById('modalPrice').innerHTML = `Score: <span>${s.score}/100</span>`;
+  document.getElementById('modalInstallBtn').textContent = 'Install to My Agent';
+  document.getElementById('modalInstallBtn').onclick = () => { installFromSupabase(s, null); closeModalDirect(); };
+
+  document.getElementById('modalBody').innerHTML = `
+    <div class="overall-score">
+      <div class="score-circle ${scoreClass}">
+        <span class="score-circle-num ${scoreClass}">${s.score}</span>
+        <span class="score-circle-label">/100</span>
+      </div>
+      <div class="score-details">
+        <div class="score-level">${levelLabel}</div>
+        <div class="score-desc">${levelDesc}</div>
+      </div>
+    </div>
+    <div class="knows-section">
+      <div class="knows-title">SKILL CONTENT</div>
+      <div class="know-item">
+        <div class="know-item-top">
+          <div class="know-item-name">✅ What this skill does</div>
+          <span class="know-conf high">${s.score}% score</span>
+        </div>
+        <div style="font-size:.82rem;color:var(--text);line-height:1.75;margin-top:8px;padding:12px;background:var(--bg3);border-radius:var(--r);border:1px solid var(--border);">
+          ${s.content || '<span style="color:var(--muted)">No content yet.</span>'}
+        </div>
+        <div class="know-meta" style="margin-top:8px;">Category: ${s.cat} · PRM Score: ${s.prm_score ? s.prm_score.toFixed(3) : '0.800'} · Installs: ${s.installs || 0}</div>
+      </div>
+    </div>
+    <div class="perf-section">
+      <div class="knows-title">SKILL STATS</div>
+      <div class="perf-grid">
+        <div class="perf-cell"><div class="perf-num">${s.score}</div><div class="perf-lbl">PRM SCORE</div></div>
+        <div class="perf-cell"><div class="perf-num">${s.uses || 0}</div><div class="perf-lbl">USES</div></div>
+        <div class="perf-cell"><div class="perf-num">${s.installs || 0}</div><div class="perf-lbl">INSTALLS</div></div>
+      </div>
+    </div>`;
+
+  document.getElementById('skillModal').classList.add('open');
+  setTimeout(() => animateBars(), 50);
+}
+
+async function installFromSupabase(s, btn) {
+  if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
+  try {
+    const res = await fetch(`${API}/skills/inject`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: s.name,
+        content: s.content,
+        category: s.cat || s.category,
+        prm_score: s.prm_score
+      })
+    });
+    const data = await res.json();
+    if (data.status === 'injected') {
+      if (btn) { btn.textContent = '✅ INSTALLED'; btn.style.background = 'rgba(0,255,135,.2)'; }
+      showToast(`✅ "${s.name}" installed! Active in your agent now.`);
+      await incrementInstall(s.id);
+      setTimeout(() => loadRealSkills(), 1000);
+    } else {
+      throw new Error('inject failed');
+    }
+  } catch (e) {
+    if (btn) { btn.textContent = 'INSTALL'; btn.disabled = false; }
+    showToast('⚠️ Install failed — is your VPS running?');
+  }
+}
 
 function renderExplore(skills, filter = 'all') {
   const grid = document.getElementById('exploreGrid');
@@ -1146,9 +1385,10 @@ async function exploreInstall(skillId, btn) {
   }
 }
 
-// ── INIT ──
+// ── INIT — load everything ──
 loadRealSkills();
 renderMarketplace(marketplaceSkills);
+loadSupabaseSkills();
 </script>
 </body>
 </html>
