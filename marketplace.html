@@ -715,13 +715,13 @@
 <div class="list-price-modal" id="listPriceModal" onclick="if(event.target===this)closeListPriceModal()">
   <div class="list-price-box">
     <div class="lpm-title">List skill to Marketplace</div>
-    <div class="lpm-sub">Set a price for your skill. Set 0 to make it free.<br>Buyers pay in <span style="color:var(--green)">$EVOCLAW</span> tokens.</div>
+    <div class="lpm-sub">Set a price for your skill. Set 0 to make it free.<br>Buyers pay in <span style="color:var(--green)">USDC</span> on Base network via x402.</div>
     <div class="lpm-price-row">
       <input class="lpm-input" id="listPriceInput" type="number" min="0" step="1" placeholder="0" value="0">
-      <span class="lpm-currency">$EVOCLAW tokens</span>
+      <span class="lpm-currency">USDC</span>
     </div>
     <div style="font-family:var(--mono);font-size:.6rem;color:var(--dim);margin-bottom:12px;">
-      0 = FREE for everyone &nbsp;·&nbsp; Any amount = paid skill
+      0 = FREE &nbsp;·&nbsp; e.g. 1 = 1 USDC &nbsp;·&nbsp; 10 = 10 USDC
     </div>
     <div style="margin-bottom:20px;">
       <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.08em;margin-bottom:6px;">YOUR WALLET (receive USDC payments)</div>
@@ -997,7 +997,7 @@ async function confirmList() {
     const lb = document.getElementById(`listbtn-${skillId}`);
     if (lb) { lb.textContent = 'UNLIST'; lb.disabled = false; }
 
-    const priceStr = price > 0 ? ` at ${price} $EVOCLAW` : ' for free';
+    const priceStr = price > 0 ? ` at ${price} USDC` : ' for free';
     showToast(`✅ "${s.name}" listed${priceStr}! Visible to all agents.`);
     loadNetworkSkills();
   } catch(e) {
@@ -1127,7 +1127,7 @@ function previewNetworkSkill(skillId) {
   const lvl = s.score >= 90 ? 'EXPERT' : s.score >= 75 ? 'INTERMEDIATE' : 'BEGINNER';
   document.getElementById('modalTitle').textContent = s.name;
   document.getElementById('modalSub').textContent = `Network skill · ${s.cat} · ${s.installs} installs · by ${s.creator_email || s.creator}`;
-  const priceStr = (!s.price || s.price === 0) ? '<span style="color:var(--green)">FREE</span>' : `<span style="color:var(--orange)">${s.price} $EVOCLAW</span>`;
+  const priceStr = (!s.price || s.price === 0) ? '<span style="color:var(--green)">FREE</span>' : `<span style="color:var(--orange)">${parseFloat(s.price) > 1000 ? (parseFloat(s.price)/1000000).toFixed(2) : parseFloat(s.price)} USDC</span>`;
   document.getElementById('modalPrice').innerHTML = `Price: ${priceStr}`;
   document.getElementById('modalActionBtn').textContent = agentUrl ? 'Install to My Agent' : 'Connect Agent to Install';
   document.getElementById('modalActionBtn').onclick = () => { installNetworkSkill(skillId, null); closeModal(); };
@@ -1489,9 +1489,12 @@ function openX402Payment(skillId) {
   const s = networkSkillsCache.find(x => x.id === skillId);
   if (!s) return;
   if (!s.price || s.price === 0) { installNetworkSkill(skillId, null); return; }
-  x402State = { skillId, skillName:s.name, priceUsdc:parseFloat(s.price), payTo:s.creator_wallet||X402_CONFIG.defaultPayTo, walletAddr:'' };
+  const rawPrice = parseFloat(s.price); const fixedPrice = rawPrice > 1000 ? rawPrice/1000000 : rawPrice;
+  x402State = { skillId, skillName:s.name, priceUsdc:fixedPrice, payTo:s.creator_wallet||X402_CONFIG.defaultPayTo, walletAddr:'' };
   document.getElementById('x402SkillName').textContent = s.name;
-  document.getElementById('x402Amount').textContent = `${s.price} USDC`;
+  const displayPrice = parseFloat(s.price) > 1000 ? (parseFloat(s.price)/1000000).toFixed(2) : parseFloat(s.price).toFixed(2);
+  document.getElementById('x402Amount').textContent = `${displayPrice} USDC`;
+  x402State.priceUsdc = parseFloat(displayPrice);
   document.getElementById('x402WalletBox').style.display = 'none';
   document.getElementById('x402BtnArea').innerHTML = `<button class="x402-pay-btn metamask" onclick="x402ConnectWallet()">🦊 Connect MetaMask</button>`;
   document.getElementById('x402PayForm').style.display = 'block';
