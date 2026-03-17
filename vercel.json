@@ -1,9 +1,5 @@
 {
-  "cleanUrls": true,
   "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "http://194.233.67.196/api/:path*"
-    }
+    { "source": "/api/submit", "destination": "/api/submit.js" }
   ]
 }
