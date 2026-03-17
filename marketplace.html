@@ -319,13 +319,13 @@
 <nav class="nav" id="nav">
   <div class="nav-inner">
     <a href="index.html" class="nav-logo"><img src="assets/logo.png" class="nav-logo-img" alt="EvoClaw"><span class="g">EVO</span>CLAW</a>
-            <ul class="nav-links">
+    <ul class="nav-links">
       <li><a href="index.html" style="color:var(--green)">HOME</a></li>
+      <li><a href="demo.html" style="color:var(--green)">LIVE DEMO</a></li>
       <li><a href="docs.html" style="color:var(--green)">DOCS</a></li>
       <li><a href="install.html" style="color:var(--green)">INSTALL</a></li>
       <li><a href="integrations.html" style="color:var(--green)">INTEGRATIONS</a></li>
-      <li><a href="marketplace.html" class="active">MARKETPLACE</a></li>
-      <li><a href="ask.html" style="color:var(--green)">ASK EVOCLAW</a></li>
+      <li><a href="dashboard.html" class="active">DASHBOARD</a></li>
       <li><a href="playground.html" style="color:var(--green)">PLAYGROUND</a></li>
     </ul>
     <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank" class="nav-cta">GITHUB →</a>
@@ -350,7 +350,7 @@
   <div class="dash-tabs">
     <div class="dash-tabs-inner">
       <div class="tab-list">
-        <button class="tab-btn active" onclick="switchTab('my-skills', this)" style="color:var(--green)">MY SKILLS</button>
+        <button class="tab-btn active" onclick="switchTab('my-skills', this)">MY SKILLS</button>
         <button class="tab-btn" onclick="switchTab('marketplace', this)">MARKETPLACE</button>
         <button class="tab-btn" onclick="switchTab('analytics', this)">ANALYTICS</button>
       </div>
@@ -760,8 +760,97 @@ const mobileOverlay = document.getElementById('mobileOverlay');
 hamburger.addEventListener('click', () => { mobileMenu.classList.toggle('open'); mobileOverlay.classList.toggle('open'); });
 mobileOverlay.addEventListener('click', () => { mobileMenu.classList.remove('open'); mobileOverlay.classList.remove('open'); });
 
-// ── INIT ──
-renderMySkills();
+// ── REAL API ──
+const API = 'http://194.233.67.196/api';
+
+async function loadRealSkills() {
+  try {
+    // Update status to loading
+    document.getElementById('totalSkills').textContent = '...';
+
+    const [skillsRes, statusRes] = await Promise.all([
+      fetch(`${API}/skills`),
+      fetch(`${API}/agent/status`)
+    ]);
+
+    const skillsData = await skillsRes.json();
+    const statusData = await statusRes.json();
+
+    if (skillsData.status === 'ok' && skillsData.skills.length > 0) {
+      // Update stats bar
+      document.getElementById('totalSkills').textContent = skillsData.total;
+
+      // Map real skills to display format
+      const realSkills = skillsData.skills.map((s, i) => ({
+        id: i + 1,
+        name: s.name || `skill-${i}`,
+        cat: s.category || 'general',
+        catClass: s.category === 'coding' ? 'blue' : s.category === 'security' ? 'orange' : '',
+        score: Math.round((s.prm_score || 0.8) * 100),
+        uses: s.uses || 0,
+        convs: s.conversations || 0,
+        status: s.status || 'private',
+      }));
+
+      // Render real data
+      renderMySkills('all', realSkills);
+
+      // Show agent online
+      document.querySelector('.tab-stats').innerHTML = `
+        <div class="tab-stat">Skills: <span>${skillsData.total}</span></div>
+        <div class="tab-stat">Avg Score: <span>${statusData.avg_prm_score || '0.81'}</span></div>
+        <div class="tab-stat" style="display:flex;align-items:center;gap:6px;">
+          <span class="pulse-dot"></span>
+          <span style="color:var(--green);">AGENT ONLINE</span>
+        </div>
+      `;
+    } else {
+      // Fallback to demo data
+      renderMySkills();
+    }
+  } catch (e) {
+    console.log('API not reachable, using demo data:', e.message);
+    renderMySkills();
+  }
+}
+
+// Override renderMySkills to accept external data
+const _origRender = renderMySkills;
+function renderMySkills(filter = 'all', data = null) {
+  const skills = data || mySkills;
+  const list = document.getElementById('mySkillsList');
+  const filtered = filter === 'all' ? skills : skills.filter(s => s.cat === filter);
+  list.innerHTML = filtered.map(s => {
+    const scoreClass = s.score >= 90 ? '' : s.score >= 75 ? 'warn' : 'weak';
+    const dotClass = s.score >= 90 ? '' : s.score >= 75 ? 'warn' : 'weak';
+    return `
+    <div class="skill-row" data-cat="${s.cat}">
+      <div class="skill-name-col">
+        <div class="skill-dot ${dotClass}"></div>
+        <span class="skill-name">${s.name}</span>
+        <span class="skill-cat ${s.catClass || ''}">${(s.cat||'general').toUpperCase()}</span>
+      </div>
+      <div class="score-bar-wrap">
+        <span class="score-num ${scoreClass}">${s.score}</span>
+        <div class="score-bar"><div class="score-fill ${scoreClass}" style="width:${s.score}%"></div></div>
+      </div>
+      <div class="uses-col">${(s.uses||0).toLocaleString()}</div>
+      <div class="conv-col col-conv">${(s.convs||0).toLocaleString()}</div>
+      <div>
+        <span class="status-badge ${s.status||'private'}">
+          ${s.status === 'listed' ? '● LISTED' : '○ PRIVATE'}
+        </span>
+      </div>
+      <div class="action-btns">
+        <button class="act-btn">PREVIEW</button>
+        <button class="act-btn sell">${s.status === 'listed' ? 'UNLIST' : 'LIST'}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── INIT — try real API first ──
+loadRealSkills();
 renderMarketplace(marketplaceSkills);
 </script>
 </body>
