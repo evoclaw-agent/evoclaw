@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8"/>
+  <title>EvoClaw — Skill Marketplace</title>
+  <meta name="description" content="Browse, buy, sell and transfer agent skills. See exactly what every skill knows before you install."/>
+  <link rel="stylesheet" href="css/shared.css"/>
+  <style>
+    .dash-wrap { padding-top: 58px; min-height: 100vh; background: var(--bg); }
+
+    /* ── TABS ── */
+    .dash-tabs {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 58px; z-index: 100;
+    }
+    .dash-tabs-inner {
+      max-width: var(--max); margin: 0 auto; padding: 0 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 20px;
+    }
+    .tab-list { display: flex; gap: 0; }
+    .tab-btn {
+      font-family: var(--mono); font-size: .7rem; letter-spacing: .1em;
+      padding: 16px 24px; color: var(--muted); background: none;
+      border: none; border-bottom: 2px solid transparent;
+      cursor: pointer; transition: all .15s;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+    .tab-stats {
+      display: flex; gap: 24px; align-items: center;
+    }
+    .tab-stat {
+      font-family: var(--mono); font-size: .62rem;
+      color: var(--muted); letter-spacing: .06em;
+    }
+    .tab-stat span { color: var(--green); font-weight: 500; }
+
+    /* ── TAB CONTENT ── */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── MY SKILLS ── */
+    .skills-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+    }
+    .skills-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-btn {
+      font-family: var(--mono); font-size: .62rem; letter-spacing: .08em;
+      padding: 6px 14px; border-radius: var(--r); cursor: pointer;
+      border: 1px solid var(--border2); background: none; color: var(--muted);
+      transition: all .15s;
+    }
+    .filter-btn:hover { color: var(--text); border-color: var(--green-b); }
+    .filter-btn.active { background: var(--green-d); border-color: var(--green-b); color: var(--green); }
+
+    /* Skills table */
+    .skills-tbl { border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
+    .skills-tbl-header {
+      display: grid; grid-template-columns: 2fr 100px 80px 80px 100px 140px;
+      background: var(--surface); padding: 10px 20px;
+      font-family: var(--mono); font-size: .58rem; letter-spacing: .12em; color: var(--muted);
+    }
+    .skill-row {
+      display: grid; grid-template-columns: 2fr 100px 80px 80px 100px 140px;
+      padding: 14px 20px; border-top: 1px solid var(--border);
+      background: var(--bg); transition: background .12s; align-items: center;
+    }
+    .skill-row:hover { background: var(--surface); }
+    .skill-name-col { display: flex; align-items: center; gap: 10px; }
+    .skill-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+    .skill-dot.warn { background: var(--orange); }
+    .skill-dot.weak { background: var(--red); }
+    .skill-name { font-size: .84rem; font-weight: 500; color: var(--text); }
+    .skill-cat {
+      font-family: var(--mono); font-size: .58rem; letter-spacing: .1em;
+      color: var(--green); background: var(--green-d);
+      border: 1px solid var(--green-b); padding: 2px 7px; border-radius: 3px;
+      margin-left: 6px;
+    }
+    .skill-cat.blue { color: var(--blue); background: var(--blue-d); border-color: var(--blue-b); }
+    .skill-cat.orange { color: var(--orange); background: rgba(255,140,66,.06); border-color: rgba(255,140,66,.2); }
+    .score-bar-wrap { display: flex; align-items: center; gap: 8px; }
+    .score-num { font-family: var(--mono); font-size: .72rem; color: var(--green); min-width: 28px; }
+    .score-num.warn { color: var(--orange); }
+    .score-num.weak { color: var(--red); }
+    .score-bar { flex: 1; height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; min-width: 40px; }
+    .score-fill { height: 100%; border-radius: 2px; background: var(--green); }
+    .score-fill.warn { background: var(--orange); }
+    .score-fill.weak { background: var(--red); }
+    .uses-col { font-family: var(--mono); font-size: .72rem; color: var(--muted); }
+    .conv-col { font-family: var(--mono); font-size: .72rem; color: var(--muted); }
+    .status-badge {
+      font-family: var(--mono); font-size: .58rem; letter-spacing: .1em;
+      padding: 3px 10px; border-radius: 3px; display: inline-flex; align-items: center; gap: 5px;
+    }
+    .status-badge.listed { background: var(--green-d); border: 1px solid var(--green-b); color: var(--green); }
+    .status-badge.private { background: var(--surface); border: 1px solid var(--border2); color: var(--muted); }
+    .status-badge.selling { background: rgba(255,140,66,.06); border: 1px solid rgba(255,140,66,.2); color: var(--orange); }
+    .action-btns { display: flex; gap: 6px; }
+    .act-btn {
+      font-family: var(--mono); font-size: .58rem; letter-spacing: .08em;
+      padding: 4px 10px; border-radius: 3px; cursor: pointer; transition: all .15s;
+      border: 1px solid var(--border2); background: none; color: var(--muted);
+    }
+    .act-btn:hover { color: var(--green); border-color: var(--green-b); background: var(--green-d); }
+    .act-btn.sell { color: var(--orange); border-color: rgba(255,140,66,.3); }
+    .act-btn.sell:hover { background: rgba(255,140,66,.08); }
+
+    /* ── MARKETPLACE ── */
+    .mkt-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px; gap: 16px; flex-wrap: wrap;
+    }
+    .mkt-search {
+      display: flex; gap: 8px; align-items: center; flex: 1;
+    }
+    .search-input {
+      flex: 1; background: var(--surface); border: 1px solid var(--border2);
+      border-radius: var(--r); padding: 9px 14px; font-family: var(--mono);
+      font-size: .72rem; color: var(--text); outline: none; max-width: 340px;
+    }
+    .search-input:focus { border-color: var(--green-b); }
+    .search-input::placeholder { color: var(--dim); }
+    .mkt-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1px; background: var(--border);
+      border: 1px solid var(--border); border-radius: var(--r); overflow: hidden;
+    }
+    .mkt-card {
+      background: var(--bg); padding: 22px;
+      transition: background .15s; cursor: pointer;
+    }
+    .mkt-card:hover { background: var(--surface); }
+    .mkt-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+    .mkt-name { font-size: .88rem; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+    .mkt-meta { font-family: var(--mono); font-size: .6rem; color: var(--muted); }
+    .mkt-score-big { font-family: var(--mono); font-size: 1.4rem; font-weight: 700; line-height: 1; }
+    .mkt-score-big.expert { color: var(--green); }
+    .mkt-score-big.inter { color: var(--orange); }
+    .mkt-score-big.begin { color: var(--red); }
+    .mkt-score-label { font-family: var(--mono); font-size: .54rem; letter-spacing: .1em; color: var(--muted); text-align: right; margin-top: 2px; }
+    .mkt-knows { margin-bottom: 12px; }
+    .mkt-know-item { font-size: .75rem; color: var(--muted); line-height: 1.8; display: flex; align-items: center; gap: 6px; }
+    .mkt-know-item .dot-g { color: var(--green); font-size: .7rem; }
+    .mkt-know-item .dot-w { color: var(--orange); font-size: .7rem; }
+    .mkt-know-item .dot-r { color: var(--red); font-size: .7rem; }
+    .mkt-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); }
+    .mkt-price { font-family: var(--mono); font-size: .68rem; color: var(--green); }
+    .mkt-price.paid { color: var(--blue); }
+    .mkt-installs { font-family: var(--mono); font-size: .6rem; color: var(--dim); }
+    .install-btn {
+      font-family: var(--mono); font-size: .62rem; letter-spacing: .08em;
+      padding: 6px 14px; border-radius: var(--r); cursor: pointer;
+      background: var(--green-d); border: 1px solid var(--green-b); color: var(--green);
+      transition: all .15s;
+    }
+    .install-btn:hover { background: rgba(0,255,135,.15); }
+    .preview-btn {
+      font-family: var(--mono); font-size: .62rem; letter-spacing: .08em;
+      padding: 6px 14px; border-radius: var(--r); cursor: pointer;
+      background: none; border: 1px solid var(--border2); color: var(--muted);
+      transition: all .15s; margin-right: 6px;
+    }
+    .preview-btn:hover { color: var(--text); border-color: var(--green-b); }
+
+    /* ── SKILL PREVIEW MODAL ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 500;
+      background: rgba(5,7,15,0.88); backdrop-filter: blur(8px);
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--r); width: 100%; max-width: 780px;
+      max-height: 88vh; overflow-y: auto;
+    }
+    .modal-header {
+      padding: 20px 28px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start; justify-content: space-between;
+      position: sticky; top: 0; background: var(--bg2); z-index: 1;
+    }
+    .modal-title { font-size: 1.1rem; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+    .modal-sub { font-family: var(--mono); font-size: .62rem; color: var(--muted); }
+    .modal-close {
+      font-size: 1.2rem; color: var(--muted); background: none;
+      border: none; cursor: pointer; padding: 4px 8px; transition: color .15s;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-body { padding: 28px; }
+
+    /* Overall score */
+    .overall-score {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 20px 24px; margin-bottom: 24px;
+      display: flex; align-items: center; gap: 24px;
+    }
+    .score-circle {
+      width: 72px; height: 72px; border-radius: 50%;
+      border: 3px solid var(--green); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .score-circle.warn { border-color: var(--orange); }
+    .score-circle.weak { border-color: var(--red); }
+    .score-circle-num { font-family: var(--mono); font-size: 1.4rem; font-weight: 700; color: var(--green); line-height: 1; }
+    .score-circle-num.warn { color: var(--orange); }
+    .score-circle-num.weak { color: var(--red); }
+    .score-circle-label { font-family: var(--mono); font-size: .52rem; color: var(--muted); letter-spacing: .06em; }
+    .score-details { flex: 1; }
+    .score-level { font-size: .92rem; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+    .score-desc { font-size: .8rem; color: var(--muted); line-height: 1.65; }
+
+    /* 5 dimensions */
+    .dimensions { margin-bottom: 24px; }
+    .dim-title { font-family: var(--mono); font-size: .62rem; letter-spacing: .14em; color: var(--green); margin-bottom: 14px; }
+    .dim-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .dim-label { font-size: .78rem; color: var(--muted); min-width: 140px; }
+    .dim-bar-wrap { flex: 1; height: 5px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+    .dim-fill { height: 100%; border-radius: 3px; background: var(--green); transition: width .6s var(--ease); }
+    .dim-fill.warn { background: var(--orange); }
+    .dim-fill.weak { background: var(--red); }
+    .dim-pct { font-family: var(--mono); font-size: .68rem; min-width: 36px; text-align: right; }
+
+    /* What it knows */
+    .knows-section { margin-bottom: 24px; }
+    .knows-title { font-family: var(--mono); font-size: .62rem; letter-spacing: .14em; color: var(--green); margin-bottom: 14px; }
+    .know-item {
+      border: 1px solid var(--border); border-radius: var(--r);
+      padding: 14px 16px; margin-bottom: 8px; background: var(--bg);
+    }
+    .know-item-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .know-item-name { font-size: .82rem; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 8px; }
+    .know-status { font-size: .8rem; }
+    .know-conf { font-family: var(--mono); font-size: .7rem; }
+    .know-conf.high { color: var(--green); }
+    .know-conf.mid { color: var(--orange); }
+    .know-conf.low { color: var(--red); }
+    .know-meta { font-family: var(--mono); font-size: .6rem; color: var(--dim); }
+
+    /* Gaps */
+    .gaps-section { margin-bottom: 24px; }
+    .gap-item {
+      border: 1px solid rgba(255,140,66,.15); border-radius: var(--r);
+      padding: 12px 16px; margin-bottom: 8px; background: rgba(255,140,66,.03);
+    }
+    .gap-name { font-size: .82rem; font-weight: 500; color: var(--orange); margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+    .gap-desc { font-size: .78rem; color: var(--muted); }
+
+    /* Real performance */
+    .perf-section { margin-bottom: 24px; }
+    .perf-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
+    .perf-cell { background: var(--bg); padding: 16px 18px; }
+    .perf-num { font-family: var(--mono); font-size: 1.3rem; font-weight: 700; color: var(--green); line-height: 1; margin-bottom: 4px; }
+    .perf-num.warn { color: var(--orange); }
+    .perf-lbl { font-family: var(--mono); font-size: .58rem; color: var(--muted); letter-spacing: .08em; }
+
+    /* Modal footer */
+    .modal-footer {
+      padding: 20px 28px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      position: sticky; bottom: 0; background: var(--bg2);
+    }
+    .modal-price { font-family: var(--mono); font-size: .78rem; color: var(--muted); }
+    .modal-price span { color: var(--green); font-weight: 500; font-size: .9rem; }
+    .modal-actions { display: flex; gap: 8px; }
+    .btn-install { background: var(--green); color: #000; font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; font-weight: 500; padding: 10px 22px; border-radius: var(--r); border: none; cursor: pointer; transition: opacity .15s; }
+    .btn-install:hover { opacity: .85; }
+    .btn-transfer { background: none; border: 1px solid var(--border2); color: var(--muted); font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; padding: 10px 22px; border-radius: var(--r); cursor: pointer; transition: all .15s; }
+    .btn-transfer:hover { color: var(--text); border-color: var(--green-b); }
+
+    /* Coming soon overlay */
+    .coming-soon {
+      text-align: center; padding: 80px 40px;
+    }
+    .coming-soon-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--green-d); border: 1px solid var(--green-b);
+      padding: 6px 16px; border-radius: var(--r);
+      font-family: var(--mono); font-size: .66rem; letter-spacing: .1em;
+      color: var(--green); margin-bottom: 24px;
+    }
+    .coming-soon h2 { font-size: 1.8rem; font-weight: 300; letter-spacing: -.025em; color: var(--text); margin-bottom: 12px; }
+    .coming-soon h2 b { font-weight: 700; color: var(--green); }
+    .coming-soon p { font-size: .9rem; color: var(--muted); max-width: 480px; margin: 0 auto 32px; line-height: 1.8; }
+
+    /* Hamburger */
+    .hamburger { display: none; flex-direction: column; gap: 5px; padding: 8px; cursor: pointer; background: none; border: none; }
+    .hamburger span { display: block; width: 20px; height: 2px; background: var(--muted); border-radius: 2px; }
+    .mobile-menu { display: none; position: fixed; top: 58px; left: 0; right: 0; background: var(--bg2); border-bottom: 1px solid var(--border); z-index: 199; padding: 16px 24px; flex-direction: column; gap: 4px; }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { font-family: var(--mono); font-size: .78rem; color: var(--muted); padding: 10px 12px; border-radius: var(--r); }
+    .mobile-menu a.active { color: var(--green); background: var(--green-d); }
+    .mobile-overlay { display: none; position: fixed; inset: 0; z-index: 198; }
+    .mobile-overlay.open { display: block; }
+
+    @media (max-width: 1024px) {
+      .mkt-grid { grid-template-columns: repeat(2,1fr); }
+      .skills-tbl-header, .skill-row { grid-template-columns: 2fr 100px 80px 120px; }
+      .skills-tbl-header .col-conv, .skill-row .col-conv { display: none; }
+    }
+    @media (max-width: 768px) {
+      .mkt-grid { grid-template-columns: 1fr; }
+      .dash-tabs-inner { padding: 0 24px; }
+      .tab-stats { display: none; }
+      .hamburger { display: flex; }
+      .nav-links { display: none !important; }
+      .nav-cta { display: none !important; }
+    }
+    @media (min-width: 769px) { .nav-links { display: flex !important; } .nav-cta { display: block !important; } }
+  </style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo"><img src="assets/logo.png" class="nav-logo-img" alt="EvoClaw"><span class="g">EVO</span>CLAW</a>
+            <ul class="nav-links">
+      <li><a href="index.html" style="color:var(--green)">HOME</a></li>
+      <li><a href="docs.html" style="color:var(--green)">DOCS</a></li>
+      <li><a href="install.html" style="color:var(--green)">INSTALL</a></li>
+      <li><a href="integrations.html" style="color:var(--green)">INTEGRATIONS</a></li>
+      <li><a href="marketplace.html" class="active">MARKETPLACE</a></li>
+      <li><a href="ask.html" style="color:var(--green)">ASK EVOCLAW</a></li>
+      <li><a href="playground.html" style="color:var(--green)">PLAYGROUND</a></li>
+    </ul>
+    <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank" class="nav-cta">GITHUB →</a>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="mobile-overlay" id="mobileOverlay"></div>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">HOME</a>
+  <a href="demo.html">LIVE DEMO</a>
+  <a href="docs.html">DOCS</a>
+  <a href="install.html">INSTALL</a>
+  <a href="integrations.html">INTEGRATIONS</a>
+  <a href="dashboard.html" class="active">DASHBOARD</a>
+  <a href="playground.html">PLAYGROUND</a>
+</div>
+
+<div class="dash-wrap">
+
+  <!-- TABS -->
+  <div class="dash-tabs">
+    <div class="dash-tabs-inner">
+      <div class="tab-list">
+        <button class="tab-btn active" onclick="switchTab('my-skills', this)" style="color:var(--green)">MY SKILLS</button>
+        <button class="tab-btn" onclick="switchTab('marketplace', this)">MARKETPLACE</button>
+        <button class="tab-btn" onclick="switchTab('analytics', this)">ANALYTICS</button>
+      </div>
+      <div class="tab-stats">
+        <div class="tab-stat">Skills: <span id="totalSkills">11</span></div>
+        <div class="tab-stat">Listed: <span>3</span></div>
+        <div class="tab-stat">Avg Score: <span>0.84</span></div>
+        <div class="tab-stat" style="display:flex;align-items:center;gap:6px;">
+          <span class="pulse-dot"></span>
+          <span style="color:var(--green);">AGENT ONLINE</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY SKILLS TAB -->
+  <div class="tab-content active" id="tab-my-skills">
+    <div class="section-sm">
+      <div class="container">
+        <div class="skills-header">
+          <div>
+            <span class="label">MY AGENT SKILLS</span>
+            <h2 class="section-title" style="font-size:1.6rem;">Skills your agent <b>has learned.</b></h2>
+          </div>
+          <div class="skills-filters">
+            <button class="filter-btn active" onclick="filterSkills('all', this)">ALL</button>
+            <button class="filter-btn" onclick="filterSkills('general', this)">GENERAL</button>
+            <button class="filter-btn" onclick="filterSkills('coding', this)">CODING</button>
+            <button class="filter-btn" onclick="filterSkills('security', this)">SECURITY</button>
+            <button class="filter-btn" onclick="filterSkills('defi', this)">DEFI</button>
+          </div>
+        </div>
+
+        <div class="skills-tbl">
+          <div class="skills-tbl-header">
+            <span>SKILL NAME</span>
+            <span>SCORE</span>
+            <span>USES</span>
+            <span class="col-conv">CONVERSATIONS</span>
+            <span>STATUS</span>
+            <span>ACTIONS</span>
+          </div>
+          <div id="mySkillsList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MARKETPLACE TAB -->
+  <div class="tab-content" id="tab-marketplace">
+    <div class="section-sm">
+      <div class="container">
+        <div class="mkt-header">
+          <div>
+            <span class="label">SKILL MARKETPLACE</span>
+            <h2 class="section-title" style="font-size:1.6rem;">Browse. Preview. <b>Install.</b></h2>
+          </div>
+          <div class="mkt-search">
+            <input class="search-input" placeholder="Search skills..." oninput="searchSkills(this.value)">
+            <div class="skills-filters">
+              <button class="filter-btn active" onclick="filterMkt('all', this)">ALL</button>
+              <button class="filter-btn" onclick="filterMkt('free', this)">FREE</button>
+              <button class="filter-btn" onclick="filterMkt('expert', this)">EXPERT</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mkt-grid" id="marketplaceGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALYTICS TAB -->
+  <div class="tab-content" id="tab-analytics">
+    <div class="section-sm">
+      <div class="container">
+        <div class="coming-soon">
+          <div class="coming-soon-badge"><span class="pulse-dot"></span>COMING SOON</div>
+          <h2>Agent <b>Analytics.</b></h2>
+          <p>Track your agent's growth over time. Revenue from skill sales. Skill performance charts. Download trends. Coming in Phase 3.</p>
+          <div class="btns" style="justify-content:center;">
+            <a href="#" class="btn btn-g">Get Notified →</a>
+            <a href="index.html" class="btn btn-o">Back to Home</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SKILL PREVIEW MODAL -->
+<div class="modal-overlay" id="skillModal" onclick="closeModal(event)">
+  <div class="modal" id="modalContent">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modalTitle">Skill Name</div>
+        <div class="modal-sub" id="modalSub">creator · category · installs</div>
+      </div>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <div class="modal-price" id="modalPrice"></div>
+      <div class="modal-actions">
+        <button class="btn-transfer" onclick="closeModalDirect()">Cancel</button>
+        <button class="btn-install" id="modalInstallBtn">Install Skill</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──
+const mySkills = [
+  { id:1, name:"async-error-recovery", cat:"coding", catClass:"blue", score:91, uses:234, convs:312, status:"listed" },
+  { id:2, name:"typescript-strict-mode", cat:"coding", catClass:"blue", score:88, uses:189, convs:267, status:"listed" },
+  { id:3, name:"chain-of-thought", cat:"general", catClass:"", score:94, uses:421, convs:589, status:"listed" },
+  { id:4, name:"regex-edge-cases", cat:"coding", catClass:"blue", score:87, uses:156, convs:198, status:"private" },
+  { id:5, name:"sql-injection-prevention", cat:"security", catClass:"orange", score:92, uses:203, convs:287, status:"private" },
+  { id:6, name:"context-window-mgmt", cat:"general", catClass:"", score:90, uses:312, convs:441, status:"private" },
+  { id:7, name:"markdown-formatting", cat:"general", catClass:"", score:82, uses:98, convs:134, status:"private" },
+  { id:8, name:"rate-limit-handling", cat:"coding", catClass:"blue", score:86, uses:145, convs:201, status:"private" },
+  { id:9, name:"python-type-hints", cat:"coding", catClass:"blue", score:85, uses:167, convs:234, status:"private" },
+  { id:10, name:"error-message-clarity", cat:"general", catClass:"", score:79, uses:89, convs:112, status:"private" },
+  { id:11, name:"api-response-validation", cat:"coding", catClass:"blue", score:83, uses:134, convs:178, status:"private" },
+];
+
+const marketplaceSkills = [
+  {
+    id:"m1", name:"Base Rug Detector", cat:"DeFi", score:78, level:"INTERMEDIATE", levelClass:"inter",
+    creator:"0x7f3a...b2c4", installs:847, price:"FREE", priceClass:"",
+    knows:[ {name:"Honeypot detection", conf:91, status:"✅"}, {name:"Liquidity lock check", conf:88, status:"✅"}, {name:"Dev wallet concentration", conf:85, status:"✅"}, {name:"Contract ownership check", conf:67, status:"⚠️"} ],
+    gaps:[ {name:"Proxy contract detection", conf:31, desc:"Only seen 23 proxy rug cases — needs ~100 more"}, {name:"Flashloan attack patterns", conf:12, desc:"Major knowledge gap — rarely encountered in training"} ],
+    perf:{ catch:"82%", catchClass:"", fp:"9%", fpClass:"warn", convs:"847" },
+    dims:[ {name:"Knowledge Depth", val:82, cls:""}, {name:"Accuracy", val:74, cls:"warn"}, {name:"Coverage", val:61, cls:"warn"}, {name:"Up-to-date", val:80, cls:""}, {name:"Real Usage", val:89, cls:""} ],
+  },
+  {
+    id:"m2", name:"Smart Money Tracker", cat:"DeFi", score:94, level:"EXPERT", levelClass:"expert",
+    creator:"0x2d8f...a1e9", installs:1203, price:"FREE", priceClass:"",
+    knows:[ {name:"Whale wallet identification", conf:96, status:"✅"}, {name:"Alpha wallet tracking", conf:93, status:"✅"}, {name:"Entry/exit pattern analysis", conf:91, status:"✅"}, {name:"Cross-chain tracking", conf:88, status:"✅"} ],
+    gaps:[ {name:"CEX withdrawal patterns", conf:44, desc:"Limited data on centralized exchange movements"} ],
+    perf:{ catch:"94%", catchClass:"", fp:"4%", fpClass:"", convs:"2,341" },
+    dims:[ {name:"Knowledge Depth", val:96, cls:""}, {name:"Accuracy", val:94, cls:""}, {name:"Coverage", val:91, cls:""}, {name:"Up-to-date", val:93, cls:""}, {name:"Real Usage", val:97, cls:""} ],
+  },
+  {
+    id:"m3", name:"Narrative Scanner", cat:"Research", score:91, level:"EXPERT", levelClass:"expert",
+    creator:"0x9c1b...d4f7", installs:634, price:"0.01 ETH", priceClass:"paid",
+    knows:[ {name:"Emerging narrative detection", conf:94, status:"✅"}, {name:"Sentiment trend analysis", conf:92, status:"✅"}, {name:"Twitter alpha identification", conf:89, status:"✅"} ],
+    gaps:[ {name:"Telegram signal detection", conf:52, desc:"Limited training on Telegram-based narratives"} ],
+    perf:{ catch:"91%", catchClass:"", fp:"6%", fpClass:"", convs:"1,567" },
+    dims:[ {name:"Knowledge Depth", val:94, cls:""}, {name:"Accuracy", val:91, cls:""}, {name:"Coverage", val:87, cls:""}, {name:"Up-to-date", val:96, cls:""}, {name:"Real Usage", val:88, cls:""} ],
+  },
+  {
+    id:"m4", name:"MEV Protection", cat:"Security", score:89, level:"EXPERT", levelClass:"expert",
+    creator:"0x4a7c...e2b8", installs:423, price:"FREE", priceClass:"",
+    knows:[ {name:"Sandwich attack detection", conf:93, status:"✅"}, {name:"Front-running prevention", conf:91, status:"✅"}, {name:"Slippage optimization", conf:88, status:"✅"} ],
+    gaps:[ {name:"JIT liquidity attacks", conf:41, desc:"New attack vector — limited training data"} ],
+    perf:{ catch:"89%", catchClass:"", fp:"5%", fpClass:"", convs:"987" },
+    dims:[ {name:"Knowledge Depth", val:93, cls:""}, {name:"Accuracy", val:89, cls:""}, {name:"Coverage", val:84, cls:""}, {name:"Up-to-date", val:91, cls:""}, {name:"Real Usage", val:87, cls:""} ],
+  },
+  {
+    id:"m5", name:"Liquidity Scanner", cat:"DeFi", score:67, level:"INTERMEDIATE", levelClass:"inter",
+    creator:"0x3f2e...c9a1", installs:289, price:"FREE", priceClass:"",
+    knows:[ {name:"Pool depth analysis", conf:78, status:"✅"}, {name:"LP concentration check", conf:71, status:"⚠️"} ],
+    gaps:[ {name:"Cross-DEX arbitrage", conf:34, desc:"Needs more training across multiple DEX environments"}, {name:"IL calculation accuracy", conf:28, desc:"Complex math edge cases not fully covered"} ],
+    perf:{ catch:"67%", catchClass:"warn", fp:"18%", fpClass:"warn", convs:"412" },
+    dims:[ {name:"Knowledge Depth", val:71, cls:"warn"}, {name:"Accuracy", val:67, cls:"warn"}, {name:"Coverage", val:58, cls:"warn"}, {name:"Up-to-date", val:74, cls:""}, {name:"Real Usage", val:65, cls:"warn"} ],
+  },
+  {
+    id:"m6", name:"Alpha Distiller", cat:"Research", score:85, level:"EXPERT", levelClass:"expert",
+    creator:"0x8b5d...f3c2", installs:756, price:"0.005 ETH", priceClass:"paid",
+    knows:[ {name:"Signal vs noise filtering", conf:92, status:"✅"}, {name:"CT alpha extraction", conf:88, status:"✅"}, {name:"Early narrative detection", conf:85, status:"✅"} ],
+    gaps:[ {name:"On-chain alpha correlation", conf:61, desc:"Needs stronger connection between CT signals and on-chain data"} ],
+    perf:{ catch:"85%", catchClass:"", fp:"8%", fpClass:"", convs:"1,234" },
+    dims:[ {name:"Knowledge Depth", val:92, cls:""}, {name:"Accuracy", val:85, cls:""}, {name:"Coverage", val:82, cls:""}, {name:"Up-to-date", val:94, cls:""}, {name:"Real Usage", val:89, cls:""} ],
+  },
+];
+
+// ── RENDER MY SKILLS ──
+function renderMySkills(filter = 'all') {
+  const list = document.getElementById('mySkillsList');
+  const filtered = filter === 'all' ? mySkills : mySkills.filter(s => s.cat === filter);
+
+  list.innerHTML = filtered.map(s => {
+    const scoreClass = s.score >= 90 ? '' : s.score >= 75 ? 'warn' : 'weak';
+    const dotClass = s.score >= 90 ? '' : s.score >= 75 ? 'warn' : 'weak';
+    const pct = s.score;
+    return `
+    <div class="skill-row" data-cat="${s.cat}">
+      <div class="skill-name-col">
+        <div class="skill-dot ${dotClass}"></div>
+        <span class="skill-name">${s.name}</span>
+        <span class="skill-cat ${s.catClass}">${s.cat.toUpperCase()}</span>
+      </div>
+      <div class="score-bar-wrap">
+        <span class="score-num ${scoreClass}">${s.score}</span>
+        <div class="score-bar"><div class="score-fill ${scoreClass}" style="width:${pct}%"></div></div>
+      </div>
+      <div class="uses-col">${s.uses.toLocaleString()}</div>
+      <div class="conv-col col-conv">${s.convs.toLocaleString()}</div>
+      <div>
+        <span class="status-badge ${s.status}">
+          ${s.status === 'listed' ? '● LISTED' : s.status === 'selling' ? '● SELLING' : '○ PRIVATE'}
+        </span>
+      </div>
+      <div class="action-btns">
+        <button class="act-btn" onclick="openModal('my', ${s.id})">PREVIEW</button>
+        <button class="act-btn sell">${s.status === 'listed' ? 'UNLIST' : 'LIST'}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── RENDER MARKETPLACE ──
+function renderMarketplace(skills) {
+  const grid = document.getElementById('marketplaceGrid');
+  grid.innerHTML = skills.map(s => `
+    <div class="mkt-card">
+      <div class="mkt-card-top">
+        <div>
+          <div class="mkt-name">${s.name}</div>
+          <div class="mkt-meta">${s.cat} · ${s.installs.toLocaleString()} installs</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="mkt-score-big ${s.levelClass}">${s.score}</div>
+          <div class="mkt-score-label">${s.level}</div>
+        </div>
+      </div>
+      <div class="mkt-knows">
+        ${s.knows.slice(0,3).map(k => `
+          <div class="mkt-know-item">
+            <span class="${k.conf >= 80 ? 'dot-g' : k.conf >= 60 ? 'dot-w' : 'dot-r'}">${k.status}</span>
+            <span>${k.name} <span style="font-family:var(--mono);font-size:.65rem;color:var(--dim);">${k.conf}%</span></span>
+          </div>`).join('')}
+        ${s.gaps.length > 0 ? `<div class="mkt-know-item"><span class="dot-r">❌</span><span style="color:var(--orange)">${s.gaps[0].name} <span style="font-family:var(--mono);font-size:.65rem;">${s.gaps[0].conf}%</span></span></div>` : ''}
+      </div>
+      <div class="mkt-card-footer">
+        <div>
+          <div class="mkt-price ${s.priceClass}">${s.price}</div>
+          <div class="mkt-installs">${s.perf.catch} catch rate</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="preview-btn" onclick="openMktModal('${s.id}')">PREVIEW</button>
+          <button class="install-btn" onclick="installSkill('${s.id}')">INSTALL</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ── MODAL ──
+function openMktModal(skillId) {
+  const s = marketplaceSkills.find(x => x.id === skillId);
+  if (!s) return;
+  document.getElementById('modalTitle').textContent = s.name;
+  document.getElementById('modalSub').textContent = `Creator: ${s.creator} · ${s.cat} · ${s.installs.toLocaleString()} installs`;
+  document.getElementById('modalPrice').innerHTML = `Price: <span>${s.price}</span>`;
+  document.getElementById('modalInstallBtn').textContent = s.price === 'FREE' ? 'Install Free' : `Buy ${s.price}`;
+  document.getElementById('modalBody').innerHTML = buildModalBody(s);
+  document.getElementById('skillModal').classList.add('open');
+  setTimeout(() => animateBars(), 50);
+}
+
+function buildModalBody(s) {
+  const scoreClass = s.score >= 90 ? '' : s.score >= 75 ? 'warn' : 'weak';
+  const levelDesc = s.score >= 90
+    ? 'Expert level — well-trained across most scenarios. Ready for production use.'
+    : s.score >= 75
+    ? 'Intermediate — solid foundation but has knowledge gaps. Good for general use.'
+    : 'Beginner — still learning. Use with caution, pair with other skills.';
+
+  return `
+    <div class="overall-score">
+      <div class="score-circle ${scoreClass}">
+        <span class="score-circle-num ${scoreClass}">${s.score}</span>
+        <span class="score-circle-label">/100</span>
+      </div>
+      <div class="score-details">
+        <div class="score-level">${s.level}</div>
+        <div class="score-desc">${levelDesc}<br>
+        Trained on <strong style="color:var(--text)">${s.perf.convs}</strong> real conversations.</div>
+      </div>
+    </div>
+
+    <div class="dimensions">
+      <div class="dim-title">SCORE BREAKDOWN</div>
+      ${s.dims.map(d => `
+        <div class="dim-row">
+          <span class="dim-label">${d.name}</span>
+          <div class="dim-bar-wrap"><div class="dim-fill ${d.cls}" style="width:0%" data-target="${d.val}"></div></div>
+          <span class="dim-pct ${d.cls === '' ? (d.val >= 80 ? '' : 'warn') : d.cls}" style="color:${d.val >= 80 ? 'var(--green)' : d.val >= 65 ? 'var(--orange)' : 'var(--red)'}">${d.val}%</span>
+        </div>`).join('')}
+    </div>
+
+    <div class="knows-section">
+      <div class="knows-title">WHAT THIS SKILL KNOWS</div>
+      ${s.knows.map(k => `
+        <div class="know-item">
+          <div class="know-item-top">
+            <div class="know-item-name">${k.status} ${k.name}</div>
+            <span class="know-conf ${k.conf >= 80 ? 'high' : k.conf >= 60 ? 'mid' : 'low'}">${k.conf}% confidence</span>
+          </div>
+          <div class="know-meta">Confidence based on real conversation outcomes</div>
+        </div>`).join('')}
+    </div>
+
+    ${s.gaps.length > 0 ? `
+    <div class="gaps-section">
+      <div class="knows-title" style="color:var(--orange)">KNOWLEDGE GAPS</div>
+      ${s.gaps.map(g => `
+        <div class="gap-item">
+          <div class="gap-name">❌ ${g.name} — ${g.conf}% confidence</div>
+          <div class="gap-desc">${g.desc}</div>
+        </div>`).join('')}
+    </div>` : ''}
+
+    <div class="perf-section">
+      <div class="knows-title">REAL WORLD PERFORMANCE</div>
+      <div class="perf-grid">
+        <div class="perf-cell">
+          <div class="perf-num">${s.perf.catch}</div>
+          <div class="perf-lbl">SUCCESS RATE</div>
+        </div>
+        <div class="perf-cell">
+          <div class="perf-num ${s.perf.fpClass}">${s.perf.fp}</div>
+          <div class="perf-lbl">FALSE POSITIVE</div>
+        </div>
+        <div class="perf-cell">
+          <div class="perf-num">${s.perf.convs}</div>
+          <div class="perf-lbl">CONVERSATIONS</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function animateBars() {
+  document.querySelectorAll('.dim-fill[data-target]').forEach(el => {
+    el.style.width = el.dataset.target + '%';
+  });
+}
+
+function openModal(type, id) {
+  const s = mySkills.find(x => x.id === id);
+  if (!s) return;
+  document.getElementById('modalTitle').textContent = s.name;
+  document.getElementById('modalSub').textContent = `Your agent · ${s.cat} · ${s.uses} uses`;
+  document.getElementById('modalPrice').innerHTML = `Score: <span>${s.score}/100</span>`;
+  document.getElementById('modalInstallBtn').textContent = s.status === 'listed' ? 'Unlist Skill' : 'List to Marketplace';
+  const fake = marketplaceSkills[0];
+  fake.name = s.name; fake.score = s.score;
+  document.getElementById('modalBody').innerHTML = buildModalBody({...fake, name: s.name, score: s.score, perf:{catch:(s.score-4)+'%',catchClass:'',fp:'8%',fpClass:'',convs:s.convs}});
+  document.getElementById('skillModal').classList.add('open');
+  setTimeout(() => animateBars(), 50);
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('skillModal')) closeModalDirect();
+}
+function closeModalDirect() {
+  document.getElementById('skillModal').classList.remove('open');
+}
+
+function installSkill(id) {
+  const btn = event.target;
+  const orig = btn.textContent;
+  btn.textContent = '✅ INSTALLED';
+  btn.style.background = 'rgba(0,255,135,.2)';
+  setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 2000);
+}
+
+// ── TAB SWITCH ──
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+// ── FILTERS ──
+function filterSkills(cat, btn) {
+  document.querySelectorAll('.skills-filters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMySkills(cat);
+}
+
+function filterMkt(type, btn) {
+  document.querySelectorAll('#tab-marketplace .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (type === 'all') renderMarketplace(marketplaceSkills);
+  else if (type === 'free') renderMarketplace(marketplaceSkills.filter(s => s.price === 'FREE'));
+  else if (type === 'expert') renderMarketplace(marketplaceSkills.filter(s => s.level === 'EXPERT'));
+}
+
+function searchSkills(q) {
+  if (!q) { renderMarketplace(marketplaceSkills); return; }
+  renderMarketplace(marketplaceSkills.filter(s =>
+    s.name.toLowerCase().includes(q.toLowerCase()) ||
+    s.cat.toLowerCase().includes(q.toLowerCase())
+  ));
+}
+
+// ── NAV ──
+window.addEventListener('scroll', () => document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 10));
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+const mobileOverlay = document.getElementById('mobileOverlay');
+hamburger.addEventListener('click', () => { mobileMenu.classList.toggle('open'); mobileOverlay.classList.toggle('open'); });
+mobileOverlay.addEventListener('click', () => { mobileMenu.classList.remove('open'); mobileOverlay.classList.remove('open'); });
+
+// ── INIT ──
+renderMySkills();
+renderMarketplace(marketplaceSkills);
+</script>
+</body>
+</html>
