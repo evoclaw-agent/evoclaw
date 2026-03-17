@@ -314,7 +314,7 @@
 
   <!-- EXPLORE TAB -->
   <div class="tab-content active" id="tab-explore">
-    <div class="section-sm">
+    <div class="section-sm" style="padding-top:28px!important;">
       <div class="container">
         <div class="mkt-header">
           <div>
@@ -373,37 +373,45 @@
 
   <!-- MY SKILLS TAB -->
   <div class="tab-content" id="tab-my-skills">
-    <div class="section-sm">
+    <div class="section-sm" style="padding-top:0!important;padding-bottom:0!important;">
       <div class="container">
 
-        <!-- Not connected state -->
-        <div id="notConnectedState" style="text-align:center;padding:60px 40px;">
-          <div style="font-size:2.5rem;margin-bottom:16px;">🔌</div>
-          <h2 class="section-title" style="font-size:1.4rem;text-align:center;">Connect your agent first.</h2>
-          <p style="color:var(--muted);font-size:.88rem;max-width:420px;margin:0 auto 28px;line-height:1.8;">
-            To see your skills, connect your EvoClaw agent using the bar at the top. Your agent can run locally or on a VPS.
-          </p>
-          <div class="panel" style="max-width:500px;margin:0 auto 24px;">
-            <div class="panel-bar"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span class="panel-label">QUICK START</span></div>
-            <div class="panel-body">
-              <div><span class="cm"># Install EvoClaw</span></div>
-              <div><span class="kw">pip</span> install evoclaw</div>
-              <div><span class="kw">evoclaw</span> init</div>
-              <div><span class="kw">evoclaw</span> start</div>
-              <div style="margin-top:8px;"><span class="cm"># Then paste http://localhost:8080 above</span></div>
+        <!-- Not connected state — compact, fits in viewport -->
+        <div id="notConnectedState" style="display:flex;align-items:center;justify-content:center;padding:40px 0;">
+          <div style="display:flex;align-items:center;gap:48px;flex-wrap:wrap;justify-content:center;max-width:860px;width:100%;">
+            <!-- Left: message -->
+            <div style="flex:1;min-width:260px;max-width:380px;">
+              <div style="font-size:2rem;margin-bottom:12px;">🔌</div>
+              <h2 style="font-size:1.35rem;font-weight:500;color:var(--text);margin-bottom:10px;letter-spacing:-.02em;">Connect your agent first.</h2>
+              <p style="color:var(--muted);font-size:.84rem;line-height:1.75;margin-bottom:20px;">
+                Paste your EvoClaw agent URL in the bar above, or type it below. Your agent can run locally or on a VPS.
+              </p>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                <input
+                  id="inlineAgentUrl"
+                  type="text"
+                  placeholder="http://localhost:8080"
+                  style="flex:1;min-width:180px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:9px 14px;font-family:var(--mono);font-size:.72rem;color:var(--text);outline:none;"
+                  onfocus="this.style.borderColor='var(--green-b)'"
+                  onblur="this.style.borderColor='var(--border2)'"
+                  onkeydown="if(event.key==='Enter')connectInline()"
+                />
+                <button class="connect-btn" onclick="connectInline()">CONNECT →</button>
+              </div>
             </div>
-          </div>
-          <div style="display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:4px;">
-            <input
-              id="inlineAgentUrl"
-              type="text"
-              placeholder="http://localhost:8080"
-              style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:9px 14px;font-family:var(--mono);font-size:.72rem;color:var(--text);outline:none;min-width:220px;max-width:300px;"
-              onfocus="this.style.borderColor='var(--green-b)'"
-              onblur="this.style.borderColor='var(--border2)'"
-              onkeydown="if(event.key==='Enter')connectInline()"
-            />
-            <button class="btn btn-g" onclick="connectInline()">Connect Agent →</button>
+            <!-- Right: code panel -->
+            <div style="flex:1;min-width:260px;max-width:360px;">
+              <div class="panel" style="margin:0;">
+                <div class="panel-bar"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span class="panel-label">QUICK START</span></div>
+                <div class="panel-body">
+                  <div><span class="cm"># Install EvoClaw</span></div>
+                  <div><span class="kw">pip</span> install evoclaw</div>
+                  <div><span class="kw">evoclaw</span> init</div>
+                  <div><span class="kw">evoclaw</span> start</div>
+                  <div style="margin-top:8px;"><span class="cm"># Then connect above ↑</span></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -444,7 +452,7 @@
 
   <!-- ANALYTICS TAB -->
   <div class="tab-content" id="tab-analytics">
-    <div class="section-sm">
+    <div class="section-sm" style="padding-top:28px!important;">
       <div class="container">
         <div class="coming-soon">
           <div class="coming-soon-badge"><span class="pulse-dot"></span>COMING SOON</div>
@@ -670,14 +678,14 @@ async function toggleList(skillId, btn) {
   if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
 
   try {
-    // Update VPS (best-effort — endpoint may not exist, that's ok)
+    // Update VPS (best-effort)
     try {
       await fetch(`${agentUrl}/api/skills/${skillId}/status`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),
         signal: AbortSignal.timeout(3000)
       });
-    } catch(_) { /* VPS status endpoint optional */ }
+    } catch(_) { /* optional */ }
 
     s.status = newStatus;
 
@@ -906,15 +914,13 @@ function showToast(msg) {
   t._timer = setTimeout(() => { t.style.display = 'none'; }, 2800);
 }
 
-// ── CONNECT INLINE (from notConnected panel) ──
+// ── CONNECT INLINE ──
 function connectInline() {
   const input = document.getElementById('inlineAgentUrl');
   const url = (input?.value || '').trim();
-  if (url) {
-    document.getElementById('agentUrl').value = url;
-  }
+  if (url) document.getElementById('agentUrl').value = url;
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  setTimeout(() => connectAgent(), 300);
+  setTimeout(() => connectAgent(), 200);
 }
 
 // ── INIT ──
