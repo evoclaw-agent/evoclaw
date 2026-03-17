@@ -15,6 +15,9 @@
       background: var(--bg3);
       border-bottom: 1px solid var(--border);
       padding: 14px 0;
+      position: sticky;
+      top: 58px;
+      z-index: 102;
     }
     .connect-inner {
       max-width: var(--max); margin: 0 auto; padding: 0 60px;
@@ -43,7 +46,7 @@
     /* ── TABS ── */
     .dash-tabs {
       background: var(--bg2); border-bottom: 1px solid var(--border);
-      position: sticky; top: 58px; z-index: 100;
+      position: sticky; top: 112px; z-index: 100;
     }
     .dash-tabs-inner {
       max-width: var(--max); margin: 0 auto; padding: 0 60px;
@@ -114,7 +117,7 @@
     .act-btn.sell:hover { background: rgba(255,140,66,.08); }
 
     /* ── EXPLORE GRID ── */
-    .mkt-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
+    .mkt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
     .mkt-card { background: var(--bg); padding: 22px; transition: background .15s; }
     .mkt-card:hover { background: var(--surface); }
     .mkt-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
@@ -390,7 +393,18 @@
               <div style="margin-top:8px;"><span class="cm"># Then paste http://localhost:8080 above</span></div>
             </div>
           </div>
-          <button class="btn btn-g" onclick="document.getElementById('agentUrl').focus()">Connect Agent →</button>
+          <div style="display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:4px;">
+            <input
+              id="inlineAgentUrl"
+              type="text"
+              placeholder="http://localhost:8080"
+              style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:9px 14px;font-family:var(--mono);font-size:.72rem;color:var(--text);outline:none;min-width:220px;max-width:300px;"
+              onfocus="this.style.borderColor='var(--green-b)'"
+              onblur="this.style.borderColor='var(--border2)'"
+              onkeydown="if(event.key==='Enter')connectInline()"
+            />
+            <button class="btn btn-g" onclick="connectInline()">Connect Agent →</button>
+          </div>
         </div>
 
         <!-- Connected state -->
@@ -656,11 +670,14 @@ async function toggleList(skillId, btn) {
   if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
 
   try {
-    // Update VPS
-    await fetch(`${agentUrl}/api/skills/${skillId}/status`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status: newStatus })
-    });
+    // Update VPS (best-effort — endpoint may not exist, that's ok)
+    try {
+      await fetch(`${agentUrl}/api/skills/${skillId}/status`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+        signal: AbortSignal.timeout(3000)
+      });
+    } catch(_) { /* VPS status endpoint optional */ }
 
     s.status = newStatus;
 
@@ -887,6 +904,17 @@ function showToast(msg) {
   t.textContent = msg; t.style.display = 'block';
   clearTimeout(t._timer);
   t._timer = setTimeout(() => { t.style.display = 'none'; }, 2800);
+}
+
+// ── CONNECT INLINE (from notConnected panel) ──
+function connectInline() {
+  const input = document.getElementById('inlineAgentUrl');
+  const url = (input?.value || '').trim();
+  if (url) {
+    document.getElementById('agentUrl').value = url;
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  setTimeout(() => connectAgent(), 300);
 }
 
 // ── INIT ──
