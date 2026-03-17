@@ -1015,13 +1015,21 @@ async function doUnlist(skillId, btn) {
   const s = mySkillsCache.find(x => x.id === skillId);
   if (!s) return;
   if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
+
+  // Delete ALL matching entries from Supabase by name
+  try {
+    await fetch(`${SUPA_URL}/rest/v1/skills?name=eq.${encodeURIComponent(s.name)}`, {
+      method: 'DELETE',
+      headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}` }
+    });
+  } catch(e) {}
+
   s.status = 'private';
   const badge = document.getElementById(`badge-${skillId}`);
   if (badge) { badge.className = 'status-badge private'; badge.textContent = '○ PRIVATE'; }
   if (btn) { btn.textContent = 'LIST'; btn.disabled = false; }
-  showToast('○ Skill set to private');
-  loadNetworkSkills();
-  renderMySkills(mySkillsCache);
+  showToast('○ Skill unlisted from marketplace');
+  setTimeout(() => { loadNetworkSkills(); renderMySkills(mySkillsCache); }, 500);
 }
 
 // ── LOAD NETWORK SKILLS (Supabase) ──
