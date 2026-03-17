@@ -762,40 +762,34 @@ mobileOverlay.addEventListener('click', () => { mobileMenu.classList.remove('ope
 
 // ── REAL API ──
 const API = '/api';
+let realSkillsCache = [];
 
+// ── LOAD REAL SKILLS FROM VPS ──
 async function loadRealSkills() {
   try {
-    // Update status to loading
     document.getElementById('totalSkills').textContent = '...';
-
     const [skillsRes, statusRes] = await Promise.all([
       fetch(`${API}/skills`),
       fetch(`${API}/agent/status`)
     ]);
-
     const skillsData = await skillsRes.json();
     const statusData = await statusRes.json();
 
     if (skillsData.status === 'ok' && skillsData.skills.length > 0) {
-      // Update stats bar
-      document.getElementById('totalSkills').textContent = skillsData.total;
-
-      // Map real skills to display format
-      const realSkills = skillsData.skills.map((s, i) => ({
-        id: i + 1,
+      realSkillsCache = skillsData.skills.map((s, i) => ({
+        id: s.id,
         name: s.name || `skill-${i}`,
         cat: s.category || 'general',
         catClass: s.category === 'coding' ? 'blue' : s.category === 'security' ? 'orange' : '',
         score: Math.round((s.prm_score || 0.8) * 100),
+        prm_score: s.prm_score || 0.8,
         uses: s.uses || 0,
         convs: s.conversations || 0,
         status: s.status || 'private',
+        content: s.content || '',
       }));
 
-      // Render real data
-      renderMySkills('all', realSkills);
-
-      // Show agent online
+      document.getElementById('totalSkills').textContent = skillsData.total;
       document.querySelector('.tab-stats').innerHTML = `
         <div class="tab-stat">Skills: <span>${skillsData.total}</span></div>
         <div class="tab-stat">Avg Score: <span>${statusData.avg_prm_score || '0.81'}</span></div>
@@ -804,31 +798,35 @@ async function loadRealSkills() {
           <span style="color:var(--green);">AGENT ONLINE</span>
         </div>
       `;
+      renderRealSkills(realSkillsCache);
     } else {
-      // Fallback to demo data
-      renderMySkills();
+      renderRealSkills([]);
     }
   } catch (e) {
     console.log('API not reachable, using demo data:', e.message);
-    renderMySkills();
+    renderRealSkills([]);
   }
 }
 
-// Override renderMySkills to accept external data
-const _origRender = renderMySkills;
-function renderMySkills(filter = 'all', data = null) {
-  const skills = data || mySkills;
+// ── RENDER MY SKILLS (real data) ──
+function renderRealSkills(skills, filter = 'all') {
   const list = document.getElementById('mySkillsList');
-  const filtered = filter === 'all' ? skills : skills.filter(s => s.cat === filter);
-  list.innerHTML = filtered.map(s => {
+  const data = filter === 'all' ? skills : skills.filter(s => s.cat === filter);
+
+  if (data.length === 0) {
+    list.innerHTML = `<div style="padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:.75rem;">No skills found. Your agent is still learning...</div>`;
+    return;
+  }
+
+  list.innerHTML = data.map(s => {
     const scoreClass = s.score >= 90 ? '' : s.score >= 75 ? 'warn' : 'weak';
-    const dotClass = s.score >= 90 ? '' : s.score >= 75 ? 'warn' : 'weak';
+    const dotClass = scoreClass;
     return `
-    <div class="skill-row" data-cat="${s.cat}">
+    <div class="skill-row" data-id="${s.id}" data-cat="${s.cat}">
       <div class="skill-name-col">
         <div class="skill-dot ${dotClass}"></div>
         <span class="skill-name">${s.name}</span>
-        <span class="skill-cat ${s.catClass || ''}">${(s.cat||'general').toUpperCase()}</span>
+        <span class="skill-cat ${s.catClass||''}">${(s.cat||'general').toUpperCase()}</span>
       </div>
       <div class="score-bar-wrap">
         <span class="score-num ${scoreClass}">${s.score}</span>
@@ -837,19 +835,151 @@ function renderMySkills(filter = 'all', data = null) {
       <div class="uses-col">${(s.uses||0).toLocaleString()}</div>
       <div class="conv-col col-conv">${(s.convs||0).toLocaleString()}</div>
       <div>
-        <span class="status-badge ${s.status||'private'}">
+        <span class="status-badge ${s.status||'private'}" id="badge-${s.id}">
           ${s.status === 'listed' ? '● LISTED' : '○ PRIVATE'}
         </span>
       </div>
       <div class="action-btns">
-        <button class="act-btn">PREVIEW</button>
-        <button class="act-btn sell">${s.status === 'listed' ? 'UNLIST' : 'LIST'}</button>
+        <button class="act-btn" onclick="previewMySkill('${s.id}')">PREVIEW</button>
+        <button class="act-btn sell" id="listbtn-${s.id}" onclick="toggleList('${s.id}', this)">
+          ${s.status === 'listed' ? 'UNLIST' : 'LIST'}
+        </button>
       </div>
     </div>`;
   }).join('');
 }
 
-// ── INIT — try real API first ──
+// ── PREVIEW MY SKILL (real content) ──
+function previewMySkill(skillId) {
+  const s = realSkillsCache.find(x => x.id === skillId);
+  if (!s) return;
+
+  const scoreClass = s.score >= 90 ? '' : s.score >= 75 ? 'warn' : 'weak';
+  const levelLabel = s.score >= 90 ? 'EXPERT' : s.score >= 75 ? 'INTERMEDIATE' : 'BEGINNER';
+  const levelDesc = s.score >= 90
+    ? 'Expert level — well trained. Ready to be listed on marketplace.'
+    : s.score >= 75
+    ? 'Intermediate — good foundation. Still improving with each conversation.'
+    : 'Beginner — still learning. Needs more conversations to develop.';
+
+  document.getElementById('modalTitle').textContent = s.name;
+  document.getElementById('modalSub').textContent = `Your agent · ${s.cat} · ${s.uses} uses · ${s.status}`;
+  document.getElementById('modalPrice').innerHTML = `Score: <span>${s.score}/100</span>`;
+  document.getElementById('modalInstallBtn').textContent = s.status === 'listed' ? '✓ Listed on Marketplace' : 'List to Marketplace';
+  document.getElementById('modalInstallBtn').onclick = () => { toggleList(s.id, null); closeModalDirect(); };
+
+  document.getElementById('modalBody').innerHTML = `
+    <div class="overall-score">
+      <div class="score-circle ${scoreClass}">
+        <span class="score-circle-num ${scoreClass}">${s.score}</span>
+        <span class="score-circle-label">/100</span>
+      </div>
+      <div class="score-details">
+        <div class="score-level">${levelLabel}</div>
+        <div class="score-desc">${levelDesc}</div>
+      </div>
+    </div>
+
+    <div class="knows-section">
+      <div class="knows-title">SKILL CONTENT</div>
+      <div class="know-item">
+        <div class="know-item-top">
+          <div class="know-item-name">✅ What this skill does</div>
+          <span class="know-conf high">${s.prm_score ? (s.prm_score*100).toFixed(0) : s.score}% PRM score</span>
+        </div>
+        <div style="font-size:.82rem;color:var(--text);line-height:1.75;margin-top:8px;padding:12px;background:var(--bg3);border-radius:var(--r);border:1px solid var(--border);">
+          ${s.content || '<span style="color:var(--muted)">No content description yet. This skill will develop more detail as your agent learns.</span>'}
+        </div>
+        <div class="know-meta" style="margin-top:8px;">Category: ${s.cat} · Uses: ${s.uses} · Status: ${s.status}</div>
+      </div>
+    </div>
+
+    <div class="perf-section">
+      <div class="knows-title">SKILL STATS</div>
+      <div class="perf-grid">
+        <div class="perf-cell">
+          <div class="perf-num">${s.score}</div>
+          <div class="perf-lbl">PRM SCORE</div>
+        </div>
+        <div class="perf-cell">
+          <div class="perf-num">${s.uses}</div>
+          <div class="perf-lbl">TIMES USED</div>
+        </div>
+        <div class="perf-cell">
+          <div class="perf-num" style="font-size:.9rem;color:${s.status==='listed'?'var(--green)':'var(--muted)'}">
+            ${s.status === 'listed' ? 'LISTED' : 'PRIVATE'}
+          </div>
+          <div class="perf-lbl">MARKETPLACE</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('skillModal').classList.add('open');
+  setTimeout(() => animateBars(), 50);
+}
+
+// ── TOGGLE LIST / UNLIST ──
+async function toggleList(skillId, btn) {
+  const s = realSkillsCache.find(x => x.id === skillId);
+  if (!s) return;
+
+  const newStatus = s.status === 'listed' ? 'private' : 'listed';
+
+  try {
+    const res = await fetch(`${API}/skills/${skillId}/status`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus })
+    });
+    const data = await res.json();
+
+    if (data.status === 'updated' || data.status === 'ok') {
+      s.status = newStatus;
+
+      // Update badge
+      const badge = document.getElementById(`badge-${skillId}`);
+      if (badge) {
+        badge.className = `status-badge ${newStatus}`;
+        badge.textContent = newStatus === 'listed' ? '● LISTED' : '○ PRIVATE';
+      }
+
+      // Update button
+      const listBtn = btn || document.getElementById(`listbtn-${skillId}`);
+      if (listBtn) listBtn.textContent = newStatus === 'listed' ? 'UNLIST' : 'LIST';
+
+      showToast(newStatus === 'listed' ? '✅ Skill listed to marketplace!' : '○ Skill set to private');
+    }
+  } catch (e) {
+    showToast('⚠️ Could not update — check VPS connection');
+  }
+}
+
+// ── TOAST NOTIFICATION ──
+function showToast(msg) {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = `position:fixed;bottom:32px;left:50%;transform:translateX(-50%);
+      background:var(--surface);border:1px solid var(--border2);color:var(--text);
+      font-family:var(--mono);font-size:.72rem;padding:12px 24px;border-radius:var(--r);
+      z-index:9999;transition:opacity .3s;letter-spacing:.06em;`;
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  setTimeout(() => { toast.style.opacity = '0'; }, 2500);
+}
+
+// ── FILTER MY SKILLS ──
+function filterSkills(cat, btn) {
+  document.querySelectorAll('.skills-filters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderRealSkills(realSkillsCache, cat);
+}
+
+// ── INIT ──
 loadRealSkills();
 renderMarketplace(marketplaceSkills);
 </script>
