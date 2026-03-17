@@ -5,68 +5,73 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8"/>
   <title>EvoClaw — Skill Marketplace</title>
-  <meta name="description" content="Browse, buy, sell and transfer agent skills. See exactly what every skill knows before you install."/>
+  <meta name="description" content="Browse, install, and share agent skills. Connect your agent and start trading intelligence."/>
   <link rel="stylesheet" href="css/shared.css"/>
   <style>
     .dash-wrap { padding-top: 58px; min-height: 100vh; background: var(--bg); }
 
+    /* ── CONNECT BANNER ── */
+    .connect-banner {
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+    }
+    .connect-inner {
+      max-width: var(--max); margin: 0 auto; padding: 0 60px;
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+    .connect-label { font-family: var(--mono); font-size: .65rem; color: var(--muted); letter-spacing: .08em; white-space: nowrap; }
+    .connect-input {
+      flex: 1; min-width: 200px; max-width: 320px;
+      background: var(--surface); border: 1px solid var(--border2);
+      border-radius: var(--r); padding: 8px 14px;
+      font-family: var(--mono); font-size: .72rem; color: var(--text);
+      outline: none;
+    }
+    .connect-input:focus { border-color: var(--green-b); }
+    .connect-btn {
+      font-family: var(--mono); font-size: .68rem; letter-spacing: .08em;
+      background: var(--green); color: #000; font-weight: 500;
+      padding: 8px 18px; border-radius: var(--r); border: none;
+      cursor: pointer; transition: opacity .15s; white-space: nowrap;
+    }
+    .connect-btn:hover { opacity: .85; }
+    .connect-btn.connected { background: var(--green-d); color: var(--green); border: 1px solid var(--green-b); }
+    .connect-status { font-family: var(--mono); font-size: .65rem; display: flex; align-items: center; gap: 6px; }
+    .connect-hint { font-family: var(--mono); font-size: .6rem; color: var(--dim); }
+
     /* ── TABS ── */
     .dash-tabs {
-      background: var(--bg2);
-      border-bottom: 1px solid var(--border);
+      background: var(--bg2); border-bottom: 1px solid var(--border);
       position: sticky; top: 58px; z-index: 100;
     }
     .dash-tabs-inner {
       max-width: var(--max); margin: 0 auto; padding: 0 60px;
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 20px;
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
     }
     .tab-list { display: flex; gap: 0; }
     .tab-btn {
       font-family: var(--mono); font-size: .7rem; letter-spacing: .1em;
       padding: 16px 24px; color: var(--muted); background: none;
-      border: none; border-bottom: 2px solid transparent;
-      cursor: pointer; transition: all .15s;
+      border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: all .15s;
     }
     .tab-btn:hover { color: var(--text); }
     .tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
-    .tab-stats {
-      display: flex; gap: 24px; align-items: center;
-    }
-    .tab-stat {
-      font-family: var(--mono); font-size: .62rem;
-      color: var(--muted); letter-spacing: .06em;
-    }
+    .tab-stats { display: flex; gap: 24px; align-items: center; }
+    .tab-stat { font-family: var(--mono); font-size: .62rem; color: var(--muted); letter-spacing: .06em; }
     .tab-stat span { color: var(--green); font-weight: 500; }
-
-    /* ── TAB CONTENT ── */
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* ── MY SKILLS ── */
-    .skills-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
-    }
-    .skills-filters { display: flex; gap: 8px; flex-wrap: wrap; }
-    .filter-btn {
-      font-family: var(--mono); font-size: .62rem; letter-spacing: .08em;
-      padding: 6px 14px; border-radius: var(--r); cursor: pointer;
-      border: 1px solid var(--border2); background: none; color: var(--muted);
-      transition: all .15s;
-    }
-    .filter-btn:hover { color: var(--text); border-color: var(--green-b); }
-    .filter-btn.active { background: var(--green-d); border-color: var(--green-b); color: var(--green); }
-
-    /* Skills table */
+    /* ── SKILLS TABLE ── */
     .skills-tbl { border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
     .skills-tbl-header {
-      display: grid; grid-template-columns: 2fr 100px 80px 80px 100px 140px;
+      display: grid; grid-template-columns: 2fr 100px 80px 120px 140px;
       background: var(--surface); padding: 10px 20px;
       font-family: var(--mono); font-size: .58rem; letter-spacing: .12em; color: var(--muted);
     }
     .skill-row {
-      display: grid; grid-template-columns: 2fr 100px 80px 80px 100px 140px;
+      display: grid; grid-template-columns: 2fr 100px 80px 120px 140px;
       padding: 14px 20px; border-top: 1px solid var(--border);
       background: var(--bg); transition: background .12s; align-items: center;
     }
@@ -78,9 +83,8 @@
     .skill-name { font-size: .84rem; font-weight: 500; color: var(--text); }
     .skill-cat {
       font-family: var(--mono); font-size: .58rem; letter-spacing: .1em;
-      color: var(--green); background: var(--green-d);
-      border: 1px solid var(--green-b); padding: 2px 7px; border-radius: 3px;
-      margin-left: 6px;
+      color: var(--green); background: var(--green-d); border: 1px solid var(--green-b);
+      padding: 2px 7px; border-radius: 3px; margin-left: 4px;
     }
     .skill-cat.blue { color: var(--blue); background: var(--blue-d); border-color: var(--blue-b); }
     .skill-cat.orange { color: var(--orange); background: rgba(255,140,66,.06); border-color: rgba(255,140,66,.2); }
@@ -93,14 +97,12 @@
     .score-fill.warn { background: var(--orange); }
     .score-fill.weak { background: var(--red); }
     .uses-col { font-family: var(--mono); font-size: .72rem; color: var(--muted); }
-    .conv-col { font-family: var(--mono); font-size: .72rem; color: var(--muted); }
     .status-badge {
       font-family: var(--mono); font-size: .58rem; letter-spacing: .1em;
       padding: 3px 10px; border-radius: 3px; display: inline-flex; align-items: center; gap: 5px;
     }
     .status-badge.listed { background: var(--green-d); border: 1px solid var(--green-b); color: var(--green); }
     .status-badge.private { background: var(--surface); border: 1px solid var(--border2); color: var(--muted); }
-    .status-badge.selling { background: rgba(255,140,66,.06); border: 1px solid rgba(255,140,66,.2); color: var(--orange); }
     .action-btns { display: flex; gap: 6px; }
     .act-btn {
       font-family: var(--mono); font-size: .58rem; letter-spacing: .08em;
@@ -111,30 +113,9 @@
     .act-btn.sell { color: var(--orange); border-color: rgba(255,140,66,.3); }
     .act-btn.sell:hover { background: rgba(255,140,66,.08); }
 
-    /* ── MARKETPLACE ── */
-    .mkt-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 24px; gap: 16px; flex-wrap: wrap;
-    }
-    .mkt-search {
-      display: flex; gap: 8px; align-items: center; flex: 1;
-    }
-    .search-input {
-      flex: 1; background: var(--surface); border: 1px solid var(--border2);
-      border-radius: var(--r); padding: 9px 14px; font-family: var(--mono);
-      font-size: .72rem; color: var(--text); outline: none; max-width: 340px;
-    }
-    .search-input:focus { border-color: var(--green-b); }
-    .search-input::placeholder { color: var(--dim); }
-    .mkt-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 1px; background: var(--border);
-      border: 1px solid var(--border); border-radius: var(--r); overflow: hidden;
-    }
-    .mkt-card {
-      background: var(--bg); padding: 22px;
-      transition: background .15s; cursor: pointer;
-    }
+    /* ── EXPLORE GRID ── */
+    .mkt-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
+    .mkt-card { background: var(--bg); padding: 22px; transition: background .15s; }
     .mkt-card:hover { background: var(--surface); }
     .mkt-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
     .mkt-name { font-size: .88rem; font-weight: 500; color: var(--text); margin-bottom: 4px; }
@@ -145,13 +126,9 @@
     .mkt-score-big.begin { color: var(--red); }
     .mkt-score-label { font-family: var(--mono); font-size: .54rem; letter-spacing: .1em; color: var(--muted); text-align: right; margin-top: 2px; }
     .mkt-knows { margin-bottom: 12px; }
-    .mkt-know-item { font-size: .75rem; color: var(--muted); line-height: 1.8; display: flex; align-items: center; gap: 6px; }
-    .mkt-know-item .dot-g { color: var(--green); font-size: .7rem; }
-    .mkt-know-item .dot-w { color: var(--orange); font-size: .7rem; }
-    .mkt-know-item .dot-r { color: var(--red); font-size: .7rem; }
+    .mkt-know-item { font-size: .75rem; color: var(--muted); line-height: 1.8; display: flex; align-items: flex-start; gap: 6px; }
     .mkt-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border); }
     .mkt-price { font-family: var(--mono); font-size: .68rem; color: var(--green); }
-    .mkt-price.paid { color: var(--blue); }
     .mkt-installs { font-family: var(--mono); font-size: .6rem; color: var(--dim); }
     .install-btn {
       font-family: var(--mono); font-size: .62rem; letter-spacing: .08em;
@@ -160,6 +137,7 @@
       transition: all .15s;
     }
     .install-btn:hover { background: rgba(0,255,135,.15); }
+    .install-btn:disabled { opacity: .5; cursor: not-allowed; }
     .preview-btn {
       font-family: var(--mono); font-size: .62rem; letter-spacing: .08em;
       padding: 6px 14px; border-radius: var(--r); cursor: pointer;
@@ -168,7 +146,7 @@
     }
     .preview-btn:hover { color: var(--text); border-color: var(--green-b); }
 
-    /* ── SKILL PREVIEW MODAL ── */
+    /* ── MODAL ── */
     .modal-overlay {
       display: none; position: fixed; inset: 0; z-index: 500;
       background: rgba(5,7,15,0.88); backdrop-filter: blur(8px);
@@ -187,146 +165,101 @@
     }
     .modal-title { font-size: 1.1rem; font-weight: 500; color: var(--text); margin-bottom: 4px; }
     .modal-sub { font-family: var(--mono); font-size: .62rem; color: var(--muted); }
-    .modal-close {
-      font-size: 1.2rem; color: var(--muted); background: none;
-      border: none; cursor: pointer; padding: 4px 8px; transition: color .15s;
-    }
+    .modal-close { font-size: 1.2rem; color: var(--muted); background: none; border: none; cursor: pointer; padding: 4px 8px; }
     .modal-close:hover { color: var(--text); }
     .modal-body { padding: 28px; }
-
-    /* Overall score */
-    .overall-score {
-      background: var(--bg3); border: 1px solid var(--border);
-      border-radius: var(--r); padding: 20px 24px; margin-bottom: 24px;
-      display: flex; align-items: center; gap: 24px;
+    .modal-footer {
+      padding: 20px 28px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; bottom: 0; background: var(--bg2);
     }
-    .score-circle {
-      width: 72px; height: 72px; border-radius: 50%;
-      border: 3px solid var(--green); display: flex; flex-direction: column;
-      align-items: center; justify-content: center; flex-shrink: 0;
-    }
+    .modal-price { font-family: var(--mono); font-size: .78rem; color: var(--muted); }
+    .modal-price span { color: var(--green); font-weight: 500; font-size: .9rem; }
+    .btn-install { background: var(--green); color: #000; font-family: var(--mono); font-size: .72rem; font-weight: 500; padding: 10px 22px; border-radius: var(--r); border: none; cursor: pointer; }
+    .btn-install:hover { opacity: .85; }
+    .btn-cancel { background: none; border: 1px solid var(--border2); color: var(--muted); font-family: var(--mono); font-size: .72rem; padding: 10px 22px; border-radius: var(--r); cursor: pointer; }
+    .btn-cancel:hover { color: var(--text); border-color: var(--green-b); }
+    .overall-score { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r); padding: 20px 24px; margin-bottom: 24px; display: flex; align-items: center; gap: 24px; }
+    .score-circle { width: 72px; height: 72px; border-radius: 50%; border: 3px solid var(--green); display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
     .score-circle.warn { border-color: var(--orange); }
     .score-circle.weak { border-color: var(--red); }
     .score-circle-num { font-family: var(--mono); font-size: 1.4rem; font-weight: 700; color: var(--green); line-height: 1; }
     .score-circle-num.warn { color: var(--orange); }
     .score-circle-num.weak { color: var(--red); }
-    .score-circle-label { font-family: var(--mono); font-size: .52rem; color: var(--muted); letter-spacing: .06em; }
-    .score-details { flex: 1; }
+    .score-circle-label { font-family: var(--mono); font-size: .52rem; color: var(--muted); }
     .score-level { font-size: .92rem; font-weight: 500; color: var(--text); margin-bottom: 4px; }
     .score-desc { font-size: .8rem; color: var(--muted); line-height: 1.65; }
-
-    /* 5 dimensions */
-    .dimensions { margin-bottom: 24px; }
-    .dim-title { font-family: var(--mono); font-size: .62rem; letter-spacing: .14em; color: var(--green); margin-bottom: 14px; }
-    .dim-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-    .dim-label { font-size: .78rem; color: var(--muted); min-width: 140px; }
-    .dim-bar-wrap { flex: 1; height: 5px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
-    .dim-fill { height: 100%; border-radius: 3px; background: var(--green); transition: width .6s var(--ease); }
-    .dim-fill.warn { background: var(--orange); }
-    .dim-fill.weak { background: var(--red); }
-    .dim-pct { font-family: var(--mono); font-size: .68rem; min-width: 36px; text-align: right; }
-
-    /* What it knows */
-    .knows-section { margin-bottom: 24px; }
     .knows-title { font-family: var(--mono); font-size: .62rem; letter-spacing: .14em; color: var(--green); margin-bottom: 14px; }
-    .know-item {
-      border: 1px solid var(--border); border-radius: var(--r);
-      padding: 14px 16px; margin-bottom: 8px; background: var(--bg);
-    }
+    .know-item { border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; margin-bottom: 8px; background: var(--bg); }
     .know-item-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-    .know-item-name { font-size: .82rem; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 8px; }
-    .know-status { font-size: .8rem; }
+    .know-item-name { font-size: .82rem; font-weight: 500; color: var(--text); }
     .know-conf { font-family: var(--mono); font-size: .7rem; }
     .know-conf.high { color: var(--green); }
-    .know-conf.mid { color: var(--orange); }
-    .know-conf.low { color: var(--red); }
     .know-meta { font-family: var(--mono); font-size: .6rem; color: var(--dim); }
-
-    /* Gaps */
-    .gaps-section { margin-bottom: 24px; }
-    .gap-item {
-      border: 1px solid rgba(255,140,66,.15); border-radius: var(--r);
-      padding: 12px 16px; margin-bottom: 8px; background: rgba(255,140,66,.03);
-    }
-    .gap-name { font-size: .82rem; font-weight: 500; color: var(--orange); margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
-    .gap-desc { font-size: .78rem; color: var(--muted); }
-
-    /* Real performance */
-    .perf-section { margin-bottom: 24px; }
     .perf-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
     .perf-cell { background: var(--bg); padding: 16px 18px; }
     .perf-num { font-family: var(--mono); font-size: 1.3rem; font-weight: 700; color: var(--green); line-height: 1; margin-bottom: 4px; }
-    .perf-num.warn { color: var(--orange); }
     .perf-lbl { font-family: var(--mono); font-size: .58rem; color: var(--muted); letter-spacing: .08em; }
 
-    /* Modal footer */
-    .modal-footer {
-      padding: 20px 28px; border-top: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between; gap: 12px;
-      position: sticky; bottom: 0; background: var(--bg2);
-    }
-    .modal-price { font-family: var(--mono); font-size: .78rem; color: var(--muted); }
-    .modal-price span { color: var(--green); font-weight: 500; font-size: .9rem; }
-    .modal-actions { display: flex; gap: 8px; }
-    .btn-install { background: var(--green); color: #000; font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; font-weight: 500; padding: 10px 22px; border-radius: var(--r); border: none; cursor: pointer; transition: opacity .15s; }
-    .btn-install:hover { opacity: .85; }
-    .btn-transfer { background: none; border: 1px solid var(--border2); color: var(--muted); font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; padding: 10px 22px; border-radius: var(--r); cursor: pointer; transition: all .15s; }
-    .btn-transfer:hover { color: var(--text); border-color: var(--green-b); }
+    /* ── SEARCH ── */
+    .mkt-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+    .mkt-search { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .search-input { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--r); padding: 9px 14px; font-family: var(--mono); font-size: .72rem; color: var(--text); outline: none; min-width: 200px; }
+    .search-input:focus { border-color: var(--green-b); }
+    .search-input::placeholder { color: var(--dim); }
+    .skills-filters { display: flex; gap: 6px; flex-wrap: wrap; }
+    .filter-btn { font-family: var(--mono); font-size: .62rem; letter-spacing: .08em; padding: 6px 14px; border-radius: var(--r); cursor: pointer; border: 1px solid var(--border2); background: none; color: var(--muted); transition: all .15s; }
+    .filter-btn:hover { color: var(--text); border-color: var(--green-b); }
+    .filter-btn.active { background: var(--green-d); border-color: var(--green-b); color: var(--green); }
 
-    /* Coming soon overlay */
-    .coming-soon {
-      text-align: center; padding: 80px 40px;
-    }
-    .coming-soon-badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--green-d); border: 1px solid var(--green-b);
-      padding: 6px 16px; border-radius: var(--r);
-      font-family: var(--mono); font-size: .66rem; letter-spacing: .1em;
-      color: var(--green); margin-bottom: 24px;
-    }
+    /* ── COMING SOON ── */
+    .coming-soon { text-align: center; padding: 80px 40px; }
+    .coming-soon-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--green-d); border: 1px solid var(--green-b); padding: 6px 16px; border-radius: var(--r); font-family: var(--mono); font-size: .66rem; letter-spacing: .1em; color: var(--green); margin-bottom: 24px; }
     .coming-soon h2 { font-size: 1.8rem; font-weight: 300; letter-spacing: -.025em; color: var(--text); margin-bottom: 12px; }
-    .coming-soon h2 b { font-weight: 700; color: var(--green); }
     .coming-soon p { font-size: .9rem; color: var(--muted); max-width: 480px; margin: 0 auto 32px; line-height: 1.8; }
 
-    /* Hamburger */
-    .hamburger { display: none; flex-direction: column; gap: 5px; padding: 8px; cursor: pointer; background: none; border: none; }
-    .hamburger span { display: block; width: 20px; height: 2px; background: var(--muted); border-radius: 2px; }
-    .mobile-menu { display: none; position: fixed; top: 58px; left: 0; right: 0; background: var(--bg2); border-bottom: 1px solid var(--border); z-index: 199; padding: 16px 24px; flex-direction: column; gap: 4px; }
-    .mobile-menu.open { display: flex; }
-    .mobile-menu a { font-family: var(--mono); font-size: .78rem; color: var(--muted); padding: 10px 12px; border-radius: var(--r); }
-    .mobile-menu a.active { color: var(--green); background: var(--green-d); }
-    .mobile-overlay { display: none; position: fixed; inset: 0; z-index: 198; }
-    .mobile-overlay.open { display: block; }
+    /* ── TOAST ── */
+    #toast { display:none; position:fixed; bottom:32px; left:50%; transform:translateX(-50%); background:var(--surface); border:1px solid var(--border2); color:var(--text); font-family:var(--mono); font-size:.72rem; padding:12px 24px; border-radius:var(--r); z-index:9999; letter-spacing:.06em; white-space:nowrap; }
 
-    @media (max-width: 1024px) {
-      .mkt-grid { grid-template-columns: repeat(2,1fr); }
-      .skills-tbl-header, .skill-row { grid-template-columns: 2fr 100px 80px 120px; }
-      .skills-tbl-header .col-conv, .skill-row .col-conv { display: none; }
+    /* hamburger */
+    .hamburger { display:none; flex-direction:column; gap:5px; padding:8px; cursor:pointer; background:none; border:none; }
+    .hamburger span { display:block; width:20px; height:2px; background:var(--muted); border-radius:2px; }
+    .mobile-menu { display:none; position:fixed; top:58px; left:0; right:0; background:var(--bg2); border-bottom:1px solid var(--border); z-index:199; padding:16px 24px; flex-direction:column; gap:4px; }
+    .mobile-menu.open { display:flex; }
+    .mobile-menu a { font-family:var(--mono); font-size:.78rem; color:var(--muted); padding:10px 12px; border-radius:var(--r); }
+    .mobile-menu a.active { color:var(--green); background:var(--green-d); }
+    .mobile-overlay { display:none; position:fixed; inset:0; z-index:198; }
+    .mobile-overlay.open { display:block; }
+
+    @media(max-width:1024px) { .mkt-grid { grid-template-columns:repeat(2,1fr); } }
+    @media(max-width:768px) {
+      .mkt-grid { grid-template-columns:1fr; }
+      .skills-tbl-header, .skill-row { grid-template-columns:2fr 80px 110px 130px; }
+      .skill-row > .uses-col { display:none; }
+      .skills-tbl-header > span:nth-child(3) { display:none; }
+      .dash-tabs-inner { padding:0 24px; }
+      .tab-stats { display:none; }
+      .hamburger { display:flex; }
+      .nav-links { display:none!important; }
+      .nav-cta { display:none!important; }
+      .connect-inner { padding:0 24px; }
     }
-    @media (max-width: 768px) {
-      .mkt-grid { grid-template-columns: 1fr; }
-      .dash-tabs-inner { padding: 0 24px; }
-      .tab-stats { display: none; }
-      .hamburger { display: flex; }
-      .nav-links { display: none !important; }
-      .nav-cta { display: none !important; }
-    }
-    @media (min-width: 769px) { .nav-links { display: flex !important; } .nav-cta { display: block !important; } }
+    @media(min-width:769px) { .nav-links { display:flex!important; } .nav-cta { display:block!important; } }
   </style>
 </head>
 <body>
 
 <nav class="nav" id="nav">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo"><img src="assets/logo.png" class="nav-logo-img" alt="EvoClaw"><span class="g">EVO</span>CLAW</a>
+    <a href="/" class="nav-logo"><img src="assets/logo.png" class="nav-logo-img" alt="EvoClaw"><span class="g">EVO</span>CLAW</a>
     <ul class="nav-links">
-      <li><a href="index.html" style="color:var(--green)">HOME</a></li>
-      <li><a href="demo.html" style="color:var(--green)">LIVE DEMO</a></li>
-      <li><a href="docs.html" style="color:var(--green)">DOCS</a></li>
-      <li><a href="install.html" style="color:var(--green)">INSTALL</a></li>
-      <li><a href="integrations.html" style="color:var(--green)">INTEGRATIONS</a></li>
-      <li><a href="marketplace.html" class="active">MARKETPLACE</a></li>
-      <li><a href="playground.html" style="color:var(--green)">PLAYGROUND</a></li>
+      <li><a href="/" style="color:var(--green)">HOME</a></li>
+      <li><a href="/docs" style="color:var(--green)">DOCS</a></li>
+      <li><a href="/install" style="color:var(--green)">INSTALL</a></li>
+      <li><a href="/integrations" style="color:var(--green)">INTEGRATIONS</a></li>
+      <li><a href="/marketplace" class="active">MARKETPLACE</a></li>
+      <li><a href="/ask" style="color:var(--green)">ASK EVOCLAW</a></li>
+      <li><a href="/playground" style="color:var(--green)">PLAYGROUND</a></li>
     </ul>
     <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank" class="nav-cta">GITHUB →</a>
     <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
@@ -335,148 +268,162 @@
 
 <div class="mobile-overlay" id="mobileOverlay"></div>
 <div class="mobile-menu" id="mobileMenu">
-  <a href="index.html">HOME</a>
-  <a href="demo.html">LIVE DEMO</a>
-  <a href="docs.html">DOCS</a>
-  <a href="install.html">INSTALL</a>
-  <a href="integrations.html">INTEGRATIONS</a>
-  <a href="marketplace.html" class="active">MARKETPLACE</a>
-  <a href="playground.html">PLAYGROUND</a>
+  <a href="/">HOME</a>
+  <a href="/docs">DOCS</a>
+  <a href="/install">INSTALL</a>
+  <a href="/integrations">INTEGRATIONS</a>
+  <a href="/marketplace" class="active">MARKETPLACE</a>
+  <a href="/ask">ASK EVOCLAW</a>
+  <a href="/playground">PLAYGROUND</a>
+</div>
+
+<!-- CONNECT AGENT BANNER -->
+<div class="connect-banner" id="connectBanner">
+  <div class="connect-inner">
+    <span class="connect-label">YOUR AGENT URL:</span>
+    <input class="connect-input" id="agentUrl" placeholder="http://localhost:8080" value="">
+    <button class="connect-btn" id="connectBtn" onclick="connectAgent()">CONNECT AGENT</button>
+    <span class="connect-status" id="connectStatus">
+      <span style="color:var(--dim)">○ Not connected</span>
+    </span>
+    <span class="connect-hint">· Run <code>evoclaw start</code> then paste your agent URL</span>
+  </div>
 </div>
 
 <div class="dash-wrap">
-
   <!-- TABS -->
   <div class="dash-tabs">
     <div class="dash-tabs-inner">
       <div class="tab-list">
-        <button class="tab-btn active" onclick="switchTab('my-skills', this)">MY SKILLS</button>
-        <button class="tab-btn" onclick="switchTab('marketplace', this)">MARKETPLACE</button>
-        <button class="tab-btn" onclick="switchTab('explore', this)">EXPLORE</button>
+        <button class="tab-btn active" onclick="switchTab('explore', this)">EXPLORE</button>
+        <button class="tab-btn" onclick="switchTab('my-skills', this)">MY SKILLS</button>
         <button class="tab-btn" onclick="switchTab('analytics', this)">ANALYTICS</button>
       </div>
       <div class="tab-stats">
-        <div class="tab-stat">Skills: <span id="totalSkills">11</span></div>
-        <div class="tab-stat">Listed: <span>3</span></div>
-        <div class="tab-stat">Avg Score: <span>0.84</span></div>
-        <div class="tab-stat" style="display:flex;align-items:center;gap:6px;">
-          <span class="pulse-dot"></span>
-          <span style="color:var(--green);">AGENT ONLINE</span>
+        <div class="tab-stat" id="networkStats">Network: <span id="networkCount">...</span> skills</div>
+        <div class="tab-stat" id="myStatsBar" style="display:none">My Agent: <span id="totalSkills">0</span> skills · Avg <span id="avgScore">0</span></div>
+        <div class="tab-stat" id="agentStatusBadge">
+          <span style="color:var(--dim);">○ AGENT OFFLINE</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- MY SKILLS TAB -->
-  <div class="tab-content active" id="tab-my-skills">
-    <div class="section-sm">
-      <div class="container">
-        <div class="skills-header">
-          <div>
-            <span class="label">MY AGENT SKILLS</span>
-            <h2 class="section-title" style="font-size:1.6rem;">Skills your agent <b>has learned.</b></h2>
-          </div>
-          <div class="skills-filters">
-            <button class="filter-btn active" onclick="filterSkills('all', this)">ALL</button>
-            <button class="filter-btn" onclick="filterSkills('general', this)">GENERAL</button>
-            <button class="filter-btn" onclick="filterSkills('coding', this)">CODING</button>
-            <button class="filter-btn" onclick="filterSkills('security', this)">SECURITY</button>
-            <button class="filter-btn" onclick="filterSkills('defi', this)">DEFI</button>
-          </div>
-        </div>
-
-        <div class="skills-tbl">
-          <div class="skills-tbl-header">
-            <span>SKILL NAME</span>
-            <span>SCORE</span>
-            <span>USES</span>
-            <span class="col-conv">CONVERSATIONS</span>
-            <span>STATUS</span>
-            <span>ACTIONS</span>
-          </div>
-          <div id="mySkillsList"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- MARKETPLACE TAB -->
-  <div class="tab-content" id="tab-marketplace">
+  <!-- EXPLORE TAB -->
+  <div class="tab-content active" id="tab-explore">
     <div class="section-sm">
       <div class="container">
         <div class="mkt-header">
           <div>
             <span class="label">SKILL MARKETPLACE</span>
             <h2 class="section-title" style="font-size:1.6rem;">Browse. Preview. <b>Install.</b></h2>
+            <p class="section-sub" style="margin-bottom:16px;">Skills learned by agents across the EvoClaw network. See full content and score before installing into your agent.</p>
           </div>
-          <div class="mkt-search">
-            <input class="search-input" placeholder="Search skills..." oninput="searchSkills(this.value)">
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
+            <input class="search-input" id="exploreSearch" placeholder="Search skills..." oninput="filterExploreSkills()">
             <div class="skills-filters">
-              <button class="filter-btn active" onclick="filterMkt('all', this)">ALL</button>
-              <button class="filter-btn" onclick="filterMkt('free', this)">FREE</button>
-              <button class="filter-btn" onclick="filterMkt('expert', this)">EXPERT</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="mkt-grid" id="marketplaceGrid"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- EXPLORE TAB -->
-  <div class="tab-content" id="tab-explore">
-    <div class="section-sm">
-      <div class="container">
-        <div class="mkt-header">
-          <div>
-            <span class="label">EXPLORE</span>
-            <h2 class="section-title" style="font-size:1.6rem;">Skills from <b>other agents.</b></h2>
-            <p class="section-sub" style="margin-bottom:20px;">Browse skills learned by agents across the EvoClaw network. See full content, score breakdown, and real performance before installing into your agent.</p>
-          </div>
-          <div class="mkt-search">
-            <input class="search-input" id="exploreSearch" placeholder="Search skills..." oninput="filterExplore()">
-            <div class="skills-filters">
-              <button class="filter-btn active" onclick="setExploreFilter('all', this)">ALL</button>
-              <button class="filter-btn" onclick="setExploreFilter('general', this)">GENERAL</button>
-              <button class="filter-btn" onclick="setExploreFilter('coding', this)">CODING</button>
-              <button class="filter-btn" onclick="setExploreFilter('security', this)">SECURITY</button>
-              <button class="filter-btn" onclick="setExploreFilter('defi', this)">DEFI</button>
+              <button class="filter-btn active" onclick="setExploreFilter('all',this)">ALL</button>
+              <button class="filter-btn" onclick="setExploreFilter('general',this)">GENERAL</button>
+              <button class="filter-btn" onclick="setExploreFilter('coding',this)">CODING</button>
+              <button class="filter-btn" onclick="setExploreFilter('security',this)">SECURITY</button>
+              <button class="filter-btn" onclick="setExploreFilter('defi',this)">DEFI</button>
             </div>
           </div>
         </div>
 
         <!-- Network stats -->
-        <div class="g4" style="margin-bottom:32px;">
+        <div class="g4" style="margin-bottom:28px;">
           <div class="cell">
-            <div style="font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--green);line-height:1;margin-bottom:4px;">2,847</div>
-            <div style="font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.1em;">TOTAL SKILLS</div>
+            <div style="font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--green);line-height:1;margin-bottom:4px;" id="statTotal">...</div>
+            <div style="font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.1em;">SKILLS IN NETWORK</div>
           </div>
           <div class="cell">
-            <div style="font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--green);line-height:1;margin-bottom:4px;">341</div>
+            <div style="font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--green);line-height:1;margin-bottom:4px;" id="statAgents">...</div>
             <div style="font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.1em;">ACTIVE AGENTS</div>
           </div>
           <div class="cell">
-            <div style="font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--green);line-height:1;margin-bottom:4px;">0.87</div>
-            <div style="font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.1em;">AVG SCORE</div>
+            <div style="font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--green);line-height:1;margin-bottom:4px;" id="statAvg">...</div>
+            <div style="font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.1em;">AVG PRM SCORE</div>
           </div>
           <div class="cell">
-            <div style="font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--blue);line-height:1;margin-bottom:4px;" id="exploreCount">11</div>
+            <div style="font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--blue);line-height:1;margin-bottom:4px;" id="statShowing">0</div>
             <div style="font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.1em;">SHOWING NOW</div>
           </div>
         </div>
 
-        <!-- Explore grid -->
-        <div class="mkt-grid" id="exploreGrid"></div>
-
-        <!-- Coming soon banner -->
-        <div style="margin-top:24px;background:var(--green-d);border:1px solid var(--green-b);border-radius:var(--r);padding:18px 24px;display:flex;align-items:center;gap:14px;">
-          <span class="pulse-dot"></span>
-          <div>
-            <div style="font-family:var(--mono);font-size:.72rem;color:var(--green);font-weight:500;margin-bottom:4px;">NETWORK EXPANDING</div>
-            <div style="font-size:.8rem;color:var(--muted);">Currently showing skills from your own agent. As more agents join the EvoClaw network, skills from other agents will appear here automatically.</div>
+        <div class="mkt-grid" id="exploreGrid">
+          <div style="padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:.72rem;grid-column:1/-1;">
+            <span class="pulse-dot" style="margin-right:8px;vertical-align:middle;"></span>Loading skills from network...
           </div>
         </div>
+
+        <div style="margin-top:20px;background:var(--green-d);border:1px solid var(--green-b);border-radius:var(--r);padding:16px 22px;display:flex;align-items:center;gap:12px;">
+          <span class="pulse-dot"></span>
+          <div>
+            <div style="font-family:var(--mono);font-size:.7rem;color:var(--green);font-weight:500;margin-bottom:3px;">NETWORK EXPANDING</div>
+            <div style="font-size:.78rem;color:var(--muted);">As more agents join and list skills, they appear here automatically. Connect your agent above to list your own skills.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY SKILLS TAB -->
+  <div class="tab-content" id="tab-my-skills">
+    <div class="section-sm">
+      <div class="container">
+
+        <!-- Not connected state -->
+        <div id="notConnectedState" style="text-align:center;padding:60px 40px;">
+          <div style="font-size:2.5rem;margin-bottom:16px;">🔌</div>
+          <h2 class="section-title" style="font-size:1.4rem;text-align:center;">Connect your agent first.</h2>
+          <p style="color:var(--muted);font-size:.88rem;max-width:420px;margin:0 auto 28px;line-height:1.8;">
+            To see your skills, connect your EvoClaw agent using the bar at the top. Your agent can run locally or on a VPS.
+          </p>
+          <div class="panel" style="max-width:500px;margin:0 auto 24px;">
+            <div class="panel-bar"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div><span class="panel-label">QUICK START</span></div>
+            <div class="panel-body">
+              <div><span class="cm"># Install EvoClaw</span></div>
+              <div><span class="kw">pip</span> install evoclaw</div>
+              <div><span class="kw">evoclaw</span> init</div>
+              <div><span class="kw">evoclaw</span> start</div>
+              <div style="margin-top:8px;"><span class="cm"># Then paste http://localhost:8080 above</span></div>
+            </div>
+          </div>
+          <button class="btn btn-g" onclick="document.getElementById('agentUrl').focus()">Connect Agent →</button>
+        </div>
+
+        <!-- Connected state -->
+        <div id="connectedState" style="display:none;">
+          <div class="skills-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+            <div>
+              <span class="label">MY AGENT SKILLS</span>
+              <h2 class="section-title" style="font-size:1.6rem;">Skills your agent <b>has learned.</b></h2>
+            </div>
+            <div class="skills-filters" id="mySkillsFilters">
+              <button class="filter-btn active" onclick="filterMySkills('all',this)">ALL</button>
+              <button class="filter-btn" onclick="filterMySkills('general',this)">GENERAL</button>
+              <button class="filter-btn" onclick="filterMySkills('coding',this)">CODING</button>
+              <button class="filter-btn" onclick="filterMySkills('security',this)">SECURITY</button>
+            </div>
+          </div>
+
+          <div class="skills-tbl">
+            <div class="skills-tbl-header">
+              <span>SKILL NAME</span>
+              <span>SCORE</span>
+              <span>USES</span>
+              <span>STATUS</span>
+              <span>ACTIONS</span>
+            </div>
+            <div id="mySkillsList">
+              <div style="padding:32px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:.72rem;">
+                <span class="pulse-dot" style="margin-right:8px;vertical-align:middle;"></span>Loading your skills...
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -488,10 +435,10 @@
         <div class="coming-soon">
           <div class="coming-soon-badge"><span class="pulse-dot"></span>COMING SOON</div>
           <h2>Agent <b>Analytics.</b></h2>
-          <p>Track your agent's growth over time. Revenue from skill sales. Skill performance charts. Download trends. Coming in Phase 3.</p>
+          <p>Track your agent's growth, revenue from skill sales, performance charts, and download trends. Coming in Phase 3.</p>
           <div class="btns" style="justify-content:center;">
-            <a href="#" class="btn btn-g">Get Notified →</a>
-            <a href="index.html" class="btn btn-o">Back to Home</a>
+            <a href="/install" class="btn btn-g">Get Started →</a>
+            <a href="/" class="btn btn-o">Back to Home</a>
           </div>
         </div>
       </div>
@@ -501,315 +448,37 @@
 </div>
 
 <!-- SKILL PREVIEW MODAL -->
-<div class="modal-overlay" id="skillModal" onclick="closeModal(event)">
-  <div class="modal" id="modalContent">
+<div class="modal-overlay" id="skillModal" onclick="closeModalBg(event)">
+  <div class="modal">
     <div class="modal-header">
       <div>
-        <div class="modal-title" id="modalTitle">Skill Name</div>
-        <div class="modal-sub" id="modalSub">creator · category · installs</div>
+        <div class="modal-title" id="modalTitle">Skill</div>
+        <div class="modal-sub" id="modalSub"></div>
       </div>
-      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+      <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body" id="modalBody"></div>
     <div class="modal-footer">
       <div class="modal-price" id="modalPrice"></div>
-      <div class="modal-actions">
-        <button class="btn-transfer" onclick="closeModalDirect()">Cancel</button>
-        <button class="btn-install" id="modalInstallBtn">Install Skill</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-cancel" onclick="closeModal()">Close</button>
+        <button class="btn-install" id="modalActionBtn">Install</button>
       </div>
     </div>
   </div>
 </div>
 
+<div id="toast"></div>
+
 <script>
-// ── DATA ──
-const mySkills = [
-  { id:1, name:"async-error-recovery", cat:"coding", catClass:"blue", score:91, uses:234, convs:312, status:"listed" },
-  { id:2, name:"typescript-strict-mode", cat:"coding", catClass:"blue", score:88, uses:189, convs:267, status:"listed" },
-  { id:3, name:"chain-of-thought", cat:"general", catClass:"", score:94, uses:421, convs:589, status:"listed" },
-  { id:4, name:"regex-edge-cases", cat:"coding", catClass:"blue", score:87, uses:156, convs:198, status:"private" },
-  { id:5, name:"sql-injection-prevention", cat:"security", catClass:"orange", score:92, uses:203, convs:287, status:"private" },
-  { id:6, name:"context-window-mgmt", cat:"general", catClass:"", score:90, uses:312, convs:441, status:"private" },
-  { id:7, name:"markdown-formatting", cat:"general", catClass:"", score:82, uses:98, convs:134, status:"private" },
-  { id:8, name:"rate-limit-handling", cat:"coding", catClass:"blue", score:86, uses:145, convs:201, status:"private" },
-  { id:9, name:"python-type-hints", cat:"coding", catClass:"blue", score:85, uses:167, convs:234, status:"private" },
-  { id:10, name:"error-message-clarity", cat:"general", catClass:"", score:79, uses:89, convs:112, status:"private" },
-  { id:11, name:"api-response-validation", cat:"coding", catClass:"blue", score:83, uses:134, convs:178, status:"private" },
-];
+// ── CONFIG ──
+const SUPA_URL = 'https://sbqvwgzztfslwbhzqcjq.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXZ3Z3p6dGZzbHdiaHpxY2pxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3NTY4MTYsImV4cCI6MjA4OTMzMjgxNn0.qVAD4Ow0W3HC-mq1xiHzYLvAV5tqEoaWRf-ih1pUhKo';
 
-const marketplaceSkills = [
-  {
-    id:"m1", name:"Base Rug Detector", cat:"DeFi", score:78, level:"INTERMEDIATE", levelClass:"inter",
-    creator:"0x7f3a...b2c4", installs:847, price:"FREE", priceClass:"",
-    knows:[ {name:"Honeypot detection", conf:91, status:"✅"}, {name:"Liquidity lock check", conf:88, status:"✅"}, {name:"Dev wallet concentration", conf:85, status:"✅"}, {name:"Contract ownership check", conf:67, status:"⚠️"} ],
-    gaps:[ {name:"Proxy contract detection", conf:31, desc:"Only seen 23 proxy rug cases — needs ~100 more"}, {name:"Flashloan attack patterns", conf:12, desc:"Major knowledge gap — rarely encountered in training"} ],
-    perf:{ catch:"82%", catchClass:"", fp:"9%", fpClass:"warn", convs:"847" },
-    dims:[ {name:"Knowledge Depth", val:82, cls:""}, {name:"Accuracy", val:74, cls:"warn"}, {name:"Coverage", val:61, cls:"warn"}, {name:"Up-to-date", val:80, cls:""}, {name:"Real Usage", val:89, cls:""} ],
-  },
-  {
-    id:"m2", name:"Smart Money Tracker", cat:"DeFi", score:94, level:"EXPERT", levelClass:"expert",
-    creator:"0x2d8f...a1e9", installs:1203, price:"FREE", priceClass:"",
-    knows:[ {name:"Whale wallet identification", conf:96, status:"✅"}, {name:"Alpha wallet tracking", conf:93, status:"✅"}, {name:"Entry/exit pattern analysis", conf:91, status:"✅"}, {name:"Cross-chain tracking", conf:88, status:"✅"} ],
-    gaps:[ {name:"CEX withdrawal patterns", conf:44, desc:"Limited data on centralized exchange movements"} ],
-    perf:{ catch:"94%", catchClass:"", fp:"4%", fpClass:"", convs:"2,341" },
-    dims:[ {name:"Knowledge Depth", val:96, cls:""}, {name:"Accuracy", val:94, cls:""}, {name:"Coverage", val:91, cls:""}, {name:"Up-to-date", val:93, cls:""}, {name:"Real Usage", val:97, cls:""} ],
-  },
-  {
-    id:"m3", name:"Narrative Scanner", cat:"Research", score:91, level:"EXPERT", levelClass:"expert",
-    creator:"0x9c1b...d4f7", installs:634, price:"0.01 ETH", priceClass:"paid",
-    knows:[ {name:"Emerging narrative detection", conf:94, status:"✅"}, {name:"Sentiment trend analysis", conf:92, status:"✅"}, {name:"Twitter alpha identification", conf:89, status:"✅"} ],
-    gaps:[ {name:"Telegram signal detection", conf:52, desc:"Limited training on Telegram-based narratives"} ],
-    perf:{ catch:"91%", catchClass:"", fp:"6%", fpClass:"", convs:"1,567" },
-    dims:[ {name:"Knowledge Depth", val:94, cls:""}, {name:"Accuracy", val:91, cls:""}, {name:"Coverage", val:87, cls:""}, {name:"Up-to-date", val:96, cls:""}, {name:"Real Usage", val:88, cls:""} ],
-  },
-  {
-    id:"m4", name:"MEV Protection", cat:"Security", score:89, level:"EXPERT", levelClass:"expert",
-    creator:"0x4a7c...e2b8", installs:423, price:"FREE", priceClass:"",
-    knows:[ {name:"Sandwich attack detection", conf:93, status:"✅"}, {name:"Front-running prevention", conf:91, status:"✅"}, {name:"Slippage optimization", conf:88, status:"✅"} ],
-    gaps:[ {name:"JIT liquidity attacks", conf:41, desc:"New attack vector — limited training data"} ],
-    perf:{ catch:"89%", catchClass:"", fp:"5%", fpClass:"", convs:"987" },
-    dims:[ {name:"Knowledge Depth", val:93, cls:""}, {name:"Accuracy", val:89, cls:""}, {name:"Coverage", val:84, cls:""}, {name:"Up-to-date", val:91, cls:""}, {name:"Real Usage", val:87, cls:""} ],
-  },
-  {
-    id:"m5", name:"Liquidity Scanner", cat:"DeFi", score:67, level:"INTERMEDIATE", levelClass:"inter",
-    creator:"0x3f2e...c9a1", installs:289, price:"FREE", priceClass:"",
-    knows:[ {name:"Pool depth analysis", conf:78, status:"✅"}, {name:"LP concentration check", conf:71, status:"⚠️"} ],
-    gaps:[ {name:"Cross-DEX arbitrage", conf:34, desc:"Needs more training across multiple DEX environments"}, {name:"IL calculation accuracy", conf:28, desc:"Complex math edge cases not fully covered"} ],
-    perf:{ catch:"67%", catchClass:"warn", fp:"18%", fpClass:"warn", convs:"412" },
-    dims:[ {name:"Knowledge Depth", val:71, cls:"warn"}, {name:"Accuracy", val:67, cls:"warn"}, {name:"Coverage", val:58, cls:"warn"}, {name:"Up-to-date", val:74, cls:""}, {name:"Real Usage", val:65, cls:"warn"} ],
-  },
-  {
-    id:"m6", name:"Alpha Distiller", cat:"Research", score:85, level:"EXPERT", levelClass:"expert",
-    creator:"0x8b5d...f3c2", installs:756, price:"0.005 ETH", priceClass:"paid",
-    knows:[ {name:"Signal vs noise filtering", conf:92, status:"✅"}, {name:"CT alpha extraction", conf:88, status:"✅"}, {name:"Early narrative detection", conf:85, status:"✅"} ],
-    gaps:[ {name:"On-chain alpha correlation", conf:61, desc:"Needs stronger connection between CT signals and on-chain data"} ],
-    perf:{ catch:"85%", catchClass:"", fp:"8%", fpClass:"", convs:"1,234" },
-    dims:[ {name:"Knowledge Depth", val:92, cls:""}, {name:"Accuracy", val:85, cls:""}, {name:"Coverage", val:82, cls:""}, {name:"Up-to-date", val:94, cls:""}, {name:"Real Usage", val:89, cls:""} ],
-  },
-];
-
-// ── RENDER MY SKILLS ──
-function renderMySkills(filter = 'all') {
-  const list = document.getElementById('mySkillsList');
-  const filtered = filter === 'all' ? mySkills : mySkills.filter(s => s.cat === filter);
-
-  list.innerHTML = filtered.map(s => {
-    const scoreClass = s.score >= 90 ? '' : s.score >= 75 ? 'warn' : 'weak';
-    const dotClass = s.score >= 90 ? '' : s.score >= 75 ? 'warn' : 'weak';
-    const pct = s.score;
-    return `
-    <div class="skill-row" data-cat="${s.cat}">
-      <div class="skill-name-col">
-        <div class="skill-dot ${dotClass}"></div>
-        <span class="skill-name">${s.name}</span>
-        <span class="skill-cat ${s.catClass}">${s.cat.toUpperCase()}</span>
-      </div>
-      <div class="score-bar-wrap">
-        <span class="score-num ${scoreClass}">${s.score}</span>
-        <div class="score-bar"><div class="score-fill ${scoreClass}" style="width:${pct}%"></div></div>
-      </div>
-      <div class="uses-col">${s.uses.toLocaleString()}</div>
-      <div class="conv-col col-conv">${s.convs.toLocaleString()}</div>
-      <div>
-        <span class="status-badge ${s.status}">
-          ${s.status === 'listed' ? '● LISTED' : s.status === 'selling' ? '● SELLING' : '○ PRIVATE'}
-        </span>
-      </div>
-      <div class="action-btns">
-        <button class="act-btn" onclick="openModal('my', ${s.id})">PREVIEW</button>
-        <button class="act-btn sell">${s.status === 'listed' ? 'UNLIST' : 'LIST'}</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// ── RENDER MARKETPLACE ──
-function renderMarketplace(skills) {
-  const grid = document.getElementById('marketplaceGrid');
-  grid.innerHTML = skills.map(s => `
-    <div class="mkt-card">
-      <div class="mkt-card-top">
-        <div>
-          <div class="mkt-name">${s.name}</div>
-          <div class="mkt-meta">${s.cat} · ${s.installs.toLocaleString()} installs</div>
-        </div>
-        <div style="text-align:right;">
-          <div class="mkt-score-big ${s.levelClass}">${s.score}</div>
-          <div class="mkt-score-label">${s.level}</div>
-        </div>
-      </div>
-      <div class="mkt-knows">
-        ${s.knows.slice(0,3).map(k => `
-          <div class="mkt-know-item">
-            <span class="${k.conf >= 80 ? 'dot-g' : k.conf >= 60 ? 'dot-w' : 'dot-r'}">${k.status}</span>
-            <span>${k.name} <span style="font-family:var(--mono);font-size:.65rem;color:var(--dim);">${k.conf}%</span></span>
-          </div>`).join('')}
-        ${s.gaps.length > 0 ? `<div class="mkt-know-item"><span class="dot-r">❌</span><span style="color:var(--orange)">${s.gaps[0].name} <span style="font-family:var(--mono);font-size:.65rem;">${s.gaps[0].conf}%</span></span></div>` : ''}
-      </div>
-      <div class="mkt-card-footer">
-        <div>
-          <div class="mkt-price ${s.priceClass}">${s.price}</div>
-          <div class="mkt-installs">${s.perf.catch} catch rate</div>
-        </div>
-        <div style="display:flex;gap:6px;">
-          <button class="preview-btn" onclick="openMktModal('${s.id}')">PREVIEW</button>
-          <button class="install-btn" onclick="installSkill('${s.id}')">INSTALL</button>
-        </div>
-      </div>
-    </div>`).join('');
-}
-
-// ── MODAL ──
-function openMktModal(skillId) {
-  const s = marketplaceSkills.find(x => x.id === skillId);
-  if (!s) return;
-  document.getElementById('modalTitle').textContent = s.name;
-  document.getElementById('modalSub').textContent = `Creator: ${s.creator} · ${s.cat} · ${s.installs.toLocaleString()} installs`;
-  document.getElementById('modalPrice').innerHTML = `Price: <span>${s.price}</span>`;
-  document.getElementById('modalInstallBtn').textContent = s.price === 'FREE' ? 'Install Free' : `Buy ${s.price}`;
-  document.getElementById('modalBody').innerHTML = buildModalBody(s);
-  document.getElementById('skillModal').classList.add('open');
-  setTimeout(() => animateBars(), 50);
-}
-
-function buildModalBody(s) {
-  const scoreClass = s.score >= 90 ? '' : s.score >= 75 ? 'warn' : 'weak';
-  const levelDesc = s.score >= 90
-    ? 'Expert level — well-trained across most scenarios. Ready for production use.'
-    : s.score >= 75
-    ? 'Intermediate — solid foundation but has knowledge gaps. Good for general use.'
-    : 'Beginner — still learning. Use with caution, pair with other skills.';
-
-  return `
-    <div class="overall-score">
-      <div class="score-circle ${scoreClass}">
-        <span class="score-circle-num ${scoreClass}">${s.score}</span>
-        <span class="score-circle-label">/100</span>
-      </div>
-      <div class="score-details">
-        <div class="score-level">${s.level}</div>
-        <div class="score-desc">${levelDesc}<br>
-        Trained on <strong style="color:var(--text)">${s.perf.convs}</strong> real conversations.</div>
-      </div>
-    </div>
-
-    <div class="dimensions">
-      <div class="dim-title">SCORE BREAKDOWN</div>
-      ${s.dims.map(d => `
-        <div class="dim-row">
-          <span class="dim-label">${d.name}</span>
-          <div class="dim-bar-wrap"><div class="dim-fill ${d.cls}" style="width:0%" data-target="${d.val}"></div></div>
-          <span class="dim-pct ${d.cls === '' ? (d.val >= 80 ? '' : 'warn') : d.cls}" style="color:${d.val >= 80 ? 'var(--green)' : d.val >= 65 ? 'var(--orange)' : 'var(--red)'}">${d.val}%</span>
-        </div>`).join('')}
-    </div>
-
-    <div class="knows-section">
-      <div class="knows-title">WHAT THIS SKILL KNOWS</div>
-      ${s.knows.map(k => `
-        <div class="know-item">
-          <div class="know-item-top">
-            <div class="know-item-name">${k.status} ${k.name}</div>
-            <span class="know-conf ${k.conf >= 80 ? 'high' : k.conf >= 60 ? 'mid' : 'low'}">${k.conf}% confidence</span>
-          </div>
-          <div class="know-meta">Confidence based on real conversation outcomes</div>
-        </div>`).join('')}
-    </div>
-
-    ${s.gaps.length > 0 ? `
-    <div class="gaps-section">
-      <div class="knows-title" style="color:var(--orange)">KNOWLEDGE GAPS</div>
-      ${s.gaps.map(g => `
-        <div class="gap-item">
-          <div class="gap-name">❌ ${g.name} — ${g.conf}% confidence</div>
-          <div class="gap-desc">${g.desc}</div>
-        </div>`).join('')}
-    </div>` : ''}
-
-    <div class="perf-section">
-      <div class="knows-title">REAL WORLD PERFORMANCE</div>
-      <div class="perf-grid">
-        <div class="perf-cell">
-          <div class="perf-num">${s.perf.catch}</div>
-          <div class="perf-lbl">SUCCESS RATE</div>
-        </div>
-        <div class="perf-cell">
-          <div class="perf-num ${s.perf.fpClass}">${s.perf.fp}</div>
-          <div class="perf-lbl">FALSE POSITIVE</div>
-        </div>
-        <div class="perf-cell">
-          <div class="perf-num">${s.perf.convs}</div>
-          <div class="perf-lbl">CONVERSATIONS</div>
-        </div>
-      </div>
-    </div>`;
-}
-
-function animateBars() {
-  document.querySelectorAll('.dim-fill[data-target]').forEach(el => {
-    el.style.width = el.dataset.target + '%';
-  });
-}
-
-function openModal(type, id) {
-  const s = mySkills.find(x => x.id === id);
-  if (!s) return;
-  document.getElementById('modalTitle').textContent = s.name;
-  document.getElementById('modalSub').textContent = `Your agent · ${s.cat} · ${s.uses} uses`;
-  document.getElementById('modalPrice').innerHTML = `Score: <span>${s.score}/100</span>`;
-  document.getElementById('modalInstallBtn').textContent = s.status === 'listed' ? 'Unlist Skill' : 'List to Marketplace';
-  const fake = marketplaceSkills[0];
-  fake.name = s.name; fake.score = s.score;
-  document.getElementById('modalBody').innerHTML = buildModalBody({...fake, name: s.name, score: s.score, perf:{catch:(s.score-4)+'%',catchClass:'',fp:'8%',fpClass:'',convs:s.convs}});
-  document.getElementById('skillModal').classList.add('open');
-  setTimeout(() => animateBars(), 50);
-}
-
-function closeModal(e) {
-  if (e.target === document.getElementById('skillModal')) closeModalDirect();
-}
-function closeModalDirect() {
-  document.getElementById('skillModal').classList.remove('open');
-}
-
-function installSkill(id) {
-  const btn = event.target;
-  const orig = btn.textContent;
-  btn.textContent = '✅ INSTALLED';
-  btn.style.background = 'rgba(0,255,135,.2)';
-  setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 2000);
-}
-
-// ── TAB SWITCH ──
-function switchTab(tab, btn) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('tab-' + tab).classList.add('active');
-  if (tab === 'explore') loadSupabaseSkills();
-}
-
-// ── FILTERS ──
-function filterSkills(cat, btn) {
-  document.querySelectorAll('.skills-filters .filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderMySkills(cat);
-}
-
-function filterMkt(type, btn) {
-  document.querySelectorAll('#tab-marketplace .filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  if (type === 'all') renderMarketplace(marketplaceSkills);
-  else if (type === 'free') renderMarketplace(marketplaceSkills.filter(s => s.price === 'FREE'));
-  else if (type === 'expert') renderMarketplace(marketplaceSkills.filter(s => s.level === 'EXPERT'));
-}
-
-function searchSkills(q) {
-  if (!q) { renderMarketplace(marketplaceSkills); return; }
-  renderMarketplace(marketplaceSkills.filter(s =>
-    s.name.toLowerCase().includes(q.toLowerCase()) ||
-    s.cat.toLowerCase().includes(q.toLowerCase())
-  ));
-}
+let agentUrl = localStorage.getItem('evoclaw_agent_url') || '';
+let mySkillsCache = [];
+let networkSkillsCache = [];
+let exploreFilter = 'all';
 
 // ── NAV ──
 window.addEventListener('scroll', () => document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 10));
@@ -819,134 +488,130 @@ const mobileOverlay = document.getElementById('mobileOverlay');
 hamburger.addEventListener('click', () => { mobileMenu.classList.toggle('open'); mobileOverlay.classList.toggle('open'); });
 mobileOverlay.addEventListener('click', () => { mobileMenu.classList.remove('open'); mobileOverlay.classList.remove('open'); });
 
-// ── REAL API ──
-const API = '/api';
-
-// ── SUPABASE CONFIG ──
-const SUPA_URL = 'https://sbqvwgzztfslwbhzqcjq.supabase.co';
-const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicXZ3Z3p6dGZzbHdiaHpxY2pxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3NTY4MTYsImV4cCI6MjA4OTMzMjgxNn0.qVAD4Ow0W3HC-mq1xiHzYLvAV5tqEoaWRf-ih1pUhKo';
-
-const supaHeaders = {
-  'Content-Type': 'application/json',
-  'apikey': SUPA_KEY,
-  'Authorization': `Bearer ${SUPA_KEY}`
-};
-
-async function supaFetch(path, options = {}) {
+// ── SUPABASE HELPERS ──
+async function supaGet(path) {
   const res = await fetch(`${SUPA_URL}/rest/v1/${path}`, {
-    ...options,
-    headers: { ...supaHeaders, ...(options.headers || {}) }
+    headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}` }
   });
   return res.json();
 }
 
-// ── PUBLISH SKILL TO SUPABASE ──
-async function publishToSupabase(skill) {
-  return supaFetch('skills', {
+async function supaPost(path, body) {
+  const res = await fetch(`${SUPA_URL}/rest/v1/${path}`, {
     method: 'POST',
-    headers: { 'Prefer': 'return=representation' },
-    body: JSON.stringify({
-      id: skill.id + '-' + Date.now(),
-      name: skill.name,
-      category: skill.cat || skill.category,
-      content: skill.content,
-      prm_score: skill.prm_score || (skill.score / 100),
-      uses: skill.uses || 0,
-      creator_agent: 'evoclaw-agent',
-    })
+    headers: {
+      'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}`,
+      'Content-Type': 'application/json', 'Prefer': 'return=representation'
+    },
+    body: JSON.stringify(body)
   });
+  return res.json();
 }
 
-// ── FETCH SKILLS FROM SUPABASE (all agents) ──
-async function fetchSupabaseSkills() {
-  return supaFetch('skills?select=*&order=prm_score.desc');
+async function supaPatch(path, body) {
+  const res = await fetch(`${SUPA_URL}/rest/v1/${path}`, {
+    method: 'PATCH',
+    headers: {
+      'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  return res.ok;
 }
 
-// ── INCREMENT INSTALL COUNT ──
-async function incrementInstall(skillId) {
-  // Get current installs
-  const data = await supaFetch(`skills?id=eq.${skillId}&select=installs`);
-  if (data && data[0]) {
-    const newCount = (data[0].installs || 0) + 1;
-    await supaFetch(`skills?id=eq.${skillId}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ installs: newCount })
-    });
+// ── CONNECT AGENT ──
+async function connectAgent() {
+  const input = document.getElementById('agentUrl');
+  const url = input.value.trim() || 'http://localhost:8080';
+  const btn = document.getElementById('connectBtn');
+  const status = document.getElementById('connectStatus');
+
+  btn.textContent = '⏳ CONNECTING...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`${url}/api/agent/status`, { signal: AbortSignal.timeout(5000) });
+    const data = await res.json();
+
+    if (data.status === 'online') {
+      agentUrl = url;
+      localStorage.setItem('evoclaw_agent_url', url);
+
+      btn.textContent = '✅ CONNECTED';
+      btn.className = 'connect-btn connected';
+      status.innerHTML = `<span class="pulse-dot"></span><span style="color:var(--green)">● AGENT ONLINE · ${data.skill_count} skills</span>`;
+
+      document.getElementById('agentStatusBadge').innerHTML = `<span class="pulse-dot"></span><span style="color:var(--green)">● AGENT ONLINE</span>`;
+      document.getElementById('myStatsBar').style.display = 'flex';
+
+      loadMySkills();
+      showToast('✅ Agent connected successfully!');
+    } else {
+      throw new Error('Agent returned non-online status');
+    }
+  } catch(e) {
+    btn.textContent = 'CONNECT AGENT';
+    btn.disabled = false;
+    status.innerHTML = `<span style="color:var(--red)">✗ Could not connect — is your agent running?</span>`;
+    showToast('⚠️ Could not connect. Make sure evoclaw start is running.');
   }
 }
-let realSkillsCache = [];
 
-// ── LOAD REAL SKILLS FROM VPS ──
-async function loadRealSkills() {
+// ── LOAD MY SKILLS ──
+async function loadMySkills() {
+  document.getElementById('notConnectedState').style.display = 'none';
+  document.getElementById('connectedState').style.display = 'block';
+
   try {
-    document.getElementById('totalSkills').textContent = '...';
-    const [skillsRes, statusRes] = await Promise.all([
-      fetch(`${API}/skills`),
-      fetch(`${API}/agent/status`)
-    ]);
-    const skillsData = await skillsRes.json();
-    const statusData = await statusRes.json();
+    const res = await fetch(`${agentUrl}/api/skills`);
+    const data = await res.json();
 
-    if (skillsData.status === 'ok' && skillsData.skills.length > 0) {
-      realSkillsCache = skillsData.skills.map((s, i) => ({
-        id: s.id,
-        name: s.name || `skill-${i}`,
+    if (data.status === 'ok') {
+      mySkillsCache = data.skills.map((s, i) => ({
+        id: s.id, name: s.name || `skill-${i}`,
         cat: s.category || 'general',
         catClass: s.category === 'coding' ? 'blue' : s.category === 'security' ? 'orange' : '',
         score: Math.round((s.prm_score || 0.8) * 100),
         prm_score: s.prm_score || 0.8,
-        uses: s.uses || 0,
-        convs: s.conversations || 0,
-        status: s.status || 'private',
-        content: s.content || '',
+        uses: s.uses || 0, status: s.status || 'private', content: s.content || '',
       }));
 
-      document.getElementById('totalSkills').textContent = skillsData.total;
-      document.querySelector('.tab-stats').innerHTML = `
-        <div class="tab-stat">Skills: <span>${skillsData.total}</span></div>
-        <div class="tab-stat">Avg Score: <span>${statusData.avg_prm_score || '0.81'}</span></div>
-        <div class="tab-stat" style="display:flex;align-items:center;gap:6px;">
-          <span class="pulse-dot"></span>
-          <span style="color:var(--green);">AGENT ONLINE</span>
-        </div>
-      `;
-      renderRealSkills(realSkillsCache);
-      renderExplore(realSkillsCache);
-    } else {
-      renderRealSkills([]);
+      document.getElementById('totalSkills').textContent = data.total;
+      const avg = mySkillsCache.length ? (mySkillsCache.reduce((a,s) => a + s.prm_score, 0) / mySkillsCache.length).toFixed(2) : '0';
+      document.getElementById('avgScore').textContent = avg;
+
+      renderMySkills(mySkillsCache);
     }
-  } catch (e) {
-    console.log('API not reachable, using demo data:', e.message);
-    renderRealSkills([]);
+  } catch(e) {
+    document.getElementById('mySkillsList').innerHTML = `<div style="padding:24px;text-align:center;color:var(--red);font-family:var(--mono);font-size:.72rem;">Could not load skills from agent.</div>`;
   }
 }
 
-// ── RENDER MY SKILLS (real data) ──
-function renderRealSkills(skills, filter = 'all') {
+// ── RENDER MY SKILLS ──
+function renderMySkills(skills, filter = 'all') {
   const list = document.getElementById('mySkillsList');
-  const data = filter === 'all' ? skills : skills.filter(s => s.cat === filter);
+  const filtered = filter === 'all' ? skills : skills.filter(s => s.cat === filter);
 
-  if (data.length === 0) {
-    list.innerHTML = `<div style="padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:.75rem;">No skills found. Your agent is still learning...</div>`;
+  if (filtered.length === 0) {
+    list.innerHTML = `<div style="padding:32px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:.72rem;">No skills found.</div>`;
     return;
   }
 
-  list.innerHTML = data.map(s => {
-    const scoreClass = s.score >= 90 ? '' : s.score >= 75 ? 'warn' : 'weak';
-    const dotClass = scoreClass;
+  list.innerHTML = filtered.map(s => {
+    const sc = s.score >= 90 ? '' : s.score >= 75 ? 'warn' : 'weak';
     return `
-    <div class="skill-row" data-id="${s.id}" data-cat="${s.cat}">
+    <div class="skill-row">
       <div class="skill-name-col">
-        <div class="skill-dot ${dotClass}"></div>
+        <div class="skill-dot ${sc}"></div>
         <span class="skill-name">${s.name}</span>
         <span class="skill-cat ${s.catClass||''}">${(s.cat||'general').toUpperCase()}</span>
       </div>
       <div class="score-bar-wrap">
-        <span class="score-num ${scoreClass}">${s.score}</span>
-        <div class="score-bar"><div class="score-fill ${scoreClass}" style="width:${s.score}%"></div></div>
+        <span class="score-num ${sc}">${s.score}</span>
+        <div class="score-bar"><div class="score-fill ${sc}" style="width:${s.score}%"></div></div>
       </div>
       <div class="uses-col">${(s.uses||0).toLocaleString()}</div>
-      <div class="conv-col col-conv">${(s.convs||0).toLocaleString()}</div>
       <div>
         <span class="status-badge ${s.status||'private'}" id="badge-${s.id}">
           ${s.status === 'listed' ? '● LISTED' : '○ PRIVATE'}
@@ -962,271 +627,224 @@ function renderRealSkills(skills, filter = 'all') {
   }).join('');
 }
 
-// ── PREVIEW MY SKILL (real content) ──
+function filterMySkills(cat, btn) {
+  document.querySelectorAll('#mySkillsFilters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMySkills(mySkillsCache, cat);
+}
+
+// ── PREVIEW MY SKILL ──
 function previewMySkill(skillId) {
-  const s = realSkillsCache.find(x => x.id === skillId);
+  const s = mySkillsCache.find(x => x.id === skillId);
   if (!s) return;
-
-  const scoreClass = s.score >= 90 ? '' : s.score >= 75 ? 'warn' : 'weak';
-  const levelLabel = s.score >= 90 ? 'EXPERT' : s.score >= 75 ? 'INTERMEDIATE' : 'BEGINNER';
-  const levelDesc = s.score >= 90
-    ? 'Expert level — well trained. Ready to be listed on marketplace.'
-    : s.score >= 75
-    ? 'Intermediate — good foundation. Still improving with each conversation.'
-    : 'Beginner — still learning. Needs more conversations to develop.';
-
+  const sc = s.score >= 90 ? '' : s.score >= 75 ? 'warn' : 'weak';
+  const lvl = s.score >= 90 ? 'EXPERT' : s.score >= 75 ? 'INTERMEDIATE' : 'BEGINNER';
   document.getElementById('modalTitle').textContent = s.name;
   document.getElementById('modalSub').textContent = `Your agent · ${s.cat} · ${s.uses} uses · ${s.status}`;
   document.getElementById('modalPrice').innerHTML = `Score: <span>${s.score}/100</span>`;
-  document.getElementById('modalInstallBtn').textContent = s.status === 'listed' ? '✓ Listed on Marketplace' : 'List to Marketplace';
-  document.getElementById('modalInstallBtn').onclick = () => { toggleList(s.id, null); closeModalDirect(); };
-
-  document.getElementById('modalBody').innerHTML = `
-    <div class="overall-score">
-      <div class="score-circle ${scoreClass}">
-        <span class="score-circle-num ${scoreClass}">${s.score}</span>
-        <span class="score-circle-label">/100</span>
-      </div>
-      <div class="score-details">
-        <div class="score-level">${levelLabel}</div>
-        <div class="score-desc">${levelDesc}</div>
-      </div>
-    </div>
-
-    <div class="knows-section">
-      <div class="knows-title">SKILL CONTENT</div>
-      <div class="know-item">
-        <div class="know-item-top">
-          <div class="know-item-name">✅ What this skill does</div>
-          <span class="know-conf high">${s.prm_score ? (s.prm_score*100).toFixed(0) : s.score}% PRM score</span>
-        </div>
-        <div style="font-size:.82rem;color:var(--text);line-height:1.75;margin-top:8px;padding:12px;background:var(--bg3);border-radius:var(--r);border:1px solid var(--border);">
-          ${s.content || '<span style="color:var(--muted)">No content description yet. This skill will develop more detail as your agent learns.</span>'}
-        </div>
-        <div class="know-meta" style="margin-top:8px;">Category: ${s.cat} · Uses: ${s.uses} · Status: ${s.status}</div>
-      </div>
-    </div>
-
-    <div class="perf-section">
-      <div class="knows-title">SKILL STATS</div>
-      <div class="perf-grid">
-        <div class="perf-cell">
-          <div class="perf-num">${s.score}</div>
-          <div class="perf-lbl">PRM SCORE</div>
-        </div>
-        <div class="perf-cell">
-          <div class="perf-num">${s.uses}</div>
-          <div class="perf-lbl">TIMES USED</div>
-        </div>
-        <div class="perf-cell">
-          <div class="perf-num" style="font-size:.9rem;color:${s.status==='listed'?'var(--green)':'var(--muted)'}">
-            ${s.status === 'listed' ? 'LISTED' : 'PRIVATE'}
-          </div>
-          <div class="perf-lbl">MARKETPLACE</div>
-        </div>
-      </div>
-    </div>
-  `;
-
+  document.getElementById('modalActionBtn').textContent = s.status === 'listed' ? 'Unlist' : 'List to Marketplace';
+  document.getElementById('modalActionBtn').onclick = () => { toggleList(s.id, null); closeModal(); };
+  document.getElementById('modalBody').innerHTML = buildSkillModal(s, sc, lvl);
   document.getElementById('skillModal').classList.add('open');
-  setTimeout(() => animateBars(), 50);
 }
 
-// ── TOGGLE LIST / UNLIST ──
+// ── TOGGLE LIST ──
 async function toggleList(skillId, btn) {
-  const s = realSkillsCache.find(x => x.id === skillId);
+  const s = mySkillsCache.find(x => x.id === skillId);
   if (!s) return;
-
   const newStatus = s.status === 'listed' ? 'private' : 'listed';
-
-  // Show loading
   if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
 
   try {
     // Update VPS
-    const res = await fetch(`${API}/skills/${skillId}/status`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    await fetch(`${agentUrl}/api/skills/${skillId}/status`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus })
     });
-    const data = await res.json();
 
-    if (data.status === 'updated' || data.status === 'ok' || true) {
-      s.status = newStatus;
+    s.status = newStatus;
 
-      // If listing → publish to Supabase marketplace
-      if (newStatus === 'listed') {
-        try {
-          await publishToSupabase(s);
-          showToast('✅ Skill listed to marketplace! Now visible to all agents.');
-        } catch(e) {
-          showToast('✅ Listed locally! Marketplace sync coming soon.');
-        }
-      } else {
-        showToast('○ Skill set to private');
-      }
-
-      // Update badge
-      const badge = document.getElementById(`badge-${skillId}`);
-      if (badge) {
-        badge.className = `status-badge ${newStatus}`;
-        badge.textContent = newStatus === 'listed' ? '● LISTED' : '○ PRIVATE';
-      }
-
-      // Update button
-      const listBtn = btn || document.getElementById(`listbtn-${skillId}`);
-      if (listBtn) {
-        listBtn.textContent = newStatus === 'listed' ? 'UNLIST' : 'LIST';
-        listBtn.disabled = false;
-      }
-
-      // Refresh explore tab
-      loadSupabaseSkills();
+    if (newStatus === 'listed') {
+      // Publish to Supabase
+      await supaPost('skills', {
+        id: skillId + '-' + Date.now(),
+        name: s.name, category: s.cat, content: s.content,
+        prm_score: s.prm_score, uses: s.uses,
+        creator_agent: agentUrl.replace('http://', '').replace('https://', ''),
+        installs: 0,
+      });
+      showToast(`✅ "${s.name}" listed! Now visible to all agents in network.`);
+    } else {
+      showToast('○ Skill set to private');
     }
-  } catch (e) {
+
+    const badge = document.getElementById(`badge-${skillId}`);
+    if (badge) { badge.className = `status-badge ${newStatus}`; badge.textContent = newStatus === 'listed' ? '● LISTED' : '○ PRIVATE'; }
+    const lb = btn || document.getElementById(`listbtn-${skillId}`);
+    if (lb) { lb.textContent = newStatus === 'listed' ? 'UNLIST' : 'LIST'; lb.disabled = false; }
+
+    loadNetworkSkills();
+  } catch(e) {
     if (btn) { btn.textContent = s.status === 'listed' ? 'UNLIST' : 'LIST'; btn.disabled = false; }
-    showToast('⚠️ Could not update — check VPS connection');
+    showToast('⚠️ Error — check agent connection');
   }
 }
 
-// ── TOAST NOTIFICATION ──
-function showToast(msg) {
-  let toast = document.getElementById('toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'toast';
-    toast.style.cssText = `position:fixed;bottom:32px;left:50%;transform:translateX(-50%);
-      background:var(--surface);border:1px solid var(--border2);color:var(--text);
-      font-family:var(--mono);font-size:.72rem;padding:12px 24px;border-radius:var(--r);
-      z-index:9999;transition:opacity .3s;letter-spacing:.06em;`;
-    document.body.appendChild(toast);
-  }
-  toast.textContent = msg;
-  toast.style.opacity = '1';
-  setTimeout(() => { toast.style.opacity = '0'; }, 2500);
-}
-
-// ── FILTER MY SKILLS ──
-function filterSkills(cat, btn) {
-  document.querySelectorAll('.skills-filters .filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderRealSkills(realSkillsCache, cat);
-}
-
-// ── LOAD SUPABASE SKILLS (from all agents) ──
-async function loadSupabaseSkills() {
-  const grid = document.getElementById('exploreGrid');
-  const count = document.getElementById('exploreCount');
-  if (!grid) return;
-
-  grid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:.72rem;grid-column:1/-1;"><span class="pulse-dot" style="margin-right:8px;"></span>Loading skills from network...</div>`;
-
+// ── LOAD NETWORK SKILLS (Supabase) ──
+async function loadNetworkSkills() {
   try {
-    const skills = await fetchSupabaseSkills();
-
-    if (!skills || skills.length === 0) {
-      // Fallback to local skills
-      renderExplore(realSkillsCache);
-      if (count) count.textContent = realSkillsCache.length;
-      return;
-    }
-
-    // Map Supabase format to display format
-    const mapped = skills.map(s => ({
-      id: s.id,
-      name: s.name,
-      cat: s.category || 'general',
+    const skills = await supaGet('skills?select=*&order=prm_score.desc');
+    networkSkillsCache = (Array.isArray(skills) ? skills : []).map(s => ({
+      id: s.id, name: s.name, cat: s.category || 'general',
       catClass: s.category === 'coding' ? 'blue' : s.category === 'security' ? 'orange' : '',
-      score: Math.round((s.prm_score || 0.8) * 100),
-      prm_score: s.prm_score || 0.8,
-      uses: s.uses || 0,
-      convs: 0,
-      status: 'listed',
-      content: s.content || '',
-      installs: s.installs || 0,
-      creator: s.creator_agent || 'evoclaw-agent',
+      score: Math.round((s.prm_score || 0.8) * 100), prm_score: s.prm_score || 0.8,
+      uses: s.uses || 0, content: s.content || '', installs: s.installs || 0,
+      creator: s.creator_agent || 'agent',
     }));
 
-    if (count) count.textContent = mapped.length;
-    renderExploreGrid(mapped);
+    // Update stats
+    const agents = new Set(networkSkillsCache.map(s => s.creator)).size;
+    const avg = networkSkillsCache.length ? (networkSkillsCache.reduce((a,s) => a + s.prm_score, 0) / networkSkillsCache.length).toFixed(2) : '0';
+    document.getElementById('statTotal').textContent = networkSkillsCache.length;
+    document.getElementById('statAgents').textContent = agents || 1;
+    document.getElementById('statAvg').textContent = avg;
+    document.getElementById('networkCount').textContent = networkSkillsCache.length;
 
-  } catch (e) {
-    // Fallback to local skills
-    renderExplore(realSkillsCache);
-    if (count) count.textContent = realSkillsCache.length;
+    renderExploreGrid(networkSkillsCache);
+  } catch(e) {
+    document.getElementById('statTotal').textContent = '0';
+    document.getElementById('statAgents').textContent = '0';
+    document.getElementById('statAvg').textContent = '0';
+    document.getElementById('exploreGrid').innerHTML = `<div style="padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:.72rem;grid-column:1/-1;">No skills in network yet. Be the first to list yours!</div>`;
   }
 }
 
+// ── RENDER EXPLORE ──
 function renderExploreGrid(skills) {
   const grid = document.getElementById('exploreGrid');
-  if (!grid) return;
+  document.getElementById('statShowing').textContent = skills.length;
 
   if (skills.length === 0) {
-    grid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:.75rem;grid-column:1/-1;">No skills found in network yet. Be the first to list your skills!</div>`;
+    grid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:.72rem;grid-column:1/-1;">No skills found. Be the first to list yours!</div>`;
     return;
   }
 
   grid.innerHTML = skills.map(s => {
-    const scoreClass = s.score >= 90 ? 'expert' : s.score >= 75 ? 'inter' : 'begin';
-    const levelLabel = s.score >= 90 ? 'EXPERT' : s.score >= 75 ? 'INTERMEDIATE' : 'BEGINNER';
-    const preview = s.content ? s.content.slice(0, 90) + (s.content.length > 90 ? '...' : '') : 'No description';
+    const sc = s.score >= 90 ? 'expert' : s.score >= 75 ? 'inter' : 'begin';
+    const lvl = s.score >= 90 ? 'EXPERT' : s.score >= 75 ? 'INTERMEDIATE' : 'BEGINNER';
+    const preview = (s.content || 'No description').slice(0, 85) + ((s.content||'').length > 85 ? '...' : '');
     return `
     <div class="mkt-card">
       <div class="mkt-card-top">
         <div>
           <div class="mkt-name">${s.name}</div>
-          <div class="mkt-meta">${s.cat} · ${s.installs || 0} installs · ${s.creator || 'agent'}</div>
+          <div class="mkt-meta">${s.cat} · ${s.installs} installs</div>
         </div>
         <div style="text-align:right;">
-          <div class="mkt-score-big ${scoreClass}">${s.score}</div>
-          <div class="mkt-score-label">${levelLabel}</div>
+          <div class="mkt-score-big ${sc}">${s.score}</div>
+          <div class="mkt-score-label">${lvl}</div>
         </div>
       </div>
       <div class="mkt-knows">
         <div class="mkt-know-item">
-          <span class="dot-g">✅</span>
+          <span style="color:var(--green);flex-shrink:0;">✅</span>
           <span style="font-size:.75rem;color:var(--muted);line-height:1.6;">${preview}</span>
         </div>
       </div>
       <div class="mkt-card-footer">
         <div>
           <div class="mkt-price">FREE</div>
-          <div class="mkt-installs">PRM: ${s.prm_score ? s.prm_score.toFixed(2) : '0.80'}</div>
+          <div class="mkt-installs">PRM: ${s.prm_score.toFixed(2)}</div>
         </div>
         <div style="display:flex;gap:6px;">
-          <button class="preview-btn" onclick="explorePreviewSupabase(${JSON.stringify(s).replace(/"/g, '&quot;')})">PREVIEW</button>
-          <button class="install-btn" id="install-${s.id}" onclick="installFromSupabase(${JSON.stringify(s).replace(/"/g, '&quot;')}, this)">INSTALL</button>
+          <button class="preview-btn" onclick="previewNetworkSkill('${s.id}')">PREVIEW</button>
+          <button class="install-btn" id="ibtn-${s.id}" onclick="installNetworkSkill('${s.id}', this)">INSTALL</button>
         </div>
       </div>
     </div>`;
   }).join('');
 }
 
-function explorePreviewSupabase(s) {
-  const scoreClass = s.score >= 90 ? '' : s.score >= 75 ? 'warn' : 'weak';
-  const levelLabel = s.score >= 90 ? 'EXPERT' : s.score >= 75 ? 'INTERMEDIATE' : 'BEGINNER';
-  const levelDesc = s.score >= 90 ? 'Expert level — well trained and verified by PRM scoring.'
-    : s.score >= 75 ? 'Intermediate — good foundation, improving with each conversation.'
-    : 'Beginner — still learning. Needs more conversations.';
+// ── FILTER EXPLORE ──
+let _exploreFilter = 'all';
+function setExploreFilter(filter, btn) {
+  _exploreFilter = filter;
+  document.querySelectorAll('#tab-explore .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterExploreSkills();
+}
 
+function filterExploreSkills() {
+  const q = (document.getElementById('exploreSearch')?.value || '').toLowerCase();
+  let filtered = networkSkillsCache;
+  if (_exploreFilter !== 'all') filtered = filtered.filter(s => s.cat === _exploreFilter);
+  if (q) filtered = filtered.filter(s => s.name.toLowerCase().includes(q) || (s.content||'').toLowerCase().includes(q) || s.cat.toLowerCase().includes(q));
+  renderExploreGrid(filtered);
+}
+
+// ── PREVIEW NETWORK SKILL ──
+function previewNetworkSkill(skillId) {
+  const s = networkSkillsCache.find(x => x.id === skillId);
+  if (!s) return;
+  const sc = s.score >= 90 ? '' : s.score >= 75 ? 'warn' : 'weak';
+  const lvl = s.score >= 90 ? 'EXPERT' : s.score >= 75 ? 'INTERMEDIATE' : 'BEGINNER';
   document.getElementById('modalTitle').textContent = s.name;
-  document.getElementById('modalSub').textContent = `Network skill · ${s.cat} · ${s.installs || 0} installs · by ${s.creator || 'agent'}`;
-  document.getElementById('modalPrice').innerHTML = `Score: <span>${s.score}/100</span>`;
-  document.getElementById('modalInstallBtn').textContent = 'Install to My Agent';
-  document.getElementById('modalInstallBtn').onclick = () => { installFromSupabase(s, null); closeModalDirect(); };
+  document.getElementById('modalSub').textContent = `Network skill · ${s.cat} · ${s.installs} installs`;
+  document.getElementById('modalPrice').innerHTML = `Price: <span>FREE</span>`;
+  document.getElementById('modalActionBtn').textContent = agentUrl ? 'Install to My Agent' : 'Connect Agent to Install';
+  document.getElementById('modalActionBtn').onclick = () => { installNetworkSkill(skillId, null); closeModal(); };
+  document.getElementById('modalBody').innerHTML = buildSkillModal(s, sc, lvl);
+  document.getElementById('skillModal').classList.add('open');
+}
 
-  document.getElementById('modalBody').innerHTML = `
+// ── INSTALL FROM NETWORK ──
+async function installNetworkSkill(skillId, btn) {
+  if (!agentUrl) {
+    showToast('⚠️ Connect your agent first!');
+    document.getElementById('agentUrl').focus();
+    return;
+  }
+  const s = networkSkillsCache.find(x => x.id === skillId);
+  if (!s) return;
+  if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
+
+  try {
+    const res = await fetch(`${agentUrl}/api/skills/inject`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: s.name, content: s.content, category: s.cat, prm_score: s.prm_score })
+    });
+    const data = await res.json();
+    if (data.status === 'injected') {
+      if (btn) { btn.textContent = '✅ INSTALLED'; btn.style.background = 'rgba(0,255,135,.2)'; }
+      showToast(`✅ "${s.name}" installed! Active in your agent now.`);
+      // Increment installs in Supabase
+      supaPatch(`skills?id=eq.${skillId}`, { installs: (s.installs || 0) + 1 });
+      s.installs = (s.installs || 0) + 1;
+      setTimeout(() => { if (agentUrl) loadMySkills(); }, 1500);
+    } else throw new Error();
+  } catch(e) {
+    if (btn) { btn.textContent = 'INSTALL'; btn.disabled = false; }
+    showToast('⚠️ Install failed — is your agent running?');
+  }
+}
+
+// ── BUILD MODAL BODY ──
+function buildSkillModal(s, sc, lvl) {
+  const desc = lvl === 'EXPERT' ? 'Expert level — well trained and production ready.'
+    : lvl === 'INTERMEDIATE' ? 'Intermediate — solid foundation, still improving.'
+    : 'Beginner — needs more conversations to develop.';
+  return `
     <div class="overall-score">
-      <div class="score-circle ${scoreClass}">
-        <span class="score-circle-num ${scoreClass}">${s.score}</span>
+      <div class="score-circle ${sc}">
+        <span class="score-circle-num ${sc}">${s.score}</span>
         <span class="score-circle-label">/100</span>
       </div>
-      <div class="score-details">
-        <div class="score-level">${levelLabel}</div>
-        <div class="score-desc">${levelDesc}</div>
+      <div>
+        <div class="score-level">${lvl}</div>
+        <div class="score-desc">${desc}</div>
       </div>
     </div>
-    <div class="knows-section">
+    <div style="margin-bottom:20px;">
       <div class="knows-title">SKILL CONTENT</div>
       <div class="know-item">
         <div class="know-item-top">
@@ -1234,161 +852,51 @@ function explorePreviewSupabase(s) {
           <span class="know-conf high">${s.score}% score</span>
         </div>
         <div style="font-size:.82rem;color:var(--text);line-height:1.75;margin-top:8px;padding:12px;background:var(--bg3);border-radius:var(--r);border:1px solid var(--border);">
-          ${s.content || '<span style="color:var(--muted)">No content yet.</span>'}
+          ${s.content || '<span style="color:var(--muted)">No content description yet.</span>'}
         </div>
-        <div class="know-meta" style="margin-top:8px;">Category: ${s.cat} · PRM Score: ${s.prm_score ? s.prm_score.toFixed(3) : '0.800'} · Installs: ${s.installs || 0}</div>
+        <div class="know-meta" style="margin-top:6px;">Category: ${s.cat} · Uses: ${s.uses || 0}</div>
       </div>
     </div>
-    <div class="perf-section">
-      <div class="knows-title">SKILL STATS</div>
+    <div>
+      <div class="knows-title">STATS</div>
       <div class="perf-grid">
         <div class="perf-cell"><div class="perf-num">${s.score}</div><div class="perf-lbl">PRM SCORE</div></div>
         <div class="perf-cell"><div class="perf-num">${s.uses || 0}</div><div class="perf-lbl">USES</div></div>
         <div class="perf-cell"><div class="perf-num">${s.installs || 0}</div><div class="perf-lbl">INSTALLS</div></div>
       </div>
     </div>`;
-
-  document.getElementById('skillModal').classList.add('open');
-  setTimeout(() => animateBars(), 50);
 }
 
-async function installFromSupabase(s, btn) {
-  if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
-  try {
-    const res = await fetch(`${API}/skills/inject`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: s.name,
-        content: s.content,
-        category: s.cat || s.category,
-        prm_score: s.prm_score
-      })
-    });
-    const data = await res.json();
-    if (data.status === 'injected') {
-      if (btn) { btn.textContent = '✅ INSTALLED'; btn.style.background = 'rgba(0,255,135,.2)'; }
-      showToast(`✅ "${s.name}" installed! Active in your agent now.`);
-      await incrementInstall(s.id);
-      setTimeout(() => loadRealSkills(), 1000);
-    } else {
-      throw new Error('inject failed');
-    }
-  } catch (e) {
-    if (btn) { btn.textContent = 'INSTALL'; btn.disabled = false; }
-    showToast('⚠️ Install failed — is your VPS running?');
-  }
-}
+// ── MODAL ──
+function closeModal() { document.getElementById('skillModal').classList.remove('open'); }
+function closeModalBg(e) { if (e.target === document.getElementById('skillModal')) closeModal(); }
 
-function renderExplore(skills, filter = 'all') {
-  const grid = document.getElementById('exploreGrid');
-  const count = document.getElementById('exploreCount');
-  if (!grid) return;
-
-  const filtered = filter === 'all' ? skills : skills.filter(s => s.cat === filter);
-  if (count) count.textContent = filtered.length;
-
-  if (filtered.length === 0) {
-    grid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:.75rem;grid-column:1/-1;">No skills found.</div>`;
-    return;
-  }
-
-  grid.innerHTML = filtered.map(s => {
-    const scoreClass = s.score >= 90 ? 'expert' : s.score >= 75 ? 'inter' : 'begin';
-    const levelLabel = s.score >= 90 ? 'EXPERT' : s.score >= 75 ? 'INTERMEDIATE' : 'BEGINNER';
-    const preview = s.content ? s.content.slice(0, 80) + (s.content.length > 80 ? '...' : '') : 'No description';
-    return `
-    <div class="mkt-card">
-      <div class="mkt-card-top">
-        <div>
-          <div class="mkt-name">${s.name}</div>
-          <div class="mkt-meta">${s.cat} · ${s.uses} uses</div>
-        </div>
-        <div style="text-align:right;">
-          <div class="mkt-score-big ${scoreClass}">${s.score}</div>
-          <div class="mkt-score-label">${levelLabel}</div>
-        </div>
-      </div>
-      <div class="mkt-knows">
-        <div class="mkt-know-item">
-          <span class="dot-g">✅</span>
-          <span style="font-size:.75rem;color:var(--muted);line-height:1.6;">${preview}</span>
-        </div>
-      </div>
-      <div class="mkt-card-footer">
-        <div>
-          <div class="mkt-price">FREE</div>
-          <div class="mkt-installs">PRM: ${s.prm_score || (s.score/100).toFixed(2)}</div>
-        </div>
-        <div style="display:flex;gap:6px;">
-          <button class="preview-btn" onclick="explorePreview('${s.id}')">PREVIEW</button>
-          <button class="install-btn" onclick="exploreInstall('${s.id}', this)">INSTALL</button>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function setExploreFilter(filter, btn) {
-  exploreFilter = filter;
-  document.querySelectorAll('#tab-explore .filter-btn').forEach(b => b.classList.remove('active'));
+// ── SWITCH TAB ──
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
   btn.classList.add('active');
-  renderExplore(realSkillsCache, filter);
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'my-skills' && agentUrl) loadMySkills();
+  if (tab === 'explore') loadNetworkSkills();
 }
 
-function filterExplore() {
-  const q = document.getElementById('exploreSearch')?.value?.toLowerCase() || '';
-  const filtered = realSkillsCache.filter(s =>
-    s.name.toLowerCase().includes(q) || s.cat.toLowerCase().includes(q) || (s.content||'').toLowerCase().includes(q)
-  );
-  const grid = document.getElementById('exploreGrid');
-  const count = document.getElementById('exploreCount');
-  const byFilter = exploreFilter === 'all' ? filtered : filtered.filter(s => s.cat === exploreFilter);
-  if (count) count.textContent = byFilter.length;
-  renderExplore(byFilter, 'all');
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.display = 'none'; }, 2800);
 }
 
-function explorePreview(skillId) {
-  const s = realSkillsCache.find(x => x.id === skillId);
-  if (!s) return;
-  previewMySkill(skillId);
-  document.getElementById('modalInstallBtn').textContent = 'Install to My Agent';
-  document.getElementById('modalInstallBtn').onclick = () => { exploreInstall(skillId, null); closeModalDirect(); };
+// ── INIT ──
+// Pre-fill agent URL if saved
+if (agentUrl) {
+  document.getElementById('agentUrl').value = agentUrl;
+  // Auto-connect
+  connectAgent();
 }
-
-async function exploreInstall(skillId, btn) {
-  const s = realSkillsCache.find(x => x.id === skillId);
-  if (!s) return;
-
-  if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
-
-  try {
-    const res = await fetch(`${API}/skills/inject`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: s.name + '-copy',
-        content: s.content,
-        category: s.cat,
-        prm_score: s.prm_score
-      })
-    });
-    const data = await res.json();
-    if (data.status === 'injected') {
-      if (btn) { btn.textContent = '✅ INSTALLED'; btn.style.background = 'rgba(0,255,135,.2)'; }
-      showToast(`✅ "${s.name}" installed to your agent!`);
-      setTimeout(() => loadRealSkills(), 1000);
-    }
-  } catch (e) {
-    if (btn) { btn.textContent = 'INSTALL'; btn.disabled = false; }
-    showToast('⚠️ Install failed — check VPS connection');
-  }
-}
-
-// ── INIT — load everything ──
-loadRealSkills();
-renderMarketplace(marketplaceSkills);
-loadSupabaseSkills();
+loadNetworkSkills();
 </script>
 </body>
 </html>
