@@ -352,6 +352,7 @@
       <div class="tab-list">
         <button class="tab-btn active" onclick="switchTab('my-skills', this)">MY SKILLS</button>
         <button class="tab-btn" onclick="switchTab('marketplace', this)">MARKETPLACE</button>
+        <button class="tab-btn" onclick="switchTab('explore', this)">EXPLORE</button>
         <button class="tab-btn" onclick="switchTab('analytics', this)">ANALYTICS</button>
       </div>
       <div class="tab-stats">
@@ -419,6 +420,63 @@
         </div>
 
         <div class="mkt-grid" id="marketplaceGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPLORE TAB -->
+  <div class="tab-content" id="tab-explore">
+    <div class="section-sm">
+      <div class="container">
+        <div class="mkt-header">
+          <div>
+            <span class="label">EXPLORE</span>
+            <h2 class="section-title" style="font-size:1.6rem;">Skills from <b>other agents.</b></h2>
+            <p class="section-sub" style="margin-bottom:20px;">Browse skills learned by agents across the EvoClaw network. See full content, score breakdown, and real performance before installing into your agent.</p>
+          </div>
+          <div class="mkt-search">
+            <input class="search-input" id="exploreSearch" placeholder="Search skills..." oninput="filterExplore()">
+            <div class="skills-filters">
+              <button class="filter-btn active" onclick="setExploreFilter('all', this)">ALL</button>
+              <button class="filter-btn" onclick="setExploreFilter('general', this)">GENERAL</button>
+              <button class="filter-btn" onclick="setExploreFilter('coding', this)">CODING</button>
+              <button class="filter-btn" onclick="setExploreFilter('security', this)">SECURITY</button>
+              <button class="filter-btn" onclick="setExploreFilter('defi', this)">DEFI</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Network stats -->
+        <div class="g4" style="margin-bottom:32px;">
+          <div class="cell">
+            <div style="font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--green);line-height:1;margin-bottom:4px;">2,847</div>
+            <div style="font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.1em;">TOTAL SKILLS</div>
+          </div>
+          <div class="cell">
+            <div style="font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--green);line-height:1;margin-bottom:4px;">341</div>
+            <div style="font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.1em;">ACTIVE AGENTS</div>
+          </div>
+          <div class="cell">
+            <div style="font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--green);line-height:1;margin-bottom:4px;">0.87</div>
+            <div style="font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.1em;">AVG SCORE</div>
+          </div>
+          <div class="cell">
+            <div style="font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--blue);line-height:1;margin-bottom:4px;" id="exploreCount">11</div>
+            <div style="font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.1em;">SHOWING NOW</div>
+          </div>
+        </div>
+
+        <!-- Explore grid -->
+        <div class="mkt-grid" id="exploreGrid"></div>
+
+        <!-- Coming soon banner -->
+        <div style="margin-top:24px;background:var(--green-d);border:1px solid var(--green-b);border-radius:var(--r);padding:18px 24px;display:flex;align-items:center;gap:14px;">
+          <span class="pulse-dot"></span>
+          <div>
+            <div style="font-family:var(--mono);font-size:.72rem;color:var(--green);font-weight:500;margin-bottom:4px;">NETWORK EXPANDING</div>
+            <div style="font-size:.8rem;color:var(--muted);">Currently showing skills from your own agent. As more agents join the EvoClaw network, skills from other agents will appear here automatically.</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -799,6 +857,7 @@ async function loadRealSkills() {
         </div>
       `;
       renderRealSkills(realSkillsCache);
+      renderExplore(realSkillsCache);
     } else {
       renderRealSkills([]);
     }
@@ -977,6 +1036,114 @@ function filterSkills(cat, btn) {
   document.querySelectorAll('.skills-filters .filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderRealSkills(realSkillsCache, cat);
+}
+
+// ── EXPLORE TAB ──
+let exploreFilter = 'all';
+
+function renderExplore(skills, filter = 'all') {
+  const grid = document.getElementById('exploreGrid');
+  const count = document.getElementById('exploreCount');
+  if (!grid) return;
+
+  const filtered = filter === 'all' ? skills : skills.filter(s => s.cat === filter);
+  if (count) count.textContent = filtered.length;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:.75rem;grid-column:1/-1;">No skills found.</div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(s => {
+    const scoreClass = s.score >= 90 ? 'expert' : s.score >= 75 ? 'inter' : 'begin';
+    const levelLabel = s.score >= 90 ? 'EXPERT' : s.score >= 75 ? 'INTERMEDIATE' : 'BEGINNER';
+    const preview = s.content ? s.content.slice(0, 80) + (s.content.length > 80 ? '...' : '') : 'No description';
+    return `
+    <div class="mkt-card">
+      <div class="mkt-card-top">
+        <div>
+          <div class="mkt-name">${s.name}</div>
+          <div class="mkt-meta">${s.cat} · ${s.uses} uses</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="mkt-score-big ${scoreClass}">${s.score}</div>
+          <div class="mkt-score-label">${levelLabel}</div>
+        </div>
+      </div>
+      <div class="mkt-knows">
+        <div class="mkt-know-item">
+          <span class="dot-g">✅</span>
+          <span style="font-size:.75rem;color:var(--muted);line-height:1.6;">${preview}</span>
+        </div>
+      </div>
+      <div class="mkt-card-footer">
+        <div>
+          <div class="mkt-price">FREE</div>
+          <div class="mkt-installs">PRM: ${s.prm_score || (s.score/100).toFixed(2)}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="preview-btn" onclick="explorePreview('${s.id}')">PREVIEW</button>
+          <button class="install-btn" onclick="exploreInstall('${s.id}', this)">INSTALL</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setExploreFilter(filter, btn) {
+  exploreFilter = filter;
+  document.querySelectorAll('#tab-explore .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderExplore(realSkillsCache, filter);
+}
+
+function filterExplore() {
+  const q = document.getElementById('exploreSearch')?.value?.toLowerCase() || '';
+  const filtered = realSkillsCache.filter(s =>
+    s.name.toLowerCase().includes(q) || s.cat.toLowerCase().includes(q) || (s.content||'').toLowerCase().includes(q)
+  );
+  const grid = document.getElementById('exploreGrid');
+  const count = document.getElementById('exploreCount');
+  const byFilter = exploreFilter === 'all' ? filtered : filtered.filter(s => s.cat === exploreFilter);
+  if (count) count.textContent = byFilter.length;
+  renderExplore(byFilter, 'all');
+}
+
+function explorePreview(skillId) {
+  const s = realSkillsCache.find(x => x.id === skillId);
+  if (!s) return;
+  previewMySkill(skillId);
+  document.getElementById('modalInstallBtn').textContent = 'Install to My Agent';
+  document.getElementById('modalInstallBtn').onclick = () => { exploreInstall(skillId, null); closeModalDirect(); };
+}
+
+async function exploreInstall(skillId, btn) {
+  const s = realSkillsCache.find(x => x.id === skillId);
+  if (!s) return;
+
+  if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
+
+  try {
+    const res = await fetch(`${API}/skills/inject`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: s.name + '-copy',
+        content: s.content,
+        category: s.cat,
+        prm_score: s.prm_score
+      })
+    });
+    const data = await res.json();
+    if (data.status === 'injected') {
+      if (btn) { btn.textContent = '✅ INSTALLED'; btn.style.background = 'rgba(0,255,135,.2)'; }
+      showToast(`✅ "${s.name}" installed to your agent!`);
+      setTimeout(() => loadRealSkills(), 1000);
+    }
+  } catch (e) {
+    if (btn) { btn.textContent = 'INSTALL'; btn.disabled = false; }
+    showToast('⚠️ Install failed — check VPS connection');
+  }
 }
 
 // ── INIT ──
