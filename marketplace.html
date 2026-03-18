@@ -246,6 +246,10 @@
     .auth-btn.logout { background:none; border:none; color:var(--dim); font-size:.6rem; }
     .auth-user { font-family:var(--mono); font-size:.62rem; color:var(--green); display:flex; align-items:center; gap:6px; }
 
+    /* ── TOKEN BTN ── */
+    .evoclaw-token-btn { font-family:var(--mono); font-size:.65rem; letter-spacing:.06em; padding:6px 14px; border-radius:var(--r); cursor:pointer; transition:all .15s; background:none; border:1px solid var(--green-b); color:var(--green); white-space:nowrap; }
+    .evoclaw-token-btn:hover { background:var(--green-d); }
+
     /* ── WALLET CONNECT BTN ── */
     .wallet-btn { font-family:var(--mono); font-size:.65rem; letter-spacing:.06em; padding:6px 14px; border-radius:var(--r); cursor:pointer; transition:all .15s; background:none; border:1px solid var(--border2); color:var(--muted); white-space:nowrap; }
     .wallet-btn:hover { color:var(--green); border-color:var(--green-b); background:var(--green-d); }
@@ -498,6 +502,7 @@
     </div>
     <button class="wallet-btn" id="walletBtn" onclick="connectWalletGlobal()" title="Connect MetaMask for x402 payments and ERC-8004 identity">🦊 Connect Wallet</button>
     <button class="wallet-disconnect" id="walletDisconnectBtn" onclick="disconnectWallet()" title="Disconnect wallet">⏏ DISCONNECT</button>
+    <button class="evoclaw-token-btn" onclick="showTokenComingSoon()" title="$EVOCLAW Token">🐾 $EVOCLAW</button>
   </div>
 </div>
 
@@ -1618,6 +1623,11 @@ function disconnectWallet() {
   const dbtn = document.getElementById('walletDisconnectBtn');
   if (dbtn) dbtn.style.display = 'none';
   showToast('Wallet disconnected');
+}
+
+// ── TOKEN COMING SOON ──
+function showTokenComingSoon() {
+  showToast('🐾 $EVOCLAW token — Clanker launch coming soon!');
 }
 
 // ── CONNECT INLINE ──
