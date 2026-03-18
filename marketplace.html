@@ -250,6 +250,8 @@
     .wallet-btn { font-family:var(--mono); font-size:.65rem; letter-spacing:.06em; padding:6px 14px; border-radius:var(--r); cursor:pointer; transition:all .15s; background:none; border:1px solid var(--border2); color:var(--muted); white-space:nowrap; }
     .wallet-btn:hover { color:var(--green); border-color:var(--green-b); background:var(--green-d); }
     .wallet-btn.wconnected { background:var(--green-d); border-color:var(--green-b); color:var(--green); font-size:.6rem; }
+    .wallet-disconnect { font-family:var(--mono); font-size:.6rem; padding:6px 10px; border-radius:var(--r); cursor:pointer; background:none; border:1px solid var(--border2); color:var(--muted); display:none; transition:all .15s; }
+    .wallet-disconnect:hover { color:#ff4444; border-color:#ff4444; background:rgba(255,68,68,.08); }
 
     /* ── PRICE BADGE ── */
     .price-tag { font-family:var(--mono); font-size:.68rem; font-weight:500; }
@@ -495,6 +497,7 @@
       <button class="auth-btn login" onclick="openAuthModal()" id="loginBtn">LOG IN →</button>
     </div>
     <button class="wallet-btn" id="walletBtn" onclick="connectWalletGlobal()" title="Connect MetaMask for x402 payments and ERC-8004 identity">🦊 Connect Wallet</button>
+    <button class="wallet-disconnect" id="walletDisconnectBtn" onclick="disconnectWallet()" title="Disconnect wallet">⏏ DISCONNECT</button>
   </div>
 </div>
 
@@ -1570,16 +1573,15 @@ function _setGlobalWallet(addr) {
     btn.textContent = '🦊 ' + addr.slice(0,6)+'...'+addr.slice(-4);
     btn.className = 'wallet-btn wconnected';
     btn.title = addr;
-    btn.onclick = ()=>{ 
-      if(confirm('Disconnect wallet ' + addr.slice(0,6)+'...'+addr.slice(-4) + '?')) disconnectWallet();
-      else navigator.clipboard.writeText(addr).then(()=>showToast('Address copied!'));
-    };
+    btn.onclick = ()=>{ navigator.clipboard.writeText(addr).then(()=>showToast('Address copied!')); };
   }
   const lbl = document.getElementById('erc8004CheckLabel');
   if (lbl && document.getElementById('registerErc8004')?.checked) {
     lbl.innerHTML = 'Wallet ready: <span style="color:#4da6ff">'+addr.slice(0,6)+'...'+addr.slice(-4)+'</span>';
   }
   sessionStorage.setItem('evoclaw_wallet', addr);
+  const dbtn = document.getElementById('walletDisconnectBtn');
+  if (dbtn) dbtn.style.display = 'inline-block';
 }
 
 (async function autoRestoreWallet() {
@@ -1613,6 +1615,8 @@ function disconnectWallet() {
   }
   const wf = document.getElementById('x402WalletField');
   if (wf) wf.value = '';
+  const dbtn = document.getElementById('walletDisconnectBtn');
+  if (dbtn) dbtn.style.display = 'none';
   showToast('Wallet disconnected');
 }
 
