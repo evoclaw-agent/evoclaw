@@ -765,6 +765,7 @@
 
 <div id="toast"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <script>
 // ── CONFIG ──
 const SUPA_URL = 'https://sbqvwgzztfslwbhzqcjq.supabase.co';
@@ -1556,90 +1557,207 @@ loadNetworkSkills();
 // ERC-8004 — AGENT IDENTITY & REPUTATION ON-CHAIN (Base Mainnet)
 // IdentityRegistry:   0x8004A818BFB912233c491871b3d84c89A494BD9e
 // ReputationRegistry: 0x8004B663056A597Dffe9eCcC1965A193B7388713
+// Powered by ethers.js v6
 // ══════════════════════════════════════════════════════════════════
 
 const ERC8004 = {
   chainId: 8453,
+  chainHex: '0x2105',
+  rpcUrl: 'https://mainnet.base.org',
   identity:   '0x8004A818BFB912233c491871b3d84c89A494BD9e',
   reputation: '0x8004B663056A597Dffe9eCcC1965A193B7388713',
   explorer:   'https://basescan.org',
+  identityABI: [
+    'function register(string agentDomain, address agentAddress) returns (uint256)',
+    'function getAgentId(string domain) view returns (uint256)',
+    'function ownerOf(uint256 tokenId) view returns (address)',
+  ],
+  reputationABI: [
+    'function giveFeedback(uint256 agentId, address agentRegistry, int64 value, string tag1, string fileURI, bytes32 fileHash) returns (uint256)',
+    'function getSummary(uint256 agentId, address registry) view returns (int64 totalValue, uint256 count)',
+  ],
 };
 
-// ── CHECK IF WALLET ALREADY REGISTERED ──
+// ── GET PROVIDER + SIGNER via ethers.js v6 ──
+async function erc8004GetSigner() {
+  if (!window.ethereum) return null;
+  const provider = new ethers.BrowserProvider(window.ethereum);
+  // Switch to Base
+  try {
+    await window.ethereum.request({ method:'wallet_switchEthereumChain', params:[{chainId: ERC8004.chainHex}] });
+  } catch(se) {
+    if (se.code===4902) {
+      await window.ethereum.request({ method:'wallet_addEthereumChain', params:[{
+        chainId: ERC8004.chainHex, chainName:'Base',
+        nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18},
+        rpcUrls:[ERC8004.rpcUrl],
+        blockExplorerUrls:[ERC8004.explorer]
+      }]});
+    }
+  }
+  return provider.getSigner();
+}
+
+// ── READ PROVIDER (no signer needed) ──
+function erc8004ReadProvider() {
+  return new ethers.JsonRpcProvider(ERC8004.rpcUrl);
+}
+
+// ── GET CACHED INFO ──
 function erc8004GetInfo(walletAddr) {
   if (!walletAddr) return null;
-  const agentId = localStorage.getItem('erc8004_id_' + walletAddr.toLowerCase());
+  const key = walletAddr.toLowerCase();
+  const agentId = localStorage.getItem('erc8004_id_' + key);
   if (!agentId) return null;
   return {
     agentId,
-    domain: localStorage.getItem('erc8004_domain_' + walletAddr.toLowerCase()) || '',
-    txHash: localStorage.getItem('erc8004_tx_' + walletAddr.toLowerCase()) || '',
+    domain:  localStorage.getItem('erc8004_domain_' + key) || '',
+    txHash:  localStorage.getItem('erc8004_tx_' + key) || '',
+    confirmed: localStorage.getItem('erc8004_confirmed_' + key) === '1',
   };
+}
+
+// ── CHECK IF ALREADY REGISTERED (read from chain) ──
+async function erc8004CheckOnChain(agentDomain) {
+  try {
+    const provider = erc8004ReadProvider();
+    const contract = new ethers.Contract(ERC8004.identity, ERC8004.identityABI, provider);
+    const agentId = await contract.getAgentId(agentDomain);
+    return agentId > 0n ? agentId.toString() : null;
+  } catch(e) {
+    return null;
+  }
 }
 
 // ── REGISTER TO IDENTITY REGISTRY ──
 async function erc8004Register(walletAddr, agentDomain) {
   if (!window.ethereum) { showToast('MetaMask needed for on-chain identity'); return null; }
   try {
-    // Switch to Base
-    try {
-      await window.ethereum.request({ method:'wallet_switchEthereumChain', params:[{chainId:'0x'+ERC8004.chainId.toString(16)}] });
-    } catch(se) {
-      if (se.code===4902) await window.ethereum.request({ method:'wallet_addEthereumChain', params:[{chainId:'0x'+ERC8004.chainId.toString(16),chainName:'Base',nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18},rpcUrls:['https://mainnet.base.org'],blockExplorerUrls:['https://basescan.org']}] });
+    showToast('⛓ Connecting to Base...');
+    const signer = await erc8004GetSigner();
+    if (!signer) return null;
+
+    // Check if already registered
+    const existing = await erc8004CheckOnChain(agentDomain);
+    if (existing) {
+      // Already registered — save to cache and return
+      const key = walletAddr.toLowerCase();
+      localStorage.setItem('erc8004_id_' + key, existing);
+      localStorage.setItem('erc8004_domain_' + key, agentDomain);
+      localStorage.setItem('erc8004_confirmed_' + key, '1');
+      showToast('⛓ Already registered — Agent ID #' + existing);
+      return { agentId: existing, txHash: null };
     }
 
-    // ABI-encode: register(string agentDomain, address agentAddress)
-    // Function selector for register(string,address) 
-    const selector = '0x0f2cdd6c';
-    const addrPad  = walletAddr.slice(2).toLowerCase().padStart(64,'0');
-    const domBytes = new TextEncoder().encode(agentDomain);
-    const domHex   = Array.from(domBytes).map(b=>b.toString(16).padStart(2,'0')).join('');
-    const domPad   = domHex.padEnd(Math.ceil(domHex.length/64)*64||64,'0');
-    const domLen   = domBytes.length.toString(16).padStart(64,'0');
-    // Offsets: string at 64, address at 96
-    const strOffset = (64).toString(16).padStart(64,'0');
-    const calldata  = selector + strOffset + addrPad + domLen + domPad;
+    const contract = new ethers.Contract(ERC8004.identity, ERC8004.identityABI, signer);
+    showToast('⛓ Confirm registration in MetaMask...');
+    const tx = await contract.register(agentDomain, walletAddr);
 
-    const txHash = await window.ethereum.request({
-      method:'eth_sendTransaction',
-      params:[{ from:walletAddr, to:ERC8004.identity, data:calldata }]
-    });
+    const key = walletAddr.toLowerCase();
+    localStorage.setItem('erc8004_id_'     + key, 'pending');
+    localStorage.setItem('erc8004_domain_' + key, agentDomain);
+    localStorage.setItem('erc8004_tx_'     + key, tx.hash);
+    showToast('⛓ Tx sent: ' + tx.hash.slice(0,10) + '... waiting confirmation');
 
-    // Optimistic save
-    const fakeId = Math.floor(Date.now()/1000);
-    localStorage.setItem('erc8004_id_'     + walletAddr.toLowerCase(), fakeId);
-    localStorage.setItem('erc8004_domain_' + walletAddr.toLowerCase(), agentDomain);
-    localStorage.setItem('erc8004_tx_'     + walletAddr.toLowerCase(), txHash);
+    // Wait for confirmation
+    const receipt = await tx.wait(1);
+    if (receipt.status === 1) {
+      // Get real agentId from Transfer event (ERC-721 mint)
+      let realAgentId = 'pending';
+      try {
+        const transferEvent = receipt.logs.find(l => l.topics.length === 4);
+        if (transferEvent) realAgentId = BigInt(transferEvent.topics[3]).toString();
+      } catch(_) {}
 
-    showToast('⛓ Identity registered on Base! tx: ' + txHash.slice(0,10) + '...');
-    return { agentId: fakeId, txHash };
+      localStorage.setItem('erc8004_id_' + key, realAgentId);
+      localStorage.setItem('erc8004_confirmed_' + key, '1');
+      showToast('⛓ Identity confirmed on Base! Agent ID #' + realAgentId);
+      return { agentId: realAgentId, txHash: tx.hash };
+    } else {
+      showToast('⚠️ Transaction failed on-chain');
+      localStorage.removeItem('erc8004_id_' + key);
+      return null;
+    }
   } catch(e) {
-    if (e.code===4001) showToast('Registration cancelled');
-    else console.warn('[ERC-8004] register failed:', e.message);
+    if (e.code === 'ACTION_REJECTED') showToast('Registration cancelled');
+    else showToast('⚠️ ' + (e.shortMessage || e.message || 'Registration failed').slice(0,60));
     return null;
   }
 }
 
-// ── SUBMIT RATING TO REPUTATION REGISTRY ──
+// ── SUBMIT RATING TO REPUTATION REGISTRY (real on-chain) ──
 async function erc8004SubmitReputation(sellerWallet, skillName, ratingValue) {
   if (!sellerWallet || sellerWallet === '0x0000000000000000000000000000000000000001') return;
   const info = erc8004GetInfo(sellerWallet);
-  if (!info) return; // seller not registered, skip silently
+  if (!info || info.agentId === 'pending') return;
 
-  // Store locally as pending — batch submit when wallet connected
-  const key = 'erc8004_pending_rep';
-  const pending = JSON.parse(localStorage.getItem(key)||'[]');
-  pending.push({ sellerWallet, agentId: info.agentId, skillName, rating: ratingValue, value: ratingValue*20, ts: Date.now() });
-  localStorage.setItem(key, JSON.stringify(pending.slice(-50))); // keep last 50
-  showToast('⛓ Rating queued for on-chain reputation (' + ratingValue + '/5)');
+  try {
+    if (!window.ethereum) return;
+    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+    if (!accounts || accounts.length === 0) {
+      // Queue for later
+      const pending = JSON.parse(localStorage.getItem('erc8004_pending_rep')||'[]');
+      pending.push({ sellerWallet, agentId: info.agentId, skillName, rating: ratingValue, ts: Date.now() });
+      localStorage.setItem('erc8004_pending_rep', JSON.stringify(pending.slice(-50)));
+      return;
+    }
+
+    const signer = await erc8004GetSigner();
+    if (!signer) return;
+
+    const contract = new ethers.Contract(ERC8004.reputation, ERC8004.reputationABI, signer);
+    const value = BigInt(ratingValue * 20); // 1-5 stars → 20-100 points
+    const agentIdBig = BigInt(info.agentId);
+    const fileHash = ethers.ZeroHash;
+
+    showToast('⛓ Confirm reputation in MetaMask...');
+    const tx = await contract.giveFeedback(
+      agentIdBig,
+      ERC8004.identity,
+      value,
+      skillName.slice(0,32),
+      '',
+      fileHash
+    );
+    await tx.wait(1);
+    showToast(`⛓ Reputation submitted on-chain! ${ratingValue}/5 stars for ${skillName}`);
+  } catch(e) {
+    if (e.code !== 'ACTION_REJECTED') {
+      // Queue for retry
+      const pending = JSON.parse(localStorage.getItem('erc8004_pending_rep')||'[]');
+      pending.push({ sellerWallet, agentId: info.agentId, skillName, rating: ratingValue, ts: Date.now() });
+      localStorage.setItem('erc8004_pending_rep', JSON.stringify(pending.slice(-50)));
+      showToast('⛓ Rating queued — will submit on-chain next time');
+    }
+  }
+}
+
+// ── GET REPUTATION FROM CHAIN ──
+async function erc8004GetReputation(agentId) {
+  if (!agentId || agentId === 'pending') return null;
+  try {
+    const provider = erc8004ReadProvider();
+    const contract = new ethers.Contract(ERC8004.reputation, ERC8004.reputationABI, provider);
+    const [totalValue, count] = await contract.getSummary(BigInt(agentId), ERC8004.identity);
+    if (count === 0n) return null;
+    const avg = Number(totalValue) / Number(count);
+    return { totalValue: Number(totalValue), count: Number(count), avgScore: Math.round(avg) };
+  } catch(e) {
+    return null;
+  }
 }
 
 // ── RENDER IDENTITY BADGE ──
 function erc8004Badge(walletAddr) {
   if (!walletAddr) return '';
   const info = erc8004GetInfo(walletAddr);
-  if (!info) return '';
-  return `<a href="${ERC8004.explorer}/tx/${info.txHash}" target="_blank" title="ERC-8004 Verified Agent #${info.agentId}" style="font-family:var(--mono);font-size:.55rem;background:rgba(0,180,255,.08);border:1px solid rgba(0,180,255,.2);color:#4da6ff;padding:2px 7px;border-radius:3px;text-decoration:none;margin-left:4px;">⛓ ID #${info.agentId}</a>`;
+  if (!info || !info.agentId || info.agentId === 'pending') return '';
+  const txLink = info.txHash ? `${ERC8004.explorer}/tx/${info.txHash}` : `${ERC8004.explorer}/address/${ERC8004.identity}`;
+  const confirmed = info.confirmed ? '⛓' : '⏳';
+  return `<a href="${txLink}" target="_blank"
+    title="ERC-8004 On-chain Identity — Agent #${info.agentId} · ${info.domain}"
+    style="font-family:var(--mono);font-size:.55rem;background:rgba(0,180,255,.08);border:1px solid rgba(0,180,255,.2);color:#4da6ff;padding:2px 7px;border-radius:3px;text-decoration:none;margin-left:4px;cursor:pointer;">
+    ${confirmed} ID #${info.agentId}</a>`;
 }
 // ══════════════════════════════════════════════════════════════════
 
