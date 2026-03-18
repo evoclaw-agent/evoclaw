@@ -729,10 +729,10 @@
       <div style="font-family:var(--mono);font-size:.58rem;color:var(--dim);margin-top:4px;">Payments sent directly to this address via x402 on Base network</div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:10px 14px;background:rgba(0,180,255,.05);border:1px solid rgba(0,180,255,.15);border-radius:var(--r);">
-      <input type="checkbox" id="registerErc8004" style="width:14px;height:14px;accent-color:#4da6ff;cursor:pointer;">
+      <input type="checkbox" id="registerErc8004" style="width:14px;height:14px;accent-color:#4da6ff;cursor:pointer;" onchange="onErc8004Toggle(this.checked)">
       <label for="registerErc8004" style="font-family:var(--mono);font-size:.65rem;color:var(--muted);cursor:pointer;line-height:1.5;">
         <span style="color:#4da6ff;font-weight:500;">⛓ Register to ERC-8004</span><br>
-        Get a verified on-chain identity. Badge shows on your skill cards.
+        <span id="erc8004CheckLabel">Get a verified on-chain identity. Badge shows on your skill cards.</span>
       </label>
     </div>
     <div class="lpm-btns">
@@ -1009,11 +1009,16 @@ async function confirmList() {
     setTimeout(() => renderMySkills(mySkillsCache), 300);
 
     // ERC-8004: register identity if checkbox checked
-    if (document.getElementById('registerErc8004')?.checked && x402State.walletAddr) {
-      const domain = agentUrl.replace('https://','').replace('http://','').split('/')[0];
-      erc8004Register(x402State.walletAddr, domain || 'evoclaw.agent').then(res => {
-        if (res) loadNetworkSkills(); // refresh to show badge
-      });
+    if (document.getElementById('registerErc8004')?.checked) {
+      const walletForReg = x402State.walletAddr || document.getElementById('x402WalletField')?.value?.trim();
+      if (walletForReg && walletForReg.startsWith('0x')) {
+        const domain = agentUrl.replace('https://','').replace('http://','').split('/')[0] || 'evoclaw.agent';
+        erc8004Register(walletForReg, domain).then(res => {
+          if (res) setTimeout(loadNetworkSkills, 3000);
+        });
+      } else {
+        showToast('⚠️ Fill your wallet address to register ERC-8004 identity');
+      }
     }
     const priceStr = price > 0 ? ` at ${price} USDC` : ' for free';
     showToast(`✅ "${s.name}" listed${priceStr}! Visible to all agents.`);
@@ -1494,6 +1499,37 @@ function renderStars(avg, count) {
     `<span class="star ${i < full ? 'lit' : ''}">★</span>`
   ).join('');
   return `<span class="stars">${stars}</span> <span class="rating-display">${avg.toFixed(1)} (${count})</span>`;
+}
+
+
+// ── ERC-8004 CHECKBOX TOGGLE ──
+async function onErc8004Toggle(checked) {
+  if (!checked) return;
+  const label = document.getElementById('erc8004CheckLabel');
+  if (x402State.walletAddr) {
+    label.innerHTML = 'Wallet: <span style="color:#4da6ff">' + x402State.walletAddr.slice(0,6) + '...' + x402State.walletAddr.slice(-4) + '</span>';
+    return;
+  }
+  if (!window.ethereum) {
+    label.textContent = 'MetaMask not found — install from metamask.io';
+    document.getElementById('registerErc8004').checked = false;
+    return;
+  }
+  label.textContent = 'Connecting wallet...';
+  try {
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    if (accounts && accounts[0]) {
+      x402State.walletAddr = accounts[0];
+      const wf = document.getElementById('x402WalletField');
+      if (wf && !wf.value) wf.value = accounts[0];
+      label.innerHTML = 'Wallet: <span style="color:#4da6ff">' + accounts[0].slice(0,6) + '...' + accounts[0].slice(-4) + '</span> · will register on Base';
+      showToast('Wallet connected — ERC-8004 registration ready');
+    }
+  } catch(e) {
+    document.getElementById('registerErc8004').checked = false;
+    label.textContent = 'Get a verified on-chain identity. Badge shows on your skill cards.';
+    showToast('Wallet connection cancelled');
+  }
 }
 
 // ── CONNECT INLINE ──
