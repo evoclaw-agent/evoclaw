@@ -722,12 +722,12 @@ html, body {
       <li><a href="/playground" style="color:var(--green)">PLAYGROUND</a></li>
     </ul>
     <a href="https://github.com/evoclaw-agent/evoclaw" target="_blank" class="nav-cta">GITHUB →</a>
-    <div class="ca-token-wrap" onclick="copyCA()" title="Copy Contract Address">
+    <div class="ca-token-wrap" onclick="showTokenComingSoon()" title="$EVOCLAW Token — Coming Soon">
       <img src="assets/logo.png" class="ca-token-logo" alt="$EVOCLAW">
       <span class="ca-token-label">$EVOCLAW</span>
-      <div class="ca-tooltip">📋 COPY CA<br><span style="color:var(--muted);font-size:.6rem;">0xC768...3bA3</span></div>
+      <div class="ca-tooltip">🚀 COMING SOON<br><span style="color:var(--muted);font-size:.6rem;">New contract on Clanker</span></div>
     </div>
-    <a href="https://x.com/evoclaw_" target="_blank" class="nav-cta" style="background:transparent;border:1px solid var(--border2);color:var(--text);">𝕏</a>
+    
       <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
@@ -737,7 +737,7 @@ html, body {
   <span style="color:var(--text);">CA: </span>
   <span style="color:var(--green);">0xC768...3bA3</span>
   <button id="ca-btn" onclick="copyCA()" style="margin-left:10px;background:var(--green-d);border:1px solid var(--green-b);color:var(--muted);font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;padding:3px 10px;border-radius:3px;cursor:pointer;transition:all .15s;">COPY CA</button>
-  <a href="https://bankr.bot/launches/0xC768C116D57037F15767C25663770F8ac3B23bA3" target="_blank" style="margin-left:10px;color:var(--muted);font-size:.62rem;letter-spacing:.08em;">VIEW ON BANKR →</a>
+  <a href="https://bankr.bot/launches/COMING SOON ON CLANKER" target="_blank" style="margin-left:10px;color:var(--muted);font-size:.62rem;letter-spacing:.08em;">VIEW ON BANKR →</a>
 </div>
 <div class="mobile-overlay" id="mobileOverlay"></div>
 <div class="mobile-menu" id="mobileMenu">
@@ -1555,24 +1555,8 @@ BUILT ON OPEN SOURCE</span></div>
 })();
 </script>
 <script>
-function copyCA() {
-  navigator.clipboard.writeText('0xC768C116D57037F15767C25663770F8ac3B23bA3').then(function() {
-    // Update nav widget
-    var lbl = document.querySelector('.ca-token-label');
-    if (lbl) {
-      var orig = lbl.innerHTML;
-      lbl.innerHTML = '✅ COPIED!';
-      setTimeout(function(){ lbl.innerHTML = orig; }, 1800);
-    }
-    // Update CA bar button
-    var btn = document.getElementById('ca-btn');
-    if (btn) {
-      var origBtn = btn.innerHTML;
-      btn.innerHTML = '✅ COPIED';
-      btn.style.color = 'var(--green)';
-      setTimeout(function(){ btn.innerHTML = origBtn; btn.style.color = ''; }, 1800);
-    }
-  });
+function showTokenComingSoon() {
+  showToast('🐾 $EVOCLAW — New contract on Clanker coming soon!');
 }
 </script>
 </body>
