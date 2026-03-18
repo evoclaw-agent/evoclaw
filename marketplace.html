@@ -1005,6 +1005,7 @@ async function confirmList() {
       prm_score: s.prm_score, uses: s.uses,
       creator_agent: agentUrl.replace('http://', '').replace('https://', ''),
       creator_email: currentUser || '',
+      creator_wallet: x402State.walletAddr || document.getElementById('x402WalletField')?.value?.trim() || '',
       installs: 0, price: price, avg_rating: 0, rating_count: 0,
     });
 
@@ -1569,7 +1570,10 @@ function _setGlobalWallet(addr) {
     btn.textContent = '🦊 ' + addr.slice(0,6)+'...'+addr.slice(-4);
     btn.className = 'wallet-btn wconnected';
     btn.title = addr;
-    btn.onclick = ()=>{ navigator.clipboard.writeText(addr).then(()=>showToast('Copied!')); };
+    btn.onclick = ()=>{ 
+      if(confirm('Disconnect wallet ' + addr.slice(0,6)+'...'+addr.slice(-4) + '?')) disconnectWallet();
+      else navigator.clipboard.writeText(addr).then(()=>showToast('Address copied!'));
+    };
   }
   const lbl = document.getElementById('erc8004CheckLabel');
   if (lbl && document.getElementById('registerErc8004')?.checked) {
@@ -1595,6 +1599,22 @@ function _setGlobalWallet(addr) {
     });
   } catch(_) {}
 })();
+
+// ── DISCONNECT WALLET ──
+function disconnectWallet() {
+  x402State.walletAddr = '';
+  sessionStorage.removeItem('evoclaw_wallet');
+  const btn = document.getElementById('walletBtn');
+  if (btn) {
+    btn.textContent = '🦊 Connect Wallet';
+    btn.className = 'wallet-btn';
+    btn.title = 'Connect MetaMask for x402 payments and ERC-8004 identity';
+    btn.onclick = connectWalletGlobal;
+  }
+  const wf = document.getElementById('x402WalletField');
+  if (wf) wf.value = '';
+  showToast('Wallet disconnected');
+}
 
 // ── CONNECT INLINE ──
 function connectInline() {
