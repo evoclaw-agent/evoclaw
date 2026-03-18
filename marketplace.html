@@ -1702,20 +1702,8 @@ async function erc8004Register(walletAddr, agentDomain) {
       return { agentId: existing, txHash: null };
     }
 
-    // Build agentURI as base64 JSON (ERC-8004 v1 spec)
-    const agentMeta = {
-      type: 'https://eips.ethereum.org/EIPS/eip-8004#registration-v1',
-      name: 'EvoClaw Agent',
-      description: 'Self-evolving AI agent on EvoClaw marketplace',
-      image: 'https://evoclaw.tech/assets/logo.png',
-      active: true,
-      x402Support: true,
-      services: [
-        { name: 'web', endpoint: 'https://evoclaw.tech/marketplace' },
-        { name: 'marketplace', endpoint: agentDomain }
-      ]
-    };
-    const agentURI = 'data:application/json;base64,' + btoa(JSON.stringify(agentMeta));
+    // Use simple URL as agentURI — shorter = lower gas, less likely to fail
+    const agentURI = 'https://evoclaw.tech/marketplace';
 
     const contract = new ethers.Contract(ERC8004.identity, ERC8004.identityABI, signer);
     showToast('⛓ Confirm registration in MetaMask...');
