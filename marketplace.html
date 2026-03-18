@@ -1020,7 +1020,7 @@ async function confirmList() {
       const walletForReg = x402State.walletAddr || document.getElementById('x402WalletField')?.value?.trim();
       if (walletForReg && walletForReg.startsWith('0x')) {
         const domain = agentUrl.replace('https://','').replace('http://','').split('/')[0] || 'evoclaw.agent';
-        erc8004Register(walletForReg, domain).then(res => {
+        erc8004Register(walletForReg, agentUrl || 'https://evoclaw.tech').then(res => {
           if (res) setTimeout(loadNetworkSkills, 3000);
         });
       } else {
@@ -1631,9 +1631,9 @@ const ERC8004 = {
   reputation: '0x8004B663056A597Dffe9eCcC1965A193B7388713',
   explorer:   'https://basescan.org',
   identityABI: [
-    'function register(string agentDomain, address agentAddress) returns (uint256)',
-    'function getAgentId(string domain) view returns (uint256)',
+    'function register(string agentURI) returns (uint256)',
     'function ownerOf(uint256 tokenId) view returns (address)',
+    'function tokenURI(uint256 tokenId) view returns (string)',
   ],
   reputationABI: [
     'function giveFeedback(uint256 agentId, address agentRegistry, int64 value, string tag1, string fileURI, bytes32 fileHash) returns (uint256)',
@@ -1681,15 +1681,10 @@ function erc8004GetInfo(walletAddr) {
 }
 
 // ── CHECK IF ALREADY REGISTERED (read from chain) ──
-async function erc8004CheckOnChain(agentDomain) {
-  try {
-    const provider = erc8004ReadProvider();
-    const contract = new ethers.Contract(ERC8004.identity, ERC8004.identityABI, provider);
-    const agentId = await contract.getAgentId(agentDomain);
-    return agentId > 0n ? agentId.toString() : null;
-  } catch(e) {
-    return null;
-  }
+async function erc8004CheckOnChain(walletAddr) {
+  // Check localStorage only - no getAgentId function in v1 ABI
+  const cached = localStorage.getItem('erc8004_id_' + walletAddr.toLowerCase());
+  return cached && cached !== 'pending' ? cached : null;
 }
 
 // ── REGISTER TO IDENTITY REGISTRY ──
@@ -1701,21 +1696,31 @@ async function erc8004Register(walletAddr, agentDomain) {
     if (!signer) return null;
 
     // Check if already registered
-    const existing = await erc8004CheckOnChain(agentDomain);
+    const existing = await erc8004CheckOnChain(walletAddr);
     if (existing) {
-      // Already registered — save to cache and return
-      const key = walletAddr.toLowerCase();
-      localStorage.setItem('erc8004_id_' + key, existing);
-      localStorage.setItem('erc8004_domain_' + key, agentDomain);
-      localStorage.setItem('erc8004_confirmed_' + key, '1');
       showToast('⛓ Already registered — Agent ID #' + existing);
       return { agentId: existing, txHash: null };
     }
 
+    // Build agentURI as base64 JSON (ERC-8004 v1 spec)
+    const agentMeta = {
+      type: 'https://eips.ethereum.org/EIPS/eip-8004#registration-v1',
+      name: 'EvoClaw Agent',
+      description: 'Self-evolving AI agent on EvoClaw marketplace',
+      image: 'https://evoclaw.tech/assets/logo.png',
+      active: true,
+      x402Support: true,
+      services: [
+        { name: 'web', endpoint: 'https://evoclaw.tech/marketplace' },
+        { name: 'marketplace', endpoint: agentDomain }
+      ]
+    };
+    const agentURI = 'data:application/json;base64,' + btoa(JSON.stringify(agentMeta));
+
     const contract = new ethers.Contract(ERC8004.identity, ERC8004.identityABI, signer);
     showToast('⛓ Confirm registration in MetaMask...');
-    const tx = await contract.register(agentDomain, walletAddr, {
-      gasLimit: 200000n  // manual gas limit — bypass estimateGas
+    const tx = await contract.register(agentURI, {
+      gasLimit: 300000n
     });
 
     const key = walletAddr.toLowerCase();
