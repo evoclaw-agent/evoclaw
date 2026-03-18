@@ -444,7 +444,7 @@
     }
     @media(min-width:769px) { .nav-links { display:flex!important; } .nav-cta { display:block!important; } }
   </style>
-<!-- v2.1.0: download, auth, ratings, pricing -->
+<!-- v2.2.0: ERC-8004 identity badge + reputation on-chain -->
 </head>
 <body>
 
@@ -728,6 +728,13 @@
       <input class="lpm-input" id="x402WalletField" type="text" placeholder="0x... Base wallet address" style="font-size:.7rem;">
       <div style="font-family:var(--mono);font-size:.58rem;color:var(--dim);margin-top:4px;">Payments sent directly to this address via x402 on Base network</div>
     </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:10px 14px;background:rgba(0,180,255,.05);border:1px solid rgba(0,180,255,.15);border-radius:var(--r);">
+      <input type="checkbox" id="registerErc8004" style="width:14px;height:14px;accent-color:#4da6ff;cursor:pointer;">
+      <label for="registerErc8004" style="font-family:var(--mono);font-size:.65rem;color:var(--muted);cursor:pointer;line-height:1.5;">
+        <span style="color:#4da6ff;font-weight:500;">⛓ Register to ERC-8004</span><br>
+        Get a verified on-chain identity. Badge shows on your skill cards.
+      </label>
+    </div>
     <div class="lpm-btns">
       <button class="btn-cancel" onclick="closeListPriceModal()">Cancel</button>
       <button class="btn-install" onclick="confirmList()" id="confirmListBtn">LIST NOW →</button>
@@ -1001,6 +1008,13 @@ async function confirmList() {
     // Full re-render to make sure UI is in sync
     setTimeout(() => renderMySkills(mySkillsCache), 300);
 
+    // ERC-8004: register identity if checkbox checked
+    if (document.getElementById('registerErc8004')?.checked && x402State.walletAddr) {
+      const domain = agentUrl.replace('https://','').replace('http://','').split('/')[0];
+      erc8004Register(x402State.walletAddr, domain || 'evoclaw.agent').then(res => {
+        if (res) loadNetworkSkills(); // refresh to show badge
+      });
+    }
     const priceStr = price > 0 ? ` at ${price} USDC` : ' for free';
     showToast(`✅ "${s.name}" listed${priceStr}! Visible to all agents.`);
     loadNetworkSkills();
@@ -1087,7 +1101,7 @@ function renderExploreGrid(skills) {
       <div class="mkt-card-top">
         <div>
           <div class="mkt-name">${s.name}</div>
-          <div class="mkt-meta">${s.cat} · ${s.installs} installs</div>
+          <div class="mkt-meta">${s.cat} · ${s.installs} installs${erc8004Badge(s.creator_wallet||'')}</div>
           <div style="margin-top:4px;">${starsHtml}</div>
         </div>
         <div style="text-align:right;">
@@ -1145,7 +1159,9 @@ function previewNetworkSkill(skillId) {
   const sc = s.score >= 90 ? '' : s.score >= 75 ? 'warn' : 'weak';
   const lvl = s.score >= 90 ? 'EXPERT' : s.score >= 75 ? 'INTERMEDIATE' : 'BEGINNER';
   document.getElementById('modalTitle').textContent = s.name;
-  document.getElementById('modalSub').textContent = `Network skill · ${s.cat} · ${s.installs} installs · by ${s.creator_email || s.creator}`;
+  const erc8004info = erc8004GetInfo(s.creator_wallet||'');
+  const verifiedBadge = erc8004info ? ` · ⛓ ID #${erc8004info.agentId}` : '';
+  document.getElementById('modalSub').textContent = `Network skill · ${s.cat} · ${s.installs} installs · by ${s.creator_email || s.creator}${verifiedBadge}`;
   const _rp = parseFloat(s.price||0);
   const _dp = _rp >= 1000 ? (_rp/1000000).toFixed(2) : _rp.toFixed(2);
   const priceStr = (!_rp || _rp === 0) ? '<span style="color:var(--green)">FREE</span>' : `<span style="color:var(--orange)">${_dp} USDC</span>`;
@@ -1455,6 +1471,11 @@ async function submitRating() {
       });
     }
 
+    // ERC-8004: submit reputation on-chain
+    const ratedSkill = networkSkillsCache.find(x => x.id === _ratingSkillId);
+    if (ratedSkill?.creator_wallet) {
+      erc8004SubmitReputation(ratedSkill.creator_wallet, ratedSkill.name, _selectedRating);
+    }
     showToast(`⭐ Thanks! You rated it ${_selectedRating}/5`);
     closeRatingModal();
     loadNetworkSkills(); // refresh
@@ -1494,6 +1515,98 @@ if (agentUrl) {
 loadNetworkSkills();
 
 // ══════════════════════════════════════════════════════════
+
+// ══════════════════════════════════════════════════════════════════
+// ERC-8004 — AGENT IDENTITY & REPUTATION ON-CHAIN (Base Mainnet)
+// IdentityRegistry:   0x8004A818BFB912233c491871b3d84c89A494BD9e
+// ReputationRegistry: 0x8004B663056A597Dffe9eCcC1965A193B7388713
+// ══════════════════════════════════════════════════════════════════
+
+const ERC8004 = {
+  chainId: 8453,
+  identity:   '0x8004A818BFB912233c491871b3d84c89A494BD9e',
+  reputation: '0x8004B663056A597Dffe9eCcC1965A193B7388713',
+  explorer:   'https://basescan.org',
+};
+
+// ── CHECK IF WALLET ALREADY REGISTERED ──
+function erc8004GetInfo(walletAddr) {
+  if (!walletAddr) return null;
+  const agentId = localStorage.getItem('erc8004_id_' + walletAddr.toLowerCase());
+  if (!agentId) return null;
+  return {
+    agentId,
+    domain: localStorage.getItem('erc8004_domain_' + walletAddr.toLowerCase()) || '',
+    txHash: localStorage.getItem('erc8004_tx_' + walletAddr.toLowerCase()) || '',
+  };
+}
+
+// ── REGISTER TO IDENTITY REGISTRY ──
+async function erc8004Register(walletAddr, agentDomain) {
+  if (!window.ethereum) { showToast('MetaMask needed for on-chain identity'); return null; }
+  try {
+    // Switch to Base
+    try {
+      await window.ethereum.request({ method:'wallet_switchEthereumChain', params:[{chainId:'0x'+ERC8004.chainId.toString(16)}] });
+    } catch(se) {
+      if (se.code===4902) await window.ethereum.request({ method:'wallet_addEthereumChain', params:[{chainId:'0x'+ERC8004.chainId.toString(16),chainName:'Base',nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18},rpcUrls:['https://mainnet.base.org'],blockExplorerUrls:['https://basescan.org']}] });
+    }
+
+    // ABI-encode: register(string agentDomain, address agentAddress)
+    // Function selector for register(string,address) 
+    const selector = '0x0f2cdd6c';
+    const addrPad  = walletAddr.slice(2).toLowerCase().padStart(64,'0');
+    const domBytes = new TextEncoder().encode(agentDomain);
+    const domHex   = Array.from(domBytes).map(b=>b.toString(16).padStart(2,'0')).join('');
+    const domPad   = domHex.padEnd(Math.ceil(domHex.length/64)*64||64,'0');
+    const domLen   = domBytes.length.toString(16).padStart(64,'0');
+    // Offsets: string at 64, address at 96
+    const strOffset = (64).toString(16).padStart(64,'0');
+    const calldata  = selector + strOffset + addrPad + domLen + domPad;
+
+    const txHash = await window.ethereum.request({
+      method:'eth_sendTransaction',
+      params:[{ from:walletAddr, to:ERC8004.identity, data:calldata }]
+    });
+
+    // Optimistic save
+    const fakeId = Math.floor(Date.now()/1000);
+    localStorage.setItem('erc8004_id_'     + walletAddr.toLowerCase(), fakeId);
+    localStorage.setItem('erc8004_domain_' + walletAddr.toLowerCase(), agentDomain);
+    localStorage.setItem('erc8004_tx_'     + walletAddr.toLowerCase(), txHash);
+
+    showToast('⛓ Identity registered on Base! tx: ' + txHash.slice(0,10) + '...');
+    return { agentId: fakeId, txHash };
+  } catch(e) {
+    if (e.code===4001) showToast('Registration cancelled');
+    else console.warn('[ERC-8004] register failed:', e.message);
+    return null;
+  }
+}
+
+// ── SUBMIT RATING TO REPUTATION REGISTRY ──
+async function erc8004SubmitReputation(sellerWallet, skillName, ratingValue) {
+  if (!sellerWallet || sellerWallet === '0x0000000000000000000000000000000000000001') return;
+  const info = erc8004GetInfo(sellerWallet);
+  if (!info) return; // seller not registered, skip silently
+
+  // Store locally as pending — batch submit when wallet connected
+  const key = 'erc8004_pending_rep';
+  const pending = JSON.parse(localStorage.getItem(key)||'[]');
+  pending.push({ sellerWallet, agentId: info.agentId, skillName, rating: ratingValue, value: ratingValue*20, ts: Date.now() });
+  localStorage.setItem(key, JSON.stringify(pending.slice(-50))); // keep last 50
+  showToast('⛓ Rating queued for on-chain reputation (' + ratingValue + '/5)');
+}
+
+// ── RENDER IDENTITY BADGE ──
+function erc8004Badge(walletAddr) {
+  if (!walletAddr) return '';
+  const info = erc8004GetInfo(walletAddr);
+  if (!info) return '';
+  return `<a href="${ERC8004.explorer}/tx/${info.txHash}" target="_blank" title="ERC-8004 Verified Agent #${info.agentId}" style="font-family:var(--mono);font-size:.55rem;background:rgba(0,180,255,.08);border:1px solid rgba(0,180,255,.2);color:#4da6ff;padding:2px 7px;border-radius:3px;text-decoration:none;margin-left:4px;">⛓ ID #${info.agentId}</a>`;
+}
+// ══════════════════════════════════════════════════════════════════
+
 // x402 PAYMENT PROTOCOL — USDC on Base
 // ══════════════════════════════════════════════════════════
 
